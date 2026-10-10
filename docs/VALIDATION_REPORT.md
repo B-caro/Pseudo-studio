@@ -1,6 +1,6 @@
 # Informe de validación — Pseudo / Studio
 
-Fecha: 2026-10-10. La copia temporal usada para la instalación limpia fue `/tmp/pseudo-studio-validation-0o8tswmq/workspace`; excluyó `.git`, `.venv`, `node_modules`, `data`, `reports` y archivos de caché antes del bootstrap. El código fuente copiado incluye la implementación y los tests actuales.
+Fecha: 2026-10-10. Commit local de implementación: `415b54d`. La copia temporal usada para la instalación limpia fue `/tmp/pseudo-studio-validation-0o8tswmq/workspace`; excluyó `.git`, `.venv`, `node_modules`, `data`, `reports` y archivos de caché antes del bootstrap. El código fuente copiado incluye la implementación y los tests actuales.
 
 ## Resultado ejecutado
 
@@ -40,6 +40,13 @@ Esta VM equivalente satisface la alternativa de aislamiento aceptada por el requ
 - En WSL2, Python 3.12.3 y 12 CPU, el benchmark registró 100 líneas: p50 3.731 ms / p95 5.100 ms; 1.000 líneas: p50 43.960 ms / p95 68.676 ms. 30 iteraciones por tamaño.
 - `reports/ui-workbench-clean.png` es captura Playwright de la copia limpia; `reports/clean-install-playwright/` conserva el reporte HTML y el resultado final de Playwright.
 - `reports/clean-install-python-dependency-audit.json` y `reports/clean-install-npm-dependency-audit.json` contienen el resultado de auditoría.
+
+SHA-256 de evidencia limpia:
+
+- Acceptance JSON: `b17efaf05cd329e92c1eea5b9af085f4da5938b026868d027716aa7dfb6054ed`.
+- npm audit JSON: `ee3191284f92a07f6cef6debf3de2f2ddd9df71688183f4fcd8ee1bd0f154d28`.
+- pip-audit JSON: `2f88642648fc33563be5775168fc09b1c531ff65351d101a3965c67b4c259292`.
+- Captura Playwright: `8e33de7287eca91d77a2a833a9d6d854d7ff9929f9211323303ddf7132aee2bb`.
 
 ## Límites abiertos
 

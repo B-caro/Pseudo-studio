@@ -65,6 +65,6 @@ Esta matriz refleja pruebas ejecutadas al 2026-10-10. El PDF operativo gobierna 
 
 - RF: 29/29 validados por pruebas reales del backend, runtimes o UI, con referencias individuales arriba.
 - RNF: 10/12 validados; RNF-06 y RNF-10 quedan parciales por revisión manual de accesibilidad y ejecución fuera de WSL2.
-- 194/205 tareas del plan verificadas al iniciar la auditoría final. Las tareas y diez límites pendientes están en `docs/IMPLEMENTATION_STATUS.md`; P13-14 espera el commit de entrega.
+- 195/205 tareas del plan verificadas; diez límites de verificación siguen abiertos y están enumerados en `docs/IMPLEMENTATION_STATUS.md`. El commit local de entrega es `415b54d`.
 - A–E: 30/30 ejecuciones OCI reales; evidencia detallada en `reports/acceptance-results.json` y `reports/clean-install-acceptance-results.json`.
 - No se declara 100% ni se ocultan las verificaciones ambientales no realizadas.
