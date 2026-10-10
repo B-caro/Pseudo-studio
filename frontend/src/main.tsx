@@ -554,7 +554,7 @@ function App() {
   return <div className="app-shell">
     <header className="topbar">
       <a className="brand" href="#editor" onClick={(event) => { event.preventDefault(); setTab("editor"); }} aria-label="Pseudo Studio inicio">
-        <span className="brand-mark">P</span><span>Pseudo<span className="brand-slash"> / </span>Studio</span>
+        <img className="brand-mark" src="/favicon.png" alt="" aria-hidden="true" /><span>Pseudo<span className="brand-slash"> / </span>Studio</span>
       </a>
       <div className="workspace-title"><span className="eyebrow">ESPACIO LOCAL</span><strong>{projectName || "Sin título"}</strong></div>
       <div className="header-actions">
