@@ -39,7 +39,7 @@ Registra sistema, versión de Docker/rootless engine, salida de `verify` y resul
 
 ### Intento en Ubuntu WSL2 (2026-10-10)
 
-**Actualización posterior:** el usuario reactivó Docker y `manage.py verify` volvió a pasar con `available: true`, frontera `docker-desktop-vm`, Python 3.12.14 y Node v22.22.2 con UID no privilegiado, seccomp, `NoNewPrivs` y cero capabilities. El bloqueo de acceso a Docker descrito a continuación es histórico. El plan reproducible para la nueva suite está en [WSL_TEST_PLAN_AGENT.md](WSL_TEST_PLAN_AGENT.md) y se ejecuta con `bash scripts/validate_wsl.sh`.
+**Actualización posterior:** el usuario reactivó Docker y `manage.py verify` volvió a pasar con `available: true`, frontera `docker-desktop-vm`, Python 3.12.14 y Node v22.22.2 con UID no privilegiado, seccomp, `NoNewPrivs` y cero capabilities. El bloqueo de acceso a Docker descrito a continuación es histórico. El plan reproducible para la nueva suite está en [WSL_TEST_PLAN.md](WSL_TEST_PLAN.md) y se ejecuta con `bash scripts/validate_wsl.sh`.
 
 El script completo ya se ejecutó sobre `5bce0a1` desde un clon local limpio: 76 tests + 22 subtests, Playwright 6/6, A–E 30/30, smoke y backup correctos, auditorías sin vulnerabilidades y exit 0 en sus 30 etapas. Los hashes y resultados están en `reports/wsl-validation-summary.json`. Se verificó Docker Desktop VM; esta corrida no añade evidencia de Linux rootless, macOS, CI remota ni lector de pantalla manual.
 

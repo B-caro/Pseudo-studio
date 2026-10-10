@@ -14,7 +14,7 @@ El 2026-10-10 se ejecutó `bash scripts/validate_wsl.sh` sobre el commit `5bce0a
 - Benchmark, 30 iteraciones: 100 líneas p95 **6,264 ms**; 1.000 líneas p95 **45,297 ms** en el WSL registrado.
 - Fuentes intactas tras la suite; `sha256sum -c reports/SHA256SUMS` validó los 12 artefactos del clon. Consulta Docker final sin contenedores `pseudo-studio` restantes.
 
-La guía de ejecución y traspaso está en `docs/WSL_TEST_PLAN_AGENT.md`. Los resultados que siguen corresponden a la validación limpia anterior y se conservan como historial.
+La guía de ejecución está en `docs/WSL_TEST_PLAN.md`. Los resultados que siguen corresponden a la validación limpia anterior y se conservan como historial.
 
 Después de la suite se arrancó el workspace principal con `python3.12 scripts/manage.py start` y se ejecutó de nuevo `python3.12 scripts/manage.py smoke`: exit 0; Python 3.12.14 y Node v22.22.2 produjeron `OK=42`, con source SHA-256 `5d1e7c922a35ceb4f4d9fa6e344f221f65cd7400c07e67c3251c2b34c708e290`. La salida y los hashes de artefacto están en `reports/wsl-workspace-smoke.json`. Health fue `ready` y la página del frontend respondió HTTP 200. Ambos procesos quedaron activos para la auditoría manual.
 

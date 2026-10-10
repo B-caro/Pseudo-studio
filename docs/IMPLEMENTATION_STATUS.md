@@ -8,7 +8,7 @@
 **Pruebas:** nueva corrida WSL sobre `5bce0a1`: 30 etapas con exit 0; `pytest`: 76 passed + 22 subtests, sin fallos/errores/skips y 89,82 % de cobertura de backend; Playwright: 6/6 sin retries; lint/format/build, smoke y backup pasan; pip-audit y npm audit: 0 vulnerabilidades; A–E: 30/30 OCI reales desde instalación limpia. Evidencia: `reports/wsl-validation-summary.json`.
 **Servicios:** app del workspace principal activa para revisión manual en `http://127.0.0.1:5173`; API `ready` en `http://127.0.0.1:8000` y sandbox verificado. La copia de prueba se detuvo y sus puertos se liberaron; no quedaron contenedores `pseudo-studio`.
 **Commits publicados en `origin/main`:** `a472179` al hacer push; automatización probada en `5bce0a1`; evidencia local posterior en `a472179`. El remoto es `https://github.com/B-caro/Pseudo-studio.git`.
-**Pendientes de cierre:** P9-17/P12-12 requieren auditoría manual WCAG; el usuario dispensó la ejecución CI de P11-F6, que permanece sin verificar. RNF-10 sigue parcial por cobertura de plataformas. El bloqueo de acceso a Docker WSL está resuelto; guía y automatización: `docs/WSL_TEST_PLAN_AGENT.md` y `bash scripts/validate_wsl.sh`. Pasos/evidencia requerida: `docs/REMAINING_GATES.md`. No se declara terminado al 100%.
+**Pendientes de cierre:** P9-17/P12-12 requieren auditoría manual WCAG; el usuario dispensó la ejecución CI de P11-F6, que permanece sin verificar. RNF-10 sigue parcial por cobertura de plataformas. El bloqueo de acceso a Docker WSL está resuelto; procedimiento y automatización: `docs/WSL_TEST_PLAN.md` y `bash scripts/validate_wsl.sh`. Pasos/evidencia requerida: `docs/REMAINING_GATES.md`. No se declara terminado al 100%.
 
 ## Inventario inicial observado (línea base histórica)
 

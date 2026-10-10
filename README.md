@@ -49,7 +49,7 @@ La API versionada usa el prefijo `/api/v1`; su contrato OpenAPI está en <http:/
 
 ## Desarrollo y validación
 
-Para repetir la validación automática desde una instalación limpia en WSL, ejecuta `bash scripts/validate_wsl.sh`. Usa un clon local de HEAD y conserva logs y artefactos en `reports/runs/`. La guía para el agente, los prerrequisitos y los criterios de aprobación están en [docs/WSL_TEST_PLAN_AGENT.md](docs/WSL_TEST_PLAN_AGENT.md).
+Para repetir la validación automática desde una instalación limpia en WSL, ejecuta `bash scripts/validate_wsl.sh`. Usa un clon local de HEAD y conserva logs y artefactos en `reports/runs/`. Los prerrequisitos, el procedimiento y los criterios de aprobación están en [docs/WSL_TEST_PLAN.md](docs/WSL_TEST_PLAN.md).
 
 ```sh
 .venv/bin/ruff check backend scripts

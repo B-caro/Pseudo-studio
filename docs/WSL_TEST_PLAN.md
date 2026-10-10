@@ -1,4 +1,4 @@
-# Pseudo / Studio — entrega de validación automática a otro agente
+# Pseudo / Studio — validación automática en WSL
 
 ## Estado comprobado al preparar esta guía
 
@@ -10,9 +10,13 @@
 - 202/205 casillas registradas; P9-17/P12-12 requieren auditoría WCAG manual; P11-F6 sigue sin verificar, aunque el usuario dispensó ejecutar CI remota; RNF-10 conserva cobertura parcial de plataformas.
 - El procedimiento completo se ejecutó sobre `5bce0a1`: 30 etapas con exit 0, 76 tests + 22 subtests, cero fallos/errores/skips, cobertura de líneas de backend 89,82 %, Playwright 6/6 sin reintentos y A–E 30/30. Smoke, backup, build y auditorías pasan; cero vulnerabilidades. Evidencia y hashes: `reports/wsl-validation-summary.json`; corrida `reports/runs/wsl-20261010T175319Z-z0u3ep/`. Cada corrida posterior debe medir sus propios resultados.
 
-## Instrucción que puede recibir el agente
+## Procedimiento de validación
 
-> Trabaja en `/home/bucaro/.t3/projects/automatas`. Lee esta guía, `docs/IMPLEMENTATION_STATUS.md`, `docs/TRACEABILITY.md`, `docs/DECISIONS.md` y los documentos de `Context/`. Docker está accesible y el preflight del sandbox pasó. Ejecuta `bash scripts/validate_wsl.sh` desde WSL y revisa cada evidencia. El script valida el HEAD comprometido en una copia local limpia; conserva el original, `Context/`, proyectos y reportes anteriores. Si falla, diagnostica el primer paso fallido, corrige la causa en el repositorio original cuando sea código, prueba la corrección, crea un commit y repite la validación completa sobre ese commit. No cambies salidas oficiales, snapshots ni controles del sandbox para ocultar fallos. No omitas tests. Actualiza trazabilidad y estado solo con evidencia de la corrida nueva. `origin/main` apunta al repo público que el usuario autorizó; no subas `Context/`, que continúa sin seguimiento. La revisión manual WCAG queda a cargo del usuario y no se sustituye por axe.
+Antes de iniciar, revisa esta guía, `docs/IMPLEMENTATION_STATUS.md`, `docs/TRACEABILITY.md`, `docs/DECISIONS.md` y los documentos locales de `Context/`. Confirma que Docker está accesible y que el preflight del sandbox pasa. Ejecuta `bash scripts/validate_wsl.sh` desde WSL y revisa cada evidencia.
+
+El script valida el HEAD comprometido en una copia local limpia y conserva el workspace original, `Context/`, proyectos y reportes anteriores. Si falla, diagnostica el primer paso fallido, corrige la causa en el repositorio original cuando sea código, prueba la corrección, crea un commit y repite la validación completa sobre ese commit. No cambies salidas oficiales, snapshots ni controles del sandbox para ocultar fallos, y no omitas pruebas. Actualiza trazabilidad y estado solo con evidencia de la corrida nueva.
+
+`origin/main` apunta al repositorio público autorizado. `Context/` permanece local y sin seguimiento. La revisión manual WCAG queda a cargo del usuario y no se sustituye por axe.
 
 ## Ejecución automática
 
@@ -46,7 +50,7 @@ Todas las suites se ejecutan secuencialmente para no distorsionar tiempos y cuot
 | 11 | pip-audit / npm audit | Comandos sin errores y revisión de todos los hallazgos. `npm audit --audit-level=moderate` puede pasar con hallazgos de severidad baja; no reportar cero sin leer el JSON. |
 | 12 | Integridad de fuentes y SHA-256 de evidencias | Ningún cambio en fuentes/fixtures causado por la suite; hashes de reportes y evidencia de navegador. |
 
-El script comprueba los códigos de salida y los 30 registros oficiales. El agente debe revisar cobertura, benchmark, skips, auditorías y trazabilidad antes de declarar aceptación; un exit 0 del script no completa las verificaciones humanas/remotas.
+El script comprueba los códigos de salida y los 30 registros oficiales. Revisa cobertura, benchmark, skips, auditorías y trazabilidad antes de declarar aceptación; un exit 0 del script no completa las verificaciones humanas/remotas.
 
 ## Evidencia y revisión final
 
@@ -71,7 +75,7 @@ Tras la suite, comprobar `docker ps -a --filter name=pseudo-studio --format '{{.
 3. P11-F6: el usuario dispensó el CI remoto. El repo ya está publicado en `B-caro/Pseudo-studio`; conservar el workflow sin contar como verificada una ejecución no revisada.
 4. RNF-10: registrar esta evidencia como Windows/Ubuntu WSL2 + Docker Desktop VM. Las validaciones Linux rootless y macOS necesitan sus propios entornos y resultados; no afirmar que WSL las prueba.
 
-Formato de reporte del agente:
+Formato de reporte:
 
 ```text
 Hito: P13; tareas verificadas: <n>/205
