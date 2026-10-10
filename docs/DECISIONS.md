@@ -7,7 +7,7 @@ Este registro documenta decisiones iniciales de implementación. Una decisión n
 - **Estado:** implementada y validada desde copia limpia en WSL2; otras plataformas no se ejecutaron.
 - **Decisión:** API y pipeline de compilación en Python 3.12 con FastAPI/Pydantic; cliente local en React + TypeScript + Vite con CodeMirror 6; persistencia SQLite usando `sqlite3` y migraciones versionadas. Los archivos lock fijarán versiones exactas.
 - **Motivo:** FastAPI ofrece contratos OpenAPI consumibles; Python permite módulos de compilador claros y comparte lenguaje con las pruebas; SQLite satisface uso local sin servicio externo; CodeMirror se integra con edición y spans.
-- **Evidencia:** `pyproject.toml`, `requirements.lock`, `frontend/package-lock.json`, `.github/workflows/ci.yml`, `scripts/manage.py`; bootstrap limpio, tests, build y smoke pasaron. No hay remote Git configurado para lanzar CI remoto.
+- **Evidencia:** `pyproject.toml`, `requirements.lock`, `frontend/package-lock.json`, `.github/workflows/ci.yml`, `scripts/manage.py`; bootstrap limpio, tests, build y smoke pasaron. El repo ya se publicó en `B-caro/Pseudo-studio`; ejecución CI remota dispensada por el usuario, no se toma como evidencia.
 
 ## ADR-002 — La gramática EBNF y `fase_1.pdf` son fuentes distintas y complementarias
 
@@ -58,4 +58,4 @@ Este registro documenta decisiones iniciales de implementación. Una decisión n
 - **Estado:** workflow configurado; ejecución en GitHub Actions pendiente.
 - **Decisión:** el job de Ubuntu instala Docker rootless, añade un perfil AppArmor para `rootlesskit` cuando AppArmor está habilitado y exige que `docker info` declare `rootless`. Después ejecuta `manage.py verify` antes de permitir los tests OCI.
 - **Motivo:** Ubuntu 24.04 restringe user namespaces no privilegiados bajo AppArmor; el instalador rootless sin paquetes necesita un perfil explícito de `rootlesskit`. La carga falla cerrada si no se confirma el daemon rootless.
-- **Evidencia:** `.github/workflows/ci.yml` pasó parse de PyYAML y `bash -n`; Docker documenta el requisito para Ubuntu 24.04 en [Rootless troubleshooting](https://docs.docker.com/engine/security/rootless/troubleshoot/). No se marca P11-F6 hasta observar la ejecución remota y sus artefactos.
+- **Evidencia:** `.github/workflows/ci.yml` pasó parse de PyYAML y `bash -n`; Docker documenta el requisito para Ubuntu 24.04 en [Rootless troubleshooting](https://docs.docker.com/engine/security/rootless/troubleshoot/). El workflow se publicó en `B-caro/Pseudo-studio`; el usuario dispensó la verificación remota. P11-F6 queda sin verificar, no completada.

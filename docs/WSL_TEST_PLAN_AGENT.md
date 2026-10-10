@@ -7,12 +7,12 @@
 - Python del host: 3.12.3; Node: 22.22.2; npm: 10.9.7.
 - `python3.12 scripts/manage.py verify`: exit 0, `available: true`, frontera `docker-desktop-vm`. Python 3.12.14 y Node v22.22.2 pasan UID 10001, `NoNewPrivs`, seccomp y cero capabilities. Esto verifica la alternativa VM; no certifica un daemon rootless.
 - Los puertos 8000/5173 estaban libres. `docker ps` vacío significa que no hay contenedores activos; es normal entre ejecuciones efímeras.
-- 202/205 casillas registradas; P9-17/P12-12 (WCAG manual), P11-F6 (CI remota) y RNF-10 (cobertura de plataformas) siguen pendientes.
+- 202/205 casillas registradas; P9-17/P12-12 requieren auditoría WCAG manual; P11-F6 sigue sin verificar, aunque el usuario dispensó ejecutar CI remota; RNF-10 conserva cobertura parcial de plataformas.
 - El procedimiento completo se ejecutó sobre `5bce0a1`: 30 etapas con exit 0, 76 tests + 22 subtests, cero fallos/errores/skips, cobertura de líneas de backend 89,82 %, Playwright 6/6 sin reintentos y A–E 30/30. Smoke, backup, build y auditorías pasan; cero vulnerabilidades. Evidencia y hashes: `reports/wsl-validation-summary.json`; corrida `reports/runs/wsl-20261010T175319Z-z0u3ep/`. Cada corrida posterior debe medir sus propios resultados.
 
 ## Instrucción que puede recibir el agente
 
-> Trabaja en `/home/bucaro/.t3/projects/automatas`. Lee esta guía, `docs/IMPLEMENTATION_STATUS.md`, `docs/TRACEABILITY.md`, `docs/DECISIONS.md` y los documentos de `Context/`. Docker está accesible y el preflight del sandbox pasó. Ejecuta `bash scripts/validate_wsl.sh` desde WSL y revisa cada evidencia. El script valida el HEAD comprometido en una copia local limpia; conserva el original, `Context/`, proyectos y reportes anteriores. Si falla, diagnostica el primer paso fallido, corrige la causa en el repositorio original cuando sea código, prueba la corrección, crea un commit y repite la validación completa sobre ese commit. No cambies salidas oficiales, snapshots ni controles del sandbox para ocultar fallos. No omitas tests. Actualiza trazabilidad y estado solo con evidencia de la corrida nueva. No publiques a un remote sin repositorio y autorización del usuario. La revisión manual WCAG queda a cargo del usuario y no se sustituye por axe.
+> Trabaja en `/home/bucaro/.t3/projects/automatas`. Lee esta guía, `docs/IMPLEMENTATION_STATUS.md`, `docs/TRACEABILITY.md`, `docs/DECISIONS.md` y los documentos de `Context/`. Docker está accesible y el preflight del sandbox pasó. Ejecuta `bash scripts/validate_wsl.sh` desde WSL y revisa cada evidencia. El script valida el HEAD comprometido en una copia local limpia; conserva el original, `Context/`, proyectos y reportes anteriores. Si falla, diagnostica el primer paso fallido, corrige la causa en el repositorio original cuando sea código, prueba la corrección, crea un commit y repite la validación completa sobre ese commit. No cambies salidas oficiales, snapshots ni controles del sandbox para ocultar fallos. No omitas tests. Actualiza trazabilidad y estado solo con evidencia de la corrida nueva. `origin/main` apunta al repo público que el usuario autorizó; no subas `Context/`, que continúa sin seguimiento. La revisión manual WCAG queda a cargo del usuario y no se sustituye por axe.
 
 ## Ejecución automática
 
@@ -68,7 +68,7 @@ Tras la suite, comprobar `docker ps -a --filter name=pseudo-studio --format '{{.
 
 1. Actualizar `docs/IMPLEMENTATION_STATUS.md`, `docs/TRACEABILITY.md`, `docs/VALIDATION_REPORT.md` y `docs/REMAINING_GATES.md`, conservando fechas y distinción entre resultados históricos y actuales. Crear commit de evidencia e informar su hash y el commit de código probado.
 2. P9-17/P12-12: esperar el informe manual del usuario sobre lector de pantalla, contraste y siete paneles; corregir hallazgos y repetir comprobaciones. Axe no cierra esta parte.
-3. P11-F6: cuando el usuario indique un repositorio autorizado, ejecutar el workflow y registrar URL/ID, commit y artefactos. La corrida local no equivale a una ejecución de GitHub Actions.
+3. P11-F6: el usuario dispensó el CI remoto. El repo ya está publicado en `B-caro/Pseudo-studio`; conservar el workflow sin contar como verificada una ejecución no revisada.
 4. RNF-10: registrar esta evidencia como Windows/Ubuntu WSL2 + Docker Desktop VM. Las validaciones Linux rootless y macOS necesitan sus propios entornos y resultados; no afirmar que WSL las prueba.
 
 Formato de reporte del agente:
