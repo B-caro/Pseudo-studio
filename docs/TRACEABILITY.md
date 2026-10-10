@@ -32,7 +32,7 @@ Esta matriz refleja pruebas ejecutadas al 2026-10-10. El PDF operativo gobierna 
 | RF-24 | Autosave, aviso y restauración de borrador | frontend + persistencia | Playwright recarga/cierre/reapertura y cambios pendientes | Validado | `E2E recarga y reabre proyecto con fuente persistida y estado de autosave.` | — |
 | RF-25 | Manual, gramática, ayuda y ejemplos comprobables | docs + UI | tests de consistencia gramática/parser y navegación de ayuda | Validado | `docs/gramatica.ebnf, docs/MANUAL.md y E2E ayuda/descarga EBNF.` | — |
 | RF-26 | Modo defensa conectado al pipeline | UI + API | e2e siguiente fase con fuentes válidas e inválidas y resultado de servicio | Validado | `E2E ejecuta fases válidas e inválidas en Modo defensa y exporta resultado.` | — |
-| RF-27 | API versionada, OpenAPI y errores coherentes | FastAPI/Pydantic | API tests positivos/negativos y validación del esquema OpenAPI | Validado | `test_api.py, Pydantic y OpenAPI FastAPI versionada.` | — |
+| RF-27 | API versionada, OpenAPI y errores coherentes | FastAPI/Pydantic | API tests positivos/negativos, matriz completa de rutas HTTP/WS y validación OpenAPI | Validado | `docs/API_ROUTE_MATRIX.md` y `backend/tests/test_api.py` cubren estado exitoso, errores y fallos de sandbox aplicables. | — |
 | RF-28 | `Mientras`, booleanos, módulo, cadenas y comentarios | lexer/parser/semantic/codegen | conformidad gramatical y tests diferenciales inéditos | Validado | `tests de conformidad + 3 programas inéditos Python/Node con Mientras, `%` negativo y funciones.` | — |
 | RF-29 | Estado real de servicios, runtimes y aislamiento | health service + UI | healthchecks de engine/imágenes; bloqueo explícito cuando no está listo | Validado | `manage.py verify/smoke, /health y UI: runners e imágenes reales detectados.` | — |
 
@@ -65,6 +65,6 @@ Esta matriz refleja pruebas ejecutadas al 2026-10-10. El PDF operativo gobierna 
 
 - RF: 29/29 validados por pruebas reales del backend, runtimes o UI, con referencias individuales arriba.
 - RNF: 10/12 validados; RNF-06 y RNF-10 quedan parciales por revisión manual de accesibilidad y ejecución fuera de WSL2.
-- 195/205 tareas del plan verificadas; diez límites de verificación siguen abiertos y están enumerados en `docs/IMPLEMENTATION_STATUS.md`. El commit local de entrega es `415b54d`.
+- 202/205 tareas del plan verificadas; sólo P9-17/P12-12 (auditoría manual WCAG) y P11-F6 (CI remota) siguen abiertos en `docs/IMPLEMENTATION_STATUS.md`. El commit de código y nuevas pruebas es `48ced1a`.
 - A–E: 30/30 ejecuciones OCI reales; evidencia detallada en `reports/acceptance-results.json` y `reports/clean-install-acceptance-results.json`.
 - No se declara 100% ni se ocultan las verificaciones ambientales no realizadas.

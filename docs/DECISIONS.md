@@ -30,7 +30,7 @@ Este registro documenta decisiones iniciales de implementación. Una decisión n
 - **Estado:** aceptada.
 - **Decisión:** lexer → parser → semántica → AST tipado validado → generator Python/JavaScript. El generador rechaza cualquier diagnóstico de error. `source_hash`, `artifact_hash`, versión del compilador y source maps acompañan cada artefacto.
 - **Motivo:** impide que la interfaz o los ejemplos dicten resultados y permite verificar determinismo y obsolescencia.
-- **Evidencia:** `backend/compiler/service.py`, `backend/generators/codegen.py` y pruebas de compilador/codegen/conformidad; analiza fuente inédita, devuelve hashes, genera dos targets desde AST y bloquea traducción con errores. 66 tests y 22 subtests pasan desde checkout limpio.
+- **Evidencia:** `backend/compiler/service.py`, `backend/generators/codegen.py` y pruebas de compilador/codegen/conformidad; analiza fuente inédita, devuelve hashes, genera dos targets desde AST y bloquea traducción con errores. 76 tests y 22 subtests pasan desde checkout limpio; los diez snapshots A–E se comparan contra generación real.
 
 ## ADR-005 — Política numérica y de entrada sigue la especificación operativa
 
@@ -45,3 +45,10 @@ Este registro documenta decisiones iniciales de implementación. Una decisión n
 - **Decisión:** las interacciones del editor, consola, pruebas, proyectos, defensa, ayuda y descargas se verifican en Chromium real mediante `frontend/e2e/workbench.spec.ts`. T3 preview se usa para la vista compartida y para leer estado DOM.
 - **Evidencia:** `preview_status` y `preview_evaluate` confirmaron título, API lista, sandbox verificado, siete pestañas y ausencia de scroll horizontal; `preview_snapshot(includeImage=false)` devolvió `PreviewAutomationExecutionError` del cliente. Playwright ejecutó 5/5 flujos desde copia limpia, incluida accesibilidad axe en siete secciones, y guardó captura real bajo `reports/`.
 - **Límite restante:** el snapshot/render de la herramienta T3 es un problema del cliente que no impide la interacción automatizada independiente; se mantiene registrado y no se afirma inspección visual nativa por snapshot.
+
+## ADR-007 — La desconexión requiere cancelación resistente a la carrera de arranque OCI
+
+- **Estado:** implementada y probada con socket WebSocket real.
+- **Decisión:** mantener una sola tarea de recepción WebSocket durante la sesión; cancelar y esperar esa tarea al terminar. La cancelación OCI reintenta `kill` mientras el contenedor puede estar registrándose, con un límite temporal, y comprueba que la sesión se haya liberado.
+- **Motivo:** el cliente podía desconectarse después del evento `started` y antes de que el daemon registrara el contenedor; un único `docker kill` temprano podía fallar y dejar el proceso activo.
+- **Evidencia:** `test_websocket_disconnect_kills_container_and_releases_session`, `test_interactive_idle_input_expires_and_returns_timeout` y `test_concurrency_quota_rejects_excess_run_and_releases_slot_after_cancel` pasan en la suite limpia.
