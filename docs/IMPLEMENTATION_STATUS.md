@@ -6,9 +6,9 @@
 **RF implementados y probados:** 29 / 29 en flujos principales; la evidencia individual está en `docs/TRACEABILITY.md`.
 **RNF:** 10 verificados, 2 parciales (accesibilidad manual y validación en plataformas/CI externas); VM equivalente WSL2 verificada para el runner.
 **Pruebas:** `pytest`: 76 passed + 22 subtests, 90% de cobertura; Playwright: 6/6 desde la copia limpia; lint/format/build pasan; pip-audit y npm audit: 0 vulnerabilidades; A–E: 30/30 OCI reales desde instalación limpia.
-**Servicios:** frontend y API activos en `http://127.0.0.1:5173` y `http://127.0.0.1:8000`; OCI Python y Node verificados.
+**Servicios:** frontend y API detenidos al preparar la nueva validación WSL; puertos 5173/8000 libres. Docker vuelve a responder y `manage.py verify` pasa para Python y Node con frontera `docker-desktop-vm`.
 **Commit de implementación y evidencia:** `2adddeb` (local; sin remote Git configurado).
-**Pendientes de cierre:** P9-17/P12-12 requieren auditoría manual WCAG; P11-F6 requiere ejecución en CI remota. RNF-10: intento explícito de bootstrap/verificación en Ubuntu WSL2 el 2026-10-10, incompleto porque no hay daemon OCI accesible ni herramientas rootless; detalle y salidas en `docs/REMAINING_GATES.md`. Pasos/evidencia requerida: `docs/REMAINING_GATES.md`. No se declara terminado al 100%.
+**Pendientes de cierre:** P9-17/P12-12 requieren auditoría manual WCAG; P11-F6 requiere ejecución en CI remota. RNF-10 sigue parcial por cobertura de plataformas. El bloqueo de acceso a Docker WSL está resuelto; guía y automatización para repetir la suite completa: `docs/WSL_TEST_PLAN_AGENT.md` y `bash scripts/validate_wsl.sh`. Pasos/evidencia requerida: `docs/REMAINING_GATES.md`. No se declara terminado al 100%.
 
 ## Inventario inicial observado (línea base histórica)
 

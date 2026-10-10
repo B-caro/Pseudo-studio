@@ -35,6 +35,7 @@ La guía de bootstrap cubre Windows/WSL2, macOS y Linux rootless; la ejecución 
 ```sh
 python3.12 scripts/manage.py bootstrap
 python3.12 scripts/manage.py verify
+python3.12 scripts/manage.py start
 python3.12 scripts/manage.py smoke
 .venv/bin/pytest -q
 ```
@@ -42,5 +43,7 @@ python3.12 scripts/manage.py smoke
 Registra sistema, versión de Docker/rootless engine, salida de `verify` y resultados. El runtime debe demostrar rootless o VM Docker Desktop comprobable y ambos runtimes no privilegiados.
 
 ### Intento en Ubuntu WSL2 (2026-10-10)
+
+**Actualización posterior:** el usuario reactivó Docker y `manage.py verify` volvió a pasar con `available: true`, frontera `docker-desktop-vm`, Python 3.12.14 y Node v22.22.2 con UID no privilegiado, seccomp, `NoNewPrivs` y cero capabilities. El bloqueo de acceso a Docker descrito a continuación es histórico. El plan reproducible para la nueva suite está en [WSL_TEST_PLAN_AGENT.md](WSL_TEST_PLAN_AGENT.md) y se ejecuta con `bash scripts/validate_wsl.sh`.
 
 Se comprobó este entorno a petición del usuario: Ubuntu 24.04.1 LTS sobre WSL2, kernel `5.15.153.1-microsoft-standard-WSL2`, systemd activo, usuario `bucaro` con rangos `/etc/subuid` y `/etc/subgid` (100000:65536). `python3.12 scripts/manage.py bootstrap` terminó con exit 1: instaló/validó Python y Node, `npm ci` reportó cero vulnerabilidades y Playwright instaló Chromium, pero el pull de la imagen Python falló porque Docker no está disponible en esta distro. `python3.12 scripts/manage.py verify` terminó con exit 1: `El engine OCI no responde`; `available: false`, `engine_ready: false`, sin frontera de aislamiento ni seccomp. `python3.12 scripts/manage.py smoke` terminó con exit 1 por conexión rechazada a la API, que no estaba iniciada. `.venv/bin/pytest -q` terminó con exit 1: **47 passed, 10 subtests passed, 15 failed, 14 errors**; los errores de integración y fallos de API/runtime reportan el mismo engine OCI no disponible. La integración WSL de Docker Desktop no está activada/disponible en esta distro; el cliente informa “Docker could not be found in this WSL 2 distro”. Tampoco están instalados `dockerd-rootless.sh`, `rootlesskit`, `newuidmap`, `newgidmap` ni `slirp4netns`. El kernel WSL no expone `/sys/module/apparmor`; Docker Desktop con VM y Docker rootless no se pudieron verificar aquí. `sudo -n true` falla (no hay sudo no interactivo), por lo que no se instalaron paquetes ni se modificó el sistema. Para continuar en este WSL: activar la integración de esta distro en Docker Desktop o instalar/configurar Docker Engine rootless con los paquetes `uidmap`, `dbus-user-session` y `slirp4netns`, y volver a ejecutar los cuatro comandos. Esta comprobación no cierra RNF-10.
