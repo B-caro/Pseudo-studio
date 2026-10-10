@@ -1,6 +1,6 @@
 # Informe de validación — Pseudo / Studio
 
-Fecha: 2026-10-10. Código de verificación API/runtime y snapshots en el commit local `48ced1a`; navegación de teclado ampliada, matriz de gates y evidencia E2E 6/6 en `4aa18fd`. La copia temporal usada para la validación limpia fue `/tmp/pseudo-studio-validation-0o8tswmq/workspace`; se preparó sin `.git`, `.venv`, `node_modules`, `data`, `reports` ni cachés antes del bootstrap. La fuente actual, incluyendo snapshots y matriz de rutas, se sincronizó antes de la suite final.
+Fecha: 2026-10-10. Código de verificación API/runtime y snapshots en `48ced1a`; navegación de teclado y E2E 6/6 en `4aa18fd`; endurecimiento del runner de CI rootless en `2adddeb`. La copia temporal usada para la validación limpia fue `/tmp/pseudo-studio-validation-0o8tswmq/workspace`; se preparó sin `.git`, `.venv`, `node_modules`, `data`, `reports` ni cachés antes del bootstrap. La fuente actual, incluyendo snapshots y matriz de rutas, se sincronizó antes de la suite final.
 
 ## Resultado ejecutado
 
@@ -17,6 +17,7 @@ Fecha: 2026-10-10. Código de verificación API/runtime y snapshots en el commit
 | Dependencias | `pip-audit --strict --no-deps --disable-pip -r requirements.lock`; `npm audit --audit-level=moderate` | 64 paquetes Python y 0 vulnerabilidades; npm 0 vulnerabilidades. JSON de auditoría guardado en `reports/`. |
 | Seguridad de ejecución | `backend/tests/test_runner_integration.py`; `manage.py verify` | Red/host filesystem/socket bloqueados; pruebas de input, límites de tiempo/memoria/salida, concurrencia y cancelación; sin privilegios en Python y Node. |
 | Rutas HTTP/WS | `docs/API_ROUTE_MATRIX.md`; `backend/tests/test_api.py` | Rutas enumeradas con éxito/error; `run`, `tests/run` y WebSocket devuelven fallo cerrado cuando el sandbox está degradado. |
+| Workflow CI | PyYAML parsea `.github/workflows/ci.yml`; `bash -n` al script de Docker rootless | YAML y sintaxis shell pasan; la ejecución remota no está probada porque el checkout no tiene remote. |
 | Regresión de codegen | `backend/tests/test_codegen_snapshots.py` | Diez snapshots (A–E Python/JavaScript) coinciden con código recién generado; no se usan para simular ejecución. |
 | Casos negativos | `docs/NEGATIVE_TEST_MATRIX.md` | N-01..N-12 trazados a diagnóstico, error runtime, límites, aislamiento, timeout y limpieza de sesiones. |
 
