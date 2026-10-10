@@ -17,7 +17,7 @@ Fecha: 2026-10-10. Código de verificación API/runtime y snapshots en `48ced1a`
 | Dependencias | `pip-audit --strict --no-deps --disable-pip -r requirements.lock`; `npm audit --audit-level=moderate` | 64 paquetes Python y 0 vulnerabilidades; npm 0 vulnerabilidades. JSON de auditoría guardado en `reports/`. |
 | Seguridad de ejecución | `backend/tests/test_runner_integration.py`; `manage.py verify` | Red/host filesystem/socket bloqueados; pruebas de input, límites de tiempo/memoria/salida, concurrencia y cancelación; sin privilegios en Python y Node. |
 | Rutas HTTP/WS | `docs/API_ROUTE_MATRIX.md`; `backend/tests/test_api.py` | Rutas enumeradas con éxito/error; `run`, `tests/run` y WebSocket devuelven fallo cerrado cuando el sandbox está degradado. |
-| Workflow CI | PyYAML parsea `.github/workflows/ci.yml`; `bash -n` al script de Docker rootless | YAML y sintaxis shell pasan; la ejecución remota no está probada porque el checkout no tiene remote. |
+| Workflow CI | PyYAML parsea `.github/workflows/ci.yml`; `bash -n` a los ocho bloques shell; `apparmor_parser --preprocess` | YAML/shell y preprocesado del perfil pasan. No se pudo cargar/validar el perfil en kernel: WSL no expone interfaz AppArmor. Falta ejecutar en GitHub Actions; no hay remote. |
 | Regresión de codegen | `backend/tests/test_codegen_snapshots.py` | Diez snapshots (A–E Python/JavaScript) coinciden con código recién generado; no se usan para simular ejecución. |
 | Casos negativos | `docs/NEGATIVE_TEST_MATRIX.md` | N-01..N-12 trazados a diagnóstico, error runtime, límites, aislamiento, timeout y limpieza de sesiones. |
 
