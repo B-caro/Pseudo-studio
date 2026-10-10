@@ -8,7 +8,7 @@
 **Pruebas:** `pytest`: 76 passed + 22 subtests, 90% de cobertura; Playwright: 6/6 desde la copia limpia; lint/format/build pasan; pip-audit y npm audit: 0 vulnerabilidades; A–E: 30/30 OCI reales desde instalación limpia.
 **Servicios:** frontend y API activos en `http://127.0.0.1:5173` y `http://127.0.0.1:8000`; OCI Python y Node verificados.
 **Commit de implementación y evidencia:** `2adddeb` (local; sin remote Git configurado).
-**Pendientes de cierre:** P9-17/P12-12 requieren auditoría manual WCAG; P11-F6 requiere ejecución en CI remota. RNF-10 requiere prueba nativa fuera de WSL2. Pasos/evidencia requerida: `docs/REMAINING_GATES.md`. No se declara terminado al 100%.
+**Pendientes de cierre:** P9-17/P12-12 requieren auditoría manual WCAG; P11-F6 requiere ejecución en CI remota. RNF-10: intento explícito de bootstrap/verificación en Ubuntu WSL2 el 2026-10-10, incompleto porque no hay daemon OCI accesible ni herramientas rootless; detalle y salidas en `docs/REMAINING_GATES.md`. Pasos/evidencia requerida: `docs/REMAINING_GATES.md`. No se declara terminado al 100%.
 
 ## Inventario inicial observado (línea base histórica)
 
