@@ -52,3 +52,10 @@ Este registro documenta decisiones iniciales de implementación. Una decisión n
 - **Decisión:** mantener una sola tarea de recepción WebSocket durante la sesión; cancelar y esperar esa tarea al terminar. La cancelación OCI reintenta `kill` mientras el contenedor puede estar registrándose, con un límite temporal, y comprueba que la sesión se haya liberado.
 - **Motivo:** el cliente podía desconectarse después del evento `started` y antes de que el daemon registrara el contenedor; un único `docker kill` temprano podía fallar y dejar el proceso activo.
 - **Evidencia:** `test_websocket_disconnect_kills_container_and_releases_session`, `test_interactive_idle_input_expires_and_returns_timeout` y `test_concurrency_quota_rejects_excess_run_and_releases_slot_after_cancel` pasan en la suite limpia.
+
+## ADR-008 — El runner remoto de CI verifica Docker rootless antes de ejecutar
+
+- **Estado:** workflow configurado; ejecución en GitHub Actions pendiente.
+- **Decisión:** el job de Ubuntu instala Docker rootless, añade un perfil AppArmor para `rootlesskit` cuando AppArmor está habilitado y exige que `docker info` declare `rootless`. Después ejecuta `manage.py verify` antes de permitir los tests OCI.
+- **Motivo:** Ubuntu 24.04 restringe user namespaces no privilegiados bajo AppArmor; el instalador rootless sin paquetes necesita un perfil explícito de `rootlesskit`. La carga falla cerrada si no se confirma el daemon rootless.
+- **Evidencia:** `.github/workflows/ci.yml` pasó parse de PyYAML y `bash -n`; Docker documenta el requisito para Ubuntu 24.04 en [Rootless troubleshooting](https://docs.docker.com/engine/security/rootless/troubleshoot/). No se marca P11-F6 hasta observar la ejecución remota y sus artefactos.

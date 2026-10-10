@@ -30,7 +30,7 @@ jobs:
           set -euo pipefail
           runner_user="$(id -un)"
           sudo apt-get update
-          sudo apt-get install -y uidmap dbus-user-session slirp4netns
+          sudo apt-get install -y uidmap dbus-user-session slirp4netns apparmor
           if ! grep -q "^${runner_user}:" /etc/subuid; then
             printf '%s:100000:65536\n' "$runner_user" | sudo tee -a /etc/subuid >/dev/null
           fi
@@ -39,6 +39,14 @@ jobs:
           fi
           sudo systemctl stop docker.service docker.socket || true
           curl -fsSL https://get.docker.com/rootless | sh
+          if [ -r /sys/module/apparmor/parameters/enabled ] && grep -q '^Y' /sys/module/apparmor/parameters/enabled; then
+            profile_name="home.$(printf '%s' "$HOME/bin/rootlesskit" | sed 's#^/##; s#/#.#g')"
+            {
+              printf 'abi <abi/4.0>,\ninclude <tunables/global>\n\n'
+              printf '"%s" flags=(unconfined) {\n  userns,\n  include if exists <local/%s>\n}\n' "$HOME/bin/rootlesskit" "$profile_name"
+            } | sudo tee "/etc/apparmor.d/${profile_name}" >/dev/null
+            sudo systemctl restart apparmor.service
+          fi
           dockerd-rootless-setuptool.sh install
           runner_uid="$(id -u)"
           sudo loginctl enable-linger "$runner_user"
@@ -49,6 +57,7 @@ jobs:
           systemctl --user start docker
           for attempt in $(seq 1 60); do
             if docker info >/dev/null 2>&1; then
+              docker info --format '{{json .SecurityOptions}}' | grep -qi rootless
               docker info
               exit 0
             fi

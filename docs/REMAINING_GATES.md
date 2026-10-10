@@ -17,7 +17,7 @@ La suite automatizada `frontend/e2e/accessibility.spec.ts` ejecuta axe en las si
 
 ## P11-F6 — Ejecución en CI remota
 
-El workflow está definido en `.github/workflows/ci.yml`; `pytest`, build, Playwright, verificación del sandbox, auditorías y 30 casos oficiales se ejecutaron localmente. El checkout no tiene remote Git (`git remote -v` no devuelve entradas), por lo que no existe una ejecución de GitHub Actions observable.
+El workflow está definido en `.github/workflows/ci.yml`; `pytest`, build, Playwright, verificación del sandbox, auditorías y 30 casos oficiales se ejecutaron localmente. El checkout no tiene remote Git (`git remote -v` no devuelve entradas), por lo que no existe una ejecución de GitHub Actions observable. El job prepara Docker rootless y configura el perfil AppArmor requerido por Ubuntu 24.04 cuando el kernel informa AppArmor activo; `manage.py verify` rechaza el job si `docker info` no demuestra la frontera. Referencias: [Docker rootless mode](https://docs.docker.com/engine/security/rootless/) y [Ubuntu 24.04 runner image](https://github.com/actions/runner-images).
 
 1. Configura el remote del repositorio, por ejemplo `git remote add origin <URL_DEL_REPOSITORIO>`.
 2. Publica el commit `4aa18fd` o uno posterior a una rama que active `push`/`pull_request`.
