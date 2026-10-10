@@ -23,3 +23,26 @@ test("workbench editor meets automated WCAG 2.2 A/AA checks", async ({ page }) =
   await expect(page.getByRole("heading", { name: "Dos destinos, una fuente." })).toBeVisible();
   expect(violations, JSON.stringify(violations, null, 2)).toEqual([]);
 });
+
+test("every workspace section can be reached and activated by keyboard", async ({ page }) => {
+  await page.goto("/");
+  const sections = [
+    ["Traducción", "Dos destinos, una fuente."],
+    ["Consola", "Consola de ejecución."],
+    ["Pruebas", "Pruebas académicas y propias."],
+    ["Proyectos", "Tus proyectos."],
+    ["Defensa", "Modo defensa."],
+    ["Ayuda", "Reglas claras, ejecución reproducible."],
+  ] as const;
+
+  await page.getByRole("button", { name: "Editor", exact: true }).focus();
+  await expect(page.getByRole("heading", { name: "Escribe en pseudocódigo." })).toBeVisible();
+  for (const [section, heading] of sections) {
+    await page.keyboard.press("Tab");
+    const navigationButton = page.getByRole("button", { name: section, exact: true });
+    await expect(navigationButton).toBeFocused();
+    await page.keyboard.press("Enter");
+    await expect(navigationButton).toHaveAttribute("aria-current", "page");
+    await expect(page.getByRole("heading", { name: heading, exact: true })).toBeVisible();
+  }
+});

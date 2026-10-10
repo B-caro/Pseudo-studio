@@ -43,7 +43,7 @@ Este registro documenta decisiones iniciales de implementación. Una decisión n
 
 - **Estado:** verificada con Playwright Chromium; T3 permite evaluación DOM pero su snapshot falla en el cliente.
 - **Decisión:** las interacciones del editor, consola, pruebas, proyectos, defensa, ayuda y descargas se verifican en Chromium real mediante `frontend/e2e/workbench.spec.ts`. T3 preview se usa para la vista compartida y para leer estado DOM.
-- **Evidencia:** `preview_status` y `preview_evaluate` confirmaron título, API lista, sandbox verificado, siete pestañas y ausencia de scroll horizontal; `preview_snapshot(includeImage=false)` devolvió `PreviewAutomationExecutionError` del cliente. Playwright ejecutó 5/5 flujos desde copia limpia, incluida accesibilidad axe en siete secciones, y guardó captura real bajo `reports/`.
+- **Evidencia:** `preview_status` y `preview_evaluate` confirmaron título, API lista, sandbox verificado, siete pestañas y ausencia de scroll horizontal; `preview_snapshot(includeImage=false)` devolvió `PreviewAutomationExecutionError` del cliente. Playwright ejecutó 6/6 pruebas desde copia limpia, incluyendo axe en siete secciones y navegación completa por teclado; guardó captura real bajo `reports/`.
 - **Límite restante:** el snapshot/render de la herramienta T3 es un problema del cliente que no impide la interacción automatizada independiente; se mantiene registrado y no se afirma inspección visual nativa por snapshot.
 
 ## ADR-007 — La desconexión requiere cancelación resistente a la carrera de arranque OCI

@@ -45,7 +45,7 @@ Si el runtime informa sandbox degradado, no habilita la ejecución: confirma Doc
 
 La fuente académica revisada es `Context/fase_1.pdf`; sus programas y datasets están en `examples/`. La gramática implementada y sus decisiones se documentan en `docs/gramatica.ebnf` y `docs/DECISIONS.md`.
 
-API JSON bajo `/api/v1`: `GET /health`, `GET /examples`, `POST /analyze`, `/translate`, `/run`, `/tests/run`, proyectos y exportaciones; `WS /api/v1/run/ws` es el canal interactivo. `/health` exige base de datos y runner verificados para declarar `ready`.
+La API versionada usa el prefijo `/api/v1`; su contrato OpenAPI está en <http://127.0.0.1:8000/api/v1/docs>. Incluye `/health`, `/analyze`, `/translate`, `/run`, `/runs/{run_id}/cancel`, `/tests/run`, `/examples`, `/grammar`, `/projects` y `/exports`. `WS /api/v1/run/interactive` es el canal interactivo. `/health` exige base de datos y runner verificados para declarar `ready`.
 
 ## Desarrollo y validación
 
