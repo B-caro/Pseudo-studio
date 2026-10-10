@@ -40,6 +40,11 @@ class SemanticTests(unittest.TestCase):
         self.assertIn("SEM_INVALID_STEP", codes)
         self.assertIn("SEM_WRONG_ARITY", codes)
 
+    def test_duplicate_function_names_are_rejected_with_semantic_diagnostic(self) -> None:
+        source = "Inicio\nFuncion Repetida()\nRetornar 1\nFinFuncion\nFuncion Repetida()\nRetornar 2\nFinFuncion\nFin\n"
+        _, result = semantic(source)
+        self.assertIn("SEM_DUPLICATE_FUNCTION", [item.code for item in result.diagnostics])
+
     def test_scopes_and_symbols_track_references(self) -> None:
         source = "Inicio\nFuncion Doble(n)\nresultado = n * 2\nRetornar resultado\nFinFuncion\nx = Doble(3)\nEscribir x\nFin\n"
         _, result = semantic(source)

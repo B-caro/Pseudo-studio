@@ -1,0 +1,27 @@
+# Matriz de rutas HTTP y WebSocket
+
+La matriz documenta el comportamiento observado en la suite de integración. Los fallos de sandbox aplican a los endpoints que ejecutan código; rutas de catálogo, proyectos y descarga no requieren runner.
+
+| Ruta | Éxito | Negativo / degradación | Evidencia |
+|---|---|---|---|
+| `GET /api/v1/health` | estado `ready` | DB degradada reporta `degraded` | `test_health_analyze_translate_and_invalid_diagnostics`, `test_health_and_grammar_degraded_responses` |
+| `POST /api/v1/analyze` | análisis devuelve tokens, AST y fases | campos desconocidos y cuerpo sobredimensionado rechazados | `test_health_analyze_translate_and_invalid_diagnostics`, `test_api_rejects_unknown_fields_invalid_targets_and_oversized_content_length` |
+| `POST /api/v1/translate` | Python y JavaScript y hashes reales | fuente inválida devuelve 422 con spans/diagnósticos | `test_health_analyze_translate_and_invalid_diagnostics`, `test_api_error_status_matrix_is_structured_and_has_no_tracebacks` |
+| `POST /api/v1/run` | ambos runtimes OCI registran resultado | target/código inválidos; sandbox no disponible devuelve 503 | `test_run_executes_compiled_program_inside_oci_and_records_history`, `test_api_rejects_unknown_fields_invalid_targets_and_oversized_content_length`, `test_api_error_status_matrix_is_structured_and_has_no_tracebacks` |
+| `POST /api/v1/runs/{run_id}/cancel` | confirma delegación de cancelación; cancelación real cubierta por runner/UI | ID malformado devuelve 400; sesión ausente devuelve 404 | `test_catalog_projects_and_test_routes_positive_and_negative`, `test_api_error_status_matrix_is_structured_and_has_no_tracebacks`, `test_parallel_sessions_and_manual_cancellation_are_isolated` |
+| `GET /api/v1/examples` | catálogo contiene A–E y 3 casos por programa | la integridad de cada recurso se comprueba al recorrer catálogo | `test_catalog_projects_and_test_routes_positive_and_negative` |
+| `GET /api/v1/examples/{example_id}` | cinco fuentes y sus casos oficiales | ID desconocido devuelve 404 | `test_catalog_projects_and_test_routes_positive_and_negative` |
+| `GET /api/v1/grammar` | devuelve EBNF como texto plano | archivo ausente devuelve 503 | `test_health_analyze_translate_and_invalid_diagnostics`, `test_health_and_grammar_degraded_responses` |
+| `POST /api/v1/tests/run` | ejecuta y compara ambos targets; reporta los dos resultados | fuente inválida 422; sandbox degradado 503 | `test_official_test_runner_and_real_downloadable_exports`, `test_catalog_projects_and_test_routes_positive_and_negative` |
+| `GET /api/v1/projects` | enumera proyectos persistidos | lista vacía permitida y serializada | `test_catalog_projects_and_test_routes_positive_and_negative` |
+| `POST /api/v1/projects` | crea proyecto SQLite | nombre vacío devuelve 422 | `test_project_crud_optimistic_conflict_and_delete`, `test_catalog_projects_and_test_routes_positive_and_negative` |
+| `GET /api/v1/projects/{project_id}` | devuelve proyecto | ID inexistente devuelve 404 | `test_project_crud_optimistic_conflict_and_delete`, `test_api_error_status_matrix_is_structured_and_has_no_tracebacks` |
+| `PUT /api/v1/projects/{project_id}` | actualiza y avanza versión | conflicto de versión 409 e ID inexistente 404 | `test_project_crud_optimistic_conflict_and_delete`, `test_catalog_projects_and_test_routes_positive_and_negative` |
+| `POST /api/v1/projects/{project_id}/duplicate` | copia fuente en proyecto nuevo | ID inexistente devuelve 404 | `test_project_crud_optimistic_conflict_and_delete`, `test_catalog_projects_and_test_routes_positive_and_negative` |
+| `DELETE /api/v1/projects/{project_id}` | elimina proyecto | ID inexistente devuelve 404 | `test_project_crud_optimistic_conflict_and_delete`, `test_catalog_projects_and_test_routes_positive_and_negative` |
+| `GET /api/v1/projects/{project_id}/runs` | devuelve historial del proyecto | ID inexistente devuelve 404; inputs no se incluyen en historial | `test_run_executes_compiled_program_inside_oci_and_records_history`, `test_catalog_projects_and_test_routes_positive_and_negative` |
+| `POST /api/v1/exports` | exporta fuente/código/inspector e informes JSON/MD/PDF | reporte inexistente 404; kind/código inválido rechazado | `test_official_test_runner_and_real_downloadable_exports`, `test_inspector_exports_match_selected_data_even_when_source_has_errors`, `test_catalog_projects_and_test_routes_positive_and_negative` |
+| `GET /api/v1/exports/{export_id}` | descarga bytes, MIME y nombre correctos; recuperación tras reinicio | ID inválido o traversal devuelve 404 | `test_official_test_runner_and_real_downloadable_exports`, `test_export_registry_rejects_path_traversal_ids`, `test_export_registry_recovers_downloads_after_api_restart` |
+| `WS /api/v1/run/interactive` | Python/Node reciben input real y transmiten salida | origen/protocolo/fuente/sandbox inválidos; timeout y desconexión limpian la sesión | `test_interactive_websocket_requests_real_input_and_streams_output`, `test_interactive_websocket_protocol_compile_and_sandbox_failures`, `test_interactive_websocket_rejects_untrusted_origin`, `test_interactive_idle_input_expires_and_returns_timeout`, `test_websocket_disconnect_kills_container_and_releases_session` |
+
+Control adicional: `test_api_error_status_matrix_is_structured_and_has_no_tracebacks` cubre 400/404/409/413/422/429/503 y verifica respuestas estructuradas sin traceback. Los tests OCI verifican cancelación efectiva, liberación de cuota y ausencia de contenedores huérfanos; la suite de interfaz demuestra la cancelación desde navegador.

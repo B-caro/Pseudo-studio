@@ -594,8 +594,12 @@ class OciRunner:
         selector.close()
         return stdout, stderr, outcome
 
-    def _kill(self, container_name: str) -> None:
-        subprocess.run([self._engine, "kill", container_name], capture_output=True, timeout=3, check=False)
+    def _kill(self, container_name: str) -> bool:
+        try:
+            result = subprocess.run([self._engine, "kill", container_name], capture_output=True, timeout=3, check=False)
+        except (OSError, subprocess.TimeoutExpired):
+            return False
+        return result.returncode == 0
 
     @staticmethod
     def _runtime_error_code(stderr: bytearray) -> str | None:
@@ -615,5 +619,13 @@ class OciRunner:
             return False
         with self._active_lock:
             self._cancelled.add(run_id)
-        self._kill(name)
-        return True
+        deadline = time.monotonic() + 3
+        while True:
+            if self._kill(name):
+                return True
+            with self._active_lock:
+                if run_id not in self._active:
+                    return True
+            if time.monotonic() >= deadline:
+                return False
+            time.sleep(0.05)

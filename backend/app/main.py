@@ -586,6 +586,7 @@ def create_app(*, store: ProjectStore | None = None, runner: OciRunner | None = 
             return
         await websocket.accept()
         session = None
+        receive_task: asyncio.Task[Any] | None = None
         closed = False
         send_lock = asyncio.Lock()
         output_bytes = 0
@@ -680,15 +681,17 @@ def create_app(*, store: ProjectStore | None = None, runner: OciRunner | None = 
 
             stdout_task = asyncio.create_task(pump_stdout())
             stderr_task = asyncio.create_task(pump_stderr())
+            receive_task = asyncio.create_task(websocket.receive_json())
             while session.process.returncode is None:
                 if time.monotonic() - session.started > app.state.runner.timeout_seconds:
                     session.forced_status = ("timed_out", "RUN_TIMEOUT")
                     await asyncio.to_thread(app.state.runner.cancel, session.run_id)
                     break
-                try:
-                    message = await asyncio.wait_for(websocket.receive_json(), timeout=0.1)
-                except asyncio.TimeoutError:
+                done, _ = await asyncio.wait({receive_task}, timeout=0.1)
+                if not done:
                     continue
+                message = receive_task.result()
+                receive_task = asyncio.create_task(websocket.receive_json())
                 message_type = message.get("type") if isinstance(message, dict) else None
                 if message_type == "input" and isinstance(message.get("value"), str):
                     try:
@@ -704,6 +707,9 @@ def create_app(*, store: ProjectStore | None = None, runner: OciRunner | None = 
                     await send({"event": "error", "code": "WS_PROTOCOL_ERROR"})
             await session.process.wait()
             await asyncio.gather(stdout_task, stderr_task, return_exceptions=True)
+            if receive_task is not None and not receive_task.done():
+                receive_task.cancel()
+                await asyncio.gather(receive_task, return_exceptions=True)
             execution = await app.state.runner.finish_interactive(session)
             app.state.store.record_run(execution.to_dict())
             await send({"event": "exited", **execution.to_dict()})
@@ -731,6 +737,9 @@ def create_app(*, store: ProjectStore | None = None, runner: OciRunner | None = 
             await send({"event": "error", "code": "RUN_SANDBOX_UNAVAILABLE", "message": str(error)})
             await websocket.close(code=4503)
         finally:
+            if receive_task is not None and not receive_task.done():
+                receive_task.cancel()
+                await asyncio.gather(receive_task, return_exceptions=True)
             if session and session.process.returncode is None:
                 await asyncio.to_thread(app.state.runner.cancel, session.run_id)
                 await session.process.wait()

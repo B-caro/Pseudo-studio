@@ -68,12 +68,35 @@ class OciRunnerIntegrationTests(unittest.TestCase):
                 ("runtime_error", "RUN_INPUT_INVALID", 70),
             )
 
+    def test_missing_numeric_input_is_controlled_for_both_targets(self) -> None:
+        source = "Inicio\nLeer dato\nEscribir dato\nFin\n"
+        for target in ("python", "javascript"):
+            result = self._run(source, [], target)
+            self.assertEqual(
+                (result.status, result.error_code, result.exit_code), ("runtime_error", "RUN_INPUT_MISSING", 70)
+            )
+
+    def test_dynamic_zero_step_is_rejected_at_runtime_for_both_targets(self) -> None:
+        source = "Inicio\nLeer incremento\nPara i = 1 Hasta 3 Paso incremento Hacer\nEscribir i\nFinPara\nFin\n"
+        compiled = compile_source(source)
+        self.assertTrue(compiled.translatable, [item.to_dict() for item in compiled.diagnostics])
+        for target in ("python", "javascript"):
+            artifact = compiled.artifacts[target]
+            result = self.runner.run_batch(target, artifact.source, ["0"], compiled.source_hash, artifact.artifact_hash)
+            self.assertEqual(
+                (result.status, result.error_code, result.exit_code), ("runtime_error", "RUN_INVALID_STEP", 70)
+            )
+
     def test_arrays_are_one_based_and_bounds_errors_are_controlled(self) -> None:
         for index in (0, 4):
             source = f"Inicio\nDimension datos[3]\nEscribir datos[{index}]\nFin\n"
             for target in ("python", "javascript"):
                 result = self._run(source, [], target)
                 self.assertEqual((result.status, result.error_code), ("runtime_error", "RUN_BOUNDS"))
+                runtime_error = next(
+                    line for line in result.stderr.splitlines() if line.startswith("PSEUDO_RUNTIME_ERROR ")
+                )
+                self.assertEqual(json.loads(runtime_error.removeprefix("PSEUDO_RUNTIME_ERROR "))["line"], 3)
         invalid_dimension = compile_source("Inicio\nDimension datos[0]\nFin\n")
         self.assertFalse(invalid_dimension.translatable)
         self.assertTrue(invalid_dimension.diagnostics)
@@ -235,9 +258,12 @@ Fin
 
     def test_text_input_is_data_and_not_evaluated(self) -> None:
         source = "Inicio\nLeerTexto payload\nEscribir payload\nFin\n"
-        payload = "__import__('os').system('touch /tmp/not-allowed')"
-        result = self._run(source, [payload], "python")
-        self.assertEqual((result.status, result.exit_code, result.stdout), ("completed", 0, payload + "\n"))
+        with tempfile.TemporaryDirectory(prefix="pseudo-shell-probe-") as directory:
+            marker = Path(directory) / "should-not-exist"
+            payload = f"__import__('os').system('touch {marker}')"
+            result = self._run(source, [payload], "python")
+            self.assertEqual((result.status, result.exit_code, result.stdout), ("completed", 0, payload + "\n"))
+            self.assertFalse(marker.exists())
 
     def test_containers_cannot_read_host_files_or_open_network_connections(self) -> None:
         with tempfile.TemporaryDirectory(prefix="pseudo-host-secret-") as host_directory:

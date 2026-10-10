@@ -23,6 +23,12 @@ class CompilerServiceTests(unittest.TestCase):
         self.assertEqual(result.artifacts, {})
         self.assertIn("SEM_UNDEFINED_IDENTIFIER", [item.code for item in result.diagnostics])
 
+    def test_invalid_lexical_source_has_diagnostics_and_no_artifacts(self) -> None:
+        result = compile_source("Inicio\nEscribir @\nFin\n")
+        self.assertFalse(result.translatable)
+        self.assertEqual(result.artifacts, {})
+        self.assertIn("LEX_INVALID_CHAR", [item.code for item in result.diagnostics])
+
     def test_source_edit_changes_hash_and_generated_artifacts(self) -> None:
         original = "Inicio\nx = 2\nEscribir x\nFin\n"
         changed = "Inicio\nx = 3\nEscribir x\nFin\n"
