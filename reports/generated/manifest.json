@@ -1,0 +1,107 @@
+{
+  "generated_at": "2026-10-10T09:45:03.568088+00:00",
+  "compiler_version": "0.1.0",
+  "execution_status": "not_executed",
+  "programs": [
+    {
+      "program": "A",
+      "source_path": "examples/A.psc",
+      "source_hash": "3a5da713368c50624f98f523bc6d0cbb61fcabcb5ae9f4b8cc18d8f418d6d084",
+      "compiler_version": "0.1.0",
+      "artifacts": [
+        {
+          "target": "python",
+          "path": "reports/generated/A.py",
+          "source_map": "reports/generated/A.py.map.json",
+          "artifact_hash": "066714a1eb7fef1dbf7fc3918031a3cdbdd749a8b020427c19a56f784c9557dc"
+        },
+        {
+          "target": "javascript",
+          "path": "reports/generated/A.js",
+          "source_map": "reports/generated/A.js.map.json",
+          "artifact_hash": "9d4a7bcf3747a525ceebedbf07b9ed029c76973354fe10b018a59c90d4166d8d"
+        }
+      ]
+    },
+    {
+      "program": "B",
+      "source_path": "examples/B.psc",
+      "source_hash": "f0a248d1e25a16c5a97e64007408b4c22d379592e6d571519feb70cb63b20a03",
+      "compiler_version": "0.1.0",
+      "artifacts": [
+        {
+          "target": "python",
+          "path": "reports/generated/B.py",
+          "source_map": "reports/generated/B.py.map.json",
+          "artifact_hash": "4c278cdc5b7a2bbd1de9dd91fa3b2ee06859d8ca174c4387277466b263356928"
+        },
+        {
+          "target": "javascript",
+          "path": "reports/generated/B.js",
+          "source_map": "reports/generated/B.js.map.json",
+          "artifact_hash": "97b19358899830ac3e34c23db1dda57b217b99476552dc441a2f24841325c356"
+        }
+      ]
+    },
+    {
+      "program": "C",
+      "source_path": "examples/C.psc",
+      "source_hash": "4b7639347382c12f603fdea2a21d024b6191e08adb47dcf5e60c8bfbaef4a627",
+      "compiler_version": "0.1.0",
+      "artifacts": [
+        {
+          "target": "python",
+          "path": "reports/generated/C.py",
+          "source_map": "reports/generated/C.py.map.json",
+          "artifact_hash": "c61455c6bb9ae93aa05efb0dac98d25d8bdb1c7e929e746150257325427b8062"
+        },
+        {
+          "target": "javascript",
+          "path": "reports/generated/C.js",
+          "source_map": "reports/generated/C.js.map.json",
+          "artifact_hash": "422404a688e489c21c15b36992da8cbca782b9c98bfd29798dc8e5c5dbaf81cb"
+        }
+      ]
+    },
+    {
+      "program": "D",
+      "source_path": "examples/D.psc",
+      "source_hash": "c1a2bcce16a91408460ba36654c27e4d714f023c2db78806bf0457aeb3334a23",
+      "compiler_version": "0.1.0",
+      "artifacts": [
+        {
+          "target": "python",
+          "path": "reports/generated/D.py",
+          "source_map": "reports/generated/D.py.map.json",
+          "artifact_hash": "0ecce9c2b2206454835fcf505c00ce8caee9fbec79ff6c42150c29671acc33b3"
+        },
+        {
+          "target": "javascript",
+          "path": "reports/generated/D.js",
+          "source_map": "reports/generated/D.js.map.json",
+          "artifact_hash": "550caa5cd4f219699588b67f1a9574ed73ef93742d3463e9294cdcfb6a4eced7"
+        }
+      ]
+    },
+    {
+      "program": "E",
+      "source_path": "examples/E.psc",
+      "source_hash": "0bdd0185df18aae5d56924e3b6a217f6c40c9295ab2e1a47d3fe64fb3afc20b6",
+      "compiler_version": "0.1.0",
+      "artifacts": [
+        {
+          "target": "python",
+          "path": "reports/generated/E.py",
+          "source_map": "reports/generated/E.py.map.json",
+          "artifact_hash": "b4bebb99e144c116c2414a7145088bf7d4f573c4a09c6de34c577cc4f41dc7a8"
+        },
+        {
+          "target": "javascript",
+          "path": "reports/generated/E.js",
+          "source_map": "reports/generated/E.js.map.json",
+          "artifact_hash": "2d421271bce61671f98b26bf3f11d402aa021871055c017b22e3fd3cdb9561da"
+        }
+      ]
+    }
+  ]
+}

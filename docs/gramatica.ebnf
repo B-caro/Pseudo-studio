@@ -1,0 +1,46 @@
+(* Pseudo / Studio EBNF v2 — fuente normativa conforme a la sección 4.2. *)
+(* NL conserva cada fin de línea no vacío; los comentarios // llegan al fin de línea. *)
+
+programa        = "Inicio", NL+, { elemento }, "Fin", [ NL+ ] ;
+elemento        = sentencia | funcion ;
+sentencia       = leer | leer_texto | escribir | asignacion | condicional
+                | para | dimension | mientras | retornar | expr_stmt ;
+leer            = "Leer", destino, NL+ ;
+leer_texto      = "LeerTexto", destino, NL+ ;
+escribir        = "Escribir", expresion, { ",", expresion }, NL+ ;
+asignacion      = destino, "=", expresion, NL+ ;
+destino         = IDENT, [ "[", expresion, "]" ] ;
+dimension       = "Dimension", IDENT, "[", expresion, "]", NL+ ;
+condicional     = "Si", expresion, "Entonces", NL+,
+                  { sentencia }, [ "Sino", NL+, { sentencia } ], "FinSi", NL+ ;
+para            = "Para", IDENT, "=", expresion, "Hasta", expresion,
+                  [ "Paso", expresion ], "Hacer", NL+,
+                  { sentencia }, "FinPara", NL+ ;
+mientras        = "Mientras", expresion, "Hacer", NL+,
+                  { sentencia }, "FinMientras", NL+ ;
+funcion         = "Funcion", [ IDENT, "=" ], IDENT, "(", [ parametros ], ")", NL+,
+                  { sentencia }, "FinFuncion", NL+ ;
+parametros      = IDENT, { ",", IDENT } ;
+retornar        = "Retornar", expresion, NL+ ;
+expr_stmt       = llamada, NL+ ;
+
+expresion       = disyuncion ;
+disyuncion      = conjuncion, { "O", conjuncion } ;
+conjuncion      = igualdad, { "Y", igualdad } ;
+igualdad        = relacion, { ("==" | "!="), relacion } ;
+relacion        = aditiva, { (">" | "<" | ">=" | "<="), aditiva } ;
+aditiva         = multiplicativa, { ("+" | "-"), multiplicativa } ;
+multiplicativa  = unaria, { ("*" | "/" | "%" | "Modulo"), unaria } ;
+unaria          = ("-" | "+" | "No"), unaria | primaria ;
+primaria        = NUM | STRING | "Verdadero" | "Falso" | referencia
+                | llamada | "(", expresion, ")" ;
+referencia      = IDENT, [ "[", expresion, "]" ] ;
+llamada         = IDENT, "(", [ argumentos ], ")" ;
+argumentos      = expresion, { ",", expresion } ;
+
+(* Convenciones terminales: *)
+(* IDENT = letra Unicode o _, seguida de letras, marcas combinantes, dígitos o _; NFC. *)
+(* NUM = dígitos decimales ASCII, opcionalmente " . " seguido de uno o más dígitos. *)
+(* STRING = comillas dobles; escapes permitidos: \\, \", \n, \t. *)
+(* Las keywords no distinguen mayúsculas; los identificadores sí. *)
+(* NL+ puede omitir líneas vacías y líneas de comentario puro. Fin puede llegar a EOF. *)

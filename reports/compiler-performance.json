@@ -1,0 +1,29 @@
+{
+  "generated_at": "2026-10-10T09:45:09.724838+00:00",
+  "python": "3.12.3",
+  "platform": "Linux-5.15.153.1-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+  "cpu_count": 12,
+  "targets": [],
+  "measurements": [
+    {
+      "requested_lines": 100,
+      "actual_lines": 100,
+      "source_bytes": 1363,
+      "iterations": 30,
+      "p50_ms": 3.731,
+      "p95_ms": 5.1,
+      "min_ms": 2.738,
+      "max_ms": 8.07
+    },
+    {
+      "requested_lines": 1000,
+      "actual_lines": 1000,
+      "source_bytes": 15759,
+      "iterations": 30,
+      "p50_ms": 43.96,
+      "p95_ms": 68.676,
+      "min_ms": 30.655,
+      "max_ms": 76.62
+    }
+  ]
+}

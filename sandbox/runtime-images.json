@@ -1,0 +1,20 @@
+{
+  "source": "Locally available Docker Official Images verified with docker image inspect and container runtime checks.",
+  "images": {
+    "python": {
+      "reference": "python@sha256:2c941e860699f878900b0edc2403613c234d4b32eda3cc9fa7036991a2a63c4a",
+      "version": "3.12.14",
+      "local_image_id": "sha256:613c5454f914638dc2bfcab71c8630de0089f7ebff0a7239b54f34866c4b6051"
+    },
+    "javascript": {
+      "reference": "node@sha256:d415caac2f1f77b98caaf9415c5f807e14bc8d7bdea62561ea2fef4fbd08a73c",
+      "version": "v22.22.2",
+      "local_image_id": "sha256:36203e98737b8debc11db10213cf25365ba303e61a073e3cce7572bbdee0df11"
+    }
+  },
+  "seccomp": {
+    "file": "sandbox/seccomp/moby-default.json",
+    "upstream": "https://github.com/moby/profiles/blob/2ceae35d351c156cb5a8efc0fdc4a08cf94569d8/seccomp/default.json",
+    "sha256": "6416b47770785a41ac59073cdc77d9fe98517df2799dc83ef207e622de3053f6"
+  }
+}

@@ -1,0 +1,15 @@
+repos:
+  - repo: local
+    hooks:
+      - id: ruff-check
+        name: Ruff lint
+        entry: .venv/bin/ruff check --fix backend scripts
+        language: system
+        pass_filenames: false
+        always_run: true
+      - id: ruff-format
+        name: Ruff format check
+        entry: .venv/bin/ruff format --check backend scripts
+        language: system
+        pass_filenames: false
+        always_run: true

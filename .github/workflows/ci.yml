@@ -1,0 +1,97 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  quality-and-acceptance:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      PSEUDO_STUDIO_OCI_ENGINE: docker
+      PSEUDO_STUDIO_ALLOWED_ORIGINS: http://127.0.0.1:5173,http://localhost:5173
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.22.2"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Set up rootless Docker
+        shell: bash
+        run: |
+          set -euo pipefail
+          runner_user="$(id -un)"
+          sudo apt-get update
+          sudo apt-get install -y uidmap dbus-user-session slirp4netns
+          if ! grep -q "^${runner_user}:" /etc/subuid; then
+            printf '%s:100000:65536\n' "$runner_user" | sudo tee -a /etc/subuid >/dev/null
+          fi
+          if ! grep -q "^${runner_user}:" /etc/subgid; then
+            printf '%s:100000:65536\n' "$runner_user" | sudo tee -a /etc/subgid >/dev/null
+          fi
+          sudo systemctl stop docker.service docker.socket || true
+          curl -fsSL https://get.docker.com/rootless | sh
+          dockerd-rootless-setuptool.sh install
+          runner_uid="$(id -u)"
+          sudo loginctl enable-linger "$runner_user"
+          export XDG_RUNTIME_DIR="/run/user/${runner_uid}"
+          export DOCKER_HOST="unix://${XDG_RUNTIME_DIR}/docker.sock"
+          echo "XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR}" >> "$GITHUB_ENV"
+          echo "DOCKER_HOST=${DOCKER_HOST}" >> "$GITHUB_ENV"
+          systemctl --user start docker
+          for attempt in $(seq 1 60); do
+            if docker info >/dev/null 2>&1; then
+              docker info
+              exit 0
+            fi
+            sleep 1
+          done
+          systemctl --user status docker --no-pager || true
+          exit 1
+      - name: Bootstrap locked dependencies and OCI images
+        run: python scripts/manage.py bootstrap
+      - name: Verify compiler and sandbox controls
+        run: python scripts/manage.py verify
+      - name: Audit Python dependencies
+        run: |
+          mkdir -p reports
+          .venv/bin/pip-audit --strict --no-deps --disable-pip -r requirements.lock --format json -o reports/python-dependency-audit.json
+          npm --prefix frontend audit --audit-level=moderate --json > reports/npm-dependency-audit.json
+      - name: Python lint and tests
+        run: |
+          .venv/bin/pre-commit run --all-files
+          .venv/bin/ruff check backend scripts
+          .venv/bin/pytest -q
+      - name: Compiler size benchmark
+        run: python scripts/benchmark_compile.py
+      - name: Frontend production build and browser tests
+        run: |
+          sudo frontend/node_modules/.bin/playwright install-deps chromium
+          cd frontend
+          npm run build
+          npm run test:e2e
+      - name: Official A–E differential executions
+        run: python scripts/run_official_acceptance.py
+      - name: Upload acceptance evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pseudo-studio-acceptance
+          path: |
+            reports/acceptance-results.json
+            reports/acceptance-results.md
+            reports/python-dependency-audit.json
+            reports/npm-dependency-audit.json
+            reports/compiler-performance.json
+            reports/compiler-performance.md
+            frontend/playwright-report/
+            frontend/test-results/
+          if-no-files-found: warn

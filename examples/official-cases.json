@@ -1,0 +1,41 @@
+{
+  "authority": "Context/fase_1.pdf (programs A-E and input tables); Context/Pseudo_Studio_Requerimientos_v2_Operativo.pdf (official result table)",
+  "source_files": {
+    "A": "examples/A.psc",
+    "B": "examples/B.psc",
+    "C": "examples/C.psc",
+    "D": "examples/D.psc",
+    "E": "examples/E.psc"
+  },
+  "prompt_templates": {
+    "A": [
+      "Ingrese el primer número:",
+      "Ingrese el segundo número:",
+      "Ingrese el tercer número:"
+    ],
+    "B": [
+      "Ingrese su nota final:",
+      "Ingrese su porcentaje de asistencia:"
+    ],
+    "C": ["Ingrese un número entero positivo:"],
+    "D": ["Ingrese la cantidad de números a ingresar:", "Ingrese el número {index}:"],
+    "E": ["Ingrese la base:", "Ingrese la altura:"]
+  },
+  "cases": [
+    {"id":"A-1","program":"A","inputs":["4","2","3"],"expected_tail":"El resultado es: 16"},
+    {"id":"A-2","program":"A","inputs":["10","5","2"],"expected_tail":"El resultado es: 28"},
+    {"id":"A-3","program":"A","inputs":["6","3","4"],"expected_tail":"El resultado es: 34"},
+    {"id":"B-1","program":"B","inputs":["8","80"],"expected_tail":"Aprobado"},
+    {"id":"B-2","program":"B","inputs":["7","60"],"expected_tail":"Reprobado por asistencia"},
+    {"id":"B-3","program":"B","inputs":["4","90"],"expected_tail":"Reprobado por nota"},
+    {"id":"C-1","program":"C","inputs":["4"],"expected_tail":"El factorial es: 24\nLa suma es: 20"},
+    {"id":"C-2","program":"C","inputs":["5"],"expected_tail":"El factorial es: 120\nLa suma es: 30"},
+    {"id":"C-3","program":"C","inputs":["1"],"expected_tail":"El factorial es: 1\nLa suma es: 2"},
+    {"id":"D-1","program":"D","inputs":["3","4","9","2"],"expected_tail":"El promedio es: 5\nEl número mayor es: 9"},
+    {"id":"D-2","program":"D","inputs":["4","10","20","5","15"],"expected_tail":"El promedio es: 12.5\nEl número mayor es: 20"},
+    {"id":"D-3","program":"D","inputs":["5","1","1","1","1","1"],"expected_tail":"El promedio es: 1\nEl número mayor es: 1"},
+    {"id":"E-1","program":"E","inputs":["5","4"],"expected_tail":"El área es: 20\nClasificación: Pequeña"},
+    {"id":"E-2","program":"E","inputs":["10","8"],"expected_tail":"El área es: 80\nClasificación: Grande"},
+    {"id":"E-3","program":"E","inputs":["6","9"],"expected_tail":"El área es: 54\nClasificación: Grande"}
+  ]
+}
