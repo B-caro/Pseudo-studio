@@ -1,5 +1,21 @@
 # Informe de validación — Pseudo / Studio
 
+## Revalidación automática WSL tras reactivar Docker
+
+El 2026-10-10 se ejecutó `bash scripts/validate_wsl.sh` sobre el commit `5bce0a1808066b9e2a156a4bb2c788a1b4b93f27`, en un clon limpio conservado en `reports/runs/wsl-20261010T175319Z-z0u3ep/workspace`. Las 30 etapas terminaron con exit 0. El resumen reproducible, commit, entorno y 22 hashes de evidencias se guardan en `reports/wsl-validation-summary.json`. Se conservaron los reportes históricos sin contarlos como resultado nuevo.
+
+- Bootstrap desde lockfiles, pre-commit/Ruff y build: pasan.
+- Sandbox: Docker 28.1.1 con frontera `docker-desktop-vm`; Python 3.12.14 y Node v22.22.2 pasan controles internos.
+- Pytest: **76 passed + 22 subtests**, cero fallos/errores/skips. JUnit cuenta 98 entradas incluyendo subtests; cobertura de líneas de backend **89,82 %** (2240/2494, mostrada redondeada como 90 %). Permanece el warning de deprecación de Starlette TestClient/httpx.
+- A–E: **30/30** registros distintos de caso/target, con stdout exacto, stderr vacío, exit 0, inputs, versiones, tiempos y hashes.
+- Playwright: **6/6**, un worker, cero retries, servidores propios del clon; axe, teclado, flujos y A–E por UI pasan.
+- Arranque/smoke/backup/parada: ambos runtimes imprimen `OK=42`, backup íntegro y puertos 8000/5173 libres al finalizar.
+- pip-audit y npm audit: cero vulnerabilidades (JSON revisados). pip-audit recomienda añadir hashes a los paquetes fijados; ese aviso no se ocultó.
+- Benchmark, 30 iteraciones: 100 líneas p95 **6,264 ms**; 1.000 líneas p95 **45,297 ms** en el WSL registrado.
+- Fuentes intactas tras la suite; `sha256sum -c reports/SHA256SUMS` validó los 12 artefactos del clon. Consulta Docker final sin contenedores `pseudo-studio` restantes.
+
+La guía de ejecución y traspaso está en `docs/WSL_TEST_PLAN_AGENT.md`. Los resultados que siguen corresponden a la validación limpia anterior y se conservan como historial.
+
 Fecha: 2026-10-10. Código de verificación API/runtime y snapshots en `48ced1a`; navegación de teclado y E2E 6/6 en `4aa18fd`; endurecimiento del runner de CI rootless en `2adddeb`. La copia temporal usada para la validación limpia fue `/tmp/pseudo-studio-validation-0o8tswmq/workspace`; se preparó sin `.git`, `.venv`, `node_modules`, `data`, `reports` ni cachés antes del bootstrap. La fuente actual, incluyendo snapshots y matriz de rutas, se sincronizó antes de la suite final.
 
 ## Resultado ejecutado
@@ -55,4 +71,4 @@ SHA-256 de evidencia limpia:
 
 ## Límites abiertos
 
-No hay remote Git asociado; GitHub Actions está configurado pero no se ejecutó en un runner remoto. Axe automatizado y teclado/foco pasan, pero se requiere una auditoría manual con lector de pantalla y revisión de contraste (P9-17/P12-12). La CI remota (P11-F6) también requiere un remote/runner asociado. A petición del usuario se comprobó Ubuntu 24.04.1 WSL2 el 2026-10-10: `python3.12 scripts/manage.py verify` falló con exit 1 porque no hay engine OCI accesible; faltan las herramientas rootless y la integración WSL de Docker Desktop no está activa. No se instalaron paquetes porque `sudo -n` no está habilitado. El detalle está en `docs/REMAINING_GATES.md`; RNF-10 sigue parcial. Los pasos para conseguir evidencia de esos gates están en `docs/REMAINING_GATES.md`. Las rutas API/WS, casos N-01..N-12, limpieza por desconexión y snapshots tienen evidencia local automatizada. No se declara el proyecto cerrado al 100%.
+No hay remote Git asociado; GitHub Actions está configurado pero no se ejecutó en un runner remoto (P11-F6). Axe automatizado y teclado/foco pasan, pero se requiere una auditoría manual con lector de pantalla y revisión de contraste (P9-17/P12-12). El fallo de acceso a Docker del intento anterior está resuelto: la nueva corrida WSL completa pasa con Docker Desktop VM. RNF-10 sigue parcial por la cobertura de plataformas; no se probó Linux rootless ni macOS con esta corrida. El detalle y los pasos pendientes están en `docs/REMAINING_GATES.md`. Las rutas API/WS, casos N-01..N-12, limpieza por desconexión y snapshots tienen evidencia local automatizada. No se declara el proyecto cerrado al 100%.

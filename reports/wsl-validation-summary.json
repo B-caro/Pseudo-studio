@@ -1,0 +1,126 @@
+{
+  "recorded_at": "2026-10-10T17:57:47.034269+00:00",
+  "command": "bash scripts/validate_wsl.sh",
+  "source_commit": "5bce0a1808066b9e2a156a4bb2c788a1b4b93f27",
+  "run_directory": "reports/runs/wsl-20261010T175319Z-z0u3ep",
+  "exit_code": 0,
+  "stages_passed": 30,
+  "docker": {
+    "ServerVersion": "28.1.1",
+    "OperatingSystem": "Docker Desktop",
+    "KernelVersion": "5.15.153.1-microsoft-standard-WSL2",
+    "CgroupVersion": "1"
+  },
+  "isolation_boundary": "docker-desktop-vm",
+  "runtime_checks": {
+    "python": {
+      "passed": true,
+      "runtime_version": "3.12.14",
+      "non_root_uid": true,
+      "no_new_privileges": true,
+      "seccomp_filter": true,
+      "zero_capabilities": true,
+      "exit_code": 0,
+      "stderr": ""
+    },
+    "javascript": {
+      "passed": true,
+      "runtime_version": "v22.22.2",
+      "non_root_uid": true,
+      "no_new_privileges": true,
+      "seccomp_filter": true,
+      "zero_capabilities": true,
+      "exit_code": 0,
+      "stderr": ""
+    }
+  },
+  "pytest": {
+    "passed": 76,
+    "warnings": 1,
+    "subtests_passed": 22,
+    "junit": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "98",
+      "time": "75.497",
+      "timestamp": "2026-10-10T11:53:45.676177-06:00",
+      "hostname": "bucaro"
+    }
+  },
+  "coverage": {
+    "scope": "backend (excluding tests)",
+    "line_rate": 0.8982,
+    "lines_covered": 2240,
+    "lines_valid": 2494
+  },
+  "playwright": {
+    "passed": 6,
+    "duration": "1.1m",
+    "workers": 1,
+    "retries": 0
+  },
+  "official": {
+    "generated_at": "2026-10-10T17:55:18.904139+00:00",
+    "total": 30,
+    "passed": 30,
+    "failed": 0
+  },
+  "benchmark": [
+    {
+      "requested_lines": 100,
+      "actual_lines": 100,
+      "source_bytes": 1363,
+      "iterations": 30,
+      "p50_ms": 3.356,
+      "p95_ms": 6.264,
+      "min_ms": 2.642,
+      "max_ms": 7.305
+    },
+    {
+      "requested_lines": 1000,
+      "actual_lines": 1000,
+      "source_bytes": 15759,
+      "iterations": 30,
+      "p50_ms": 36.379,
+      "p95_ms": 45.297,
+      "min_ms": 29.925,
+      "max_ms": 47.269
+    }
+  ],
+  "vulnerabilities": {
+    "python": 0,
+    "npm": 0
+  },
+  "services_after_run": "stopped; ports 8000 and 5173 free",
+  "remaining": [
+    "P9-17 and P12-12: manual WCAG",
+    "P11-F6: remote CI",
+    "RNF-10: platform coverage beyond this WSL2/Docker Desktop run"
+  ],
+  "sha256": {
+    "reports/runs/wsl-20261010T175319Z-z0u3ep/exit-code.txt": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "reports/runs/wsl-20261010T175319Z-z0u3ep/logs/09-verify.log": "2e90f70c3bc91c4f831176a23b2e787dff6a0fbd409a9d66b317415cdca1949d",
+    "reports/runs/wsl-20261010T175319Z-z0u3ep/logs/13-pytest.log": "e490e2d69f521e1b7f17d31f5683b6c428f7ff18f9f14c86f1634223aee91e6a",
+    "reports/runs/wsl-20261010T175319Z-z0u3ep/logs/19-e2e.log": "1b5180886e008a81e0ba3ecb3952c7388c80e9d8494cc0966de68d81e2825eba",
+    "reports/runs/wsl-20261010T175319Z-z0u3ep/logs/22-smoke.log": "5ad6ab61fc2618a3dfa628162310a36f4d144d3cd4841cc8940676dd32091f44",
+    "reports/runs/wsl-20261010T175319Z-z0u3ep/logs/23-backup.log": "eebe898fb8f335107b8791563f45980ecc521c3c025a2bba8383afb87115910a",
+    "reports/runs/wsl-20261010T175319Z-z0u3ep/logs/24-stop.log": "19011d56065ef8fba14284eba4a50eee6b8d3433a4b26fba1c5a0fe9f2041ce5",
+    "reports/runs/wsl-20261010T175319Z-z0u3ep/source-commit.txt": "3dd443073874f041ac0eb4a39c6edaf54feb5a3b11954cb454e4ca7a1acee115",
+    "reports/runs/wsl-20261010T175319Z-z0u3ep/stages.tsv": "527467b2e3e36b30b877a6696f98fb391c1919dbb177f1c00e12031dc2aaa396",
+    "reports/runs/wsl-20261010T175319Z-z0u3ep/workspace/frontend/playwright-report/index.html": "d40e075d3818c8c1161a4d8ce1c83000ed43e75f5770120b0d056b2d0c1f2e96",
+    "reports/runs/wsl-20261010T175319Z-z0u3ep/workspace/frontend/test-results/.last-run.json": "91d1c43004802cd49950d78eb11c8fa7d05da8ffffe219a8b13b2f561bc00903",
+    "reports/runs/wsl-20261010T175319Z-z0u3ep/workspace/reports/SHA256SUMS": "111f44f8df51898bcd40cddbde94bc4d18f7a9f738a3dc032504a9aa798d1314",
+    "reports/runs/wsl-20261010T175319Z-z0u3ep/workspace/reports/acceptance-results.json": "1ed46e3ba42e8dda8d386f88d6843954ce160fb5f4125ccae3289519e165fced",
+    "reports/runs/wsl-20261010T175319Z-z0u3ep/workspace/reports/acceptance-results.md": "f8f258f23bf1278b79d912cec053103a11e3e420a77eb1fa820a1f92c0f2b61c",
+    "reports/runs/wsl-20261010T175319Z-z0u3ep/workspace/reports/compiler-performance.json": "e484087aada273d7385aa1b552407d0f465d7273d57eb4d1138d38177bafee4b",
+    "reports/runs/wsl-20261010T175319Z-z0u3ep/workspace/reports/compiler-performance.md": "3819e3aae130e4bcd8ca2001ec6cee56ca99dceee39fbbec5b3bb99f34b29a73",
+    "reports/runs/wsl-20261010T175319Z-z0u3ep/workspace/reports/coverage.xml": "a4fed4684ade12758d790280cdbda8ee55187ec34bfd7fedb73b77f3a18192ee",
+    "reports/runs/wsl-20261010T175319Z-z0u3ep/workspace/reports/npm-dependency-audit.json": "ee3191284f92a07f6cef6debf3de2f2ddd9df71688183f4fcd8ee1bd0f154d28",
+    "reports/runs/wsl-20261010T175319Z-z0u3ep/workspace/reports/projects-backup.sqlite3": "d2a2c38402a32dbf1df0a76cd7b4258bf4ec79fefd71339de56498e8dedf9fc4",
+    "reports/runs/wsl-20261010T175319Z-z0u3ep/workspace/reports/pytest.xml": "3faf4746dd238fe68033ce59466dc5e3d2fc643b44507156d281fb49649b43f8",
+    "reports/runs/wsl-20261010T175319Z-z0u3ep/workspace/reports/python-dependency-audit.json": "2f88642648fc33563be5775168fc09b1c531ff65351d101a3965c67b4c259292",
+    "reports/runs/wsl-20261010T175319Z-z0u3ep/workspace/reports/ui-workbench.png": "8e33de7287eca91d77a2a833a9d6d854d7ff9929f9211323303ddf7132aee2bb"
+  }
+}

@@ -63,6 +63,8 @@ Esta matriz refleja pruebas ejecutadas al 2026-10-10. El PDF operativo gobierna 
 
 ## Resultado de la auditoría
 
+Revalidación WSL posterior sobre `5bce0a1`: `bash scripts/validate_wsl.sh` pasó sus 30 etapas en clon limpio; 76 tests + 22 subtests sin fallos/errores/skips, 89,82 % de cobertura de backend, Playwright 6/6 sin reintentos, A–E 30/30, smoke y backup correctos, cero vulnerabilidades. Evidencia nueva y hashes en `reports/wsl-validation-summary.json`; instrucciones reproducibles en `docs/WSL_TEST_PLAN_AGENT.md`. Las tareas manuales/remotas y la cobertura de otras plataformas conservan su estado parcial.
+
 - RF: 29/29 validados por pruebas reales del backend, runtimes o UI, con referencias individuales arriba.
 - RNF: 10/12 validados; RNF-06 y RNF-10 quedan parciales por revisión manual de accesibilidad y ejecución fuera de WSL2.
 - 202/205 tareas del plan verificadas; sólo P9-17/P12-12 (auditoría manual WCAG) y P11-F6 (CI remota) siguen abiertos en `docs/IMPLEMENTATION_STATUS.md`. El código de verificación está en `48ced1a`; la navegación por teclado y gates reproducibles quedaron en `4aa18fd`.
