@@ -62,7 +62,7 @@ Cada ejecución imprime su ruta `reports/runs/wsl-<fecha UTC>-<id>/` y conserva:
 
 La carpeta de corridas está ignorada por Git. Para la entrega, copiar solo reportes revisados y un resumen a las rutas versionadas pertinentes; no añadir el clon completo, `.venv`, `node_modules`, bases de usuario ni logs con secretos. Conservar los fallos previos y las correcciones/commits que los resuelven.
 
-Tras la suite, comprobar `docker ps -a --filter name=pseudo-studio --format '{{.ID}} {{.Status}} {{.Names}}'`: no debe haber restos atribuibles a esta corrida. Documentar cualquier fuga y corregir la limpieza; no usar `docker system prune` ni borrar contenedores ajenos. La aplicación queda detenida al terminar. Para la revisión manual del usuario, iniciar el workspace original con `python3.12 scripts/manage.py start` y ejecutar su `smoke`; publicar solo las URL locales `http://127.0.0.1:5173` y `http://127.0.0.1:8000/api/v1/docs` después de comprobarlas.
+Tras la suite, comprobar `docker ps -a --filter name=pseudo-studio --format '{{.ID}} {{.Status}} {{.Names}}'`: no debe haber restos atribuibles a esta corrida. Documentar cualquier fuga y corregir la limpieza; no usar `docker system prune` ni borrar contenedores ajenos. La copia limpia se apaga al terminar. Para la revisión manual, iniciar el workspace original con `python3.12 scripts/manage.py start` y ejecutar su `smoke`. En la sesión actual ya se verificaron API `ready` y frontend HTTP 200; están activos en `http://127.0.0.1:5173` y `http://127.0.0.1:8000/api/v1/docs`.
 
 ## Lo que sigue después de una corrida local aprobada
 

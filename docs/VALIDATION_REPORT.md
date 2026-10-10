@@ -16,6 +16,8 @@ El 2026-10-10 se ejecutó `bash scripts/validate_wsl.sh` sobre el commit `5bce0a
 
 La guía de ejecución y traspaso está en `docs/WSL_TEST_PLAN_AGENT.md`. Los resultados que siguen corresponden a la validación limpia anterior y se conservan como historial.
 
+Después de la suite se arrancó el workspace principal con `python3.12 scripts/manage.py start` y se ejecutó de nuevo `python3.12 scripts/manage.py smoke`: exit 0; Python 3.12.14 y Node v22.22.2 produjeron `OK=42`, con source SHA-256 `5d1e7c922a35ceb4f4d9fa6e344f221f65cd7400c07e67c3251c2b34c708e290`. La salida y los hashes de artefacto están en `reports/wsl-workspace-smoke.json`. Health fue `ready` y la página del frontend respondió HTTP 200. Ambos procesos quedaron activos para la auditoría manual.
+
 Fecha: 2026-10-10. Código de verificación API/runtime y snapshots en `48ced1a`; navegación de teclado y E2E 6/6 en `4aa18fd`; endurecimiento del runner de CI rootless en `2adddeb`. La copia temporal usada para la validación limpia fue `/tmp/pseudo-studio-validation-0o8tswmq/workspace`; se preparó sin `.git`, `.venv`, `node_modules`, `data`, `reports` ni cachés antes del bootstrap. La fuente actual, incluyendo snapshots y matriz de rutas, se sincronizó antes de la suite final.
 
 ## Resultado ejecutado

@@ -1,0 +1,32 @@
+{
+  "recorded_at": "2026-10-10T18:03:02.084746+00:00",
+  "command": "python3.12 scripts/manage.py smoke",
+  "commit": "947cdad437a4da8f7e73a29f50895504237f6960",
+  "platform": "Linux-5.15.153.1-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+  "exit_code": 0,
+  "stdout": "python: OK=42 · 3.12.14 · 1ed7a332b733d8dc655d78bfc034c3c8b0ebb703b914a3cc7502b1e957f43ba4\njavascript: OK=42 · v22.22.2 · 416aea06d5e2ac95607f6dae6470983de09fe7768d3416d330b428bb45ce2eb8\nSmoke completo; source SHA-256 5d1e7c922a35ceb4f4d9fa6e344f221f65cd7400c07e67c3251c2b34c708e290.\n",
+  "stderr": "",
+  "source_hash": "5d1e7c922a35ceb4f4d9fa6e344f221f65cd7400c07e67c3251c2b34c708e290",
+  "runtimes": {
+    "python": {
+      "version": "3.12.14",
+      "artifact_hash": "1ed7a332b733d8dc655d78bfc034c3c8b0ebb703b914a3cc7502b1e957f43ba4",
+      "stdout": "OK=42\n",
+      "exit_code": 0
+    },
+    "javascript": {
+      "version": "v22.22.2",
+      "artifact_hash": "416aea06d5e2ac95607f6dae6470983de09fe7768d3416d330b428bb45ce2eb8",
+      "stdout": "OK=42\n",
+      "exit_code": 0
+    }
+  },
+  "services": {
+    "verified_at": "2026-10-10T18:03:25.181328+00:00",
+    "api": "http://127.0.0.1:8000/api/v1/docs",
+    "api_health": "ready",
+    "frontend": "http://127.0.0.1:5173",
+    "frontend_status": 200,
+    "left_running_for_manual_review": true
+  }
+}

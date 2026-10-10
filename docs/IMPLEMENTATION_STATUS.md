@@ -6,7 +6,7 @@
 **RF implementados y probados:** 29 / 29 en flujos principales; la evidencia individual está en `docs/TRACEABILITY.md`.
 **RNF:** 10 verificados, 2 parciales (accesibilidad manual y validación en plataformas/CI externas); VM equivalente WSL2 verificada para el runner.
 **Pruebas:** nueva corrida WSL sobre `5bce0a1`: 30 etapas con exit 0; `pytest`: 76 passed + 22 subtests, sin fallos/errores/skips y 89,82 % de cobertura de backend; Playwright: 6/6 sin retries; lint/format/build, smoke y backup pasan; pip-audit y npm audit: 0 vulnerabilidades; A–E: 30/30 OCI reales desde instalación limpia. Evidencia: `reports/wsl-validation-summary.json`.
-**Servicios:** frontend y API de prueba detenidos al terminar la corrida WSL; puertos 5173/8000 libres y sin contenedores `pseudo-studio` restantes. Docker responde y `manage.py verify` pasa para Python y Node con frontera `docker-desktop-vm`.
+**Servicios:** app del workspace principal activa para revisión manual en `http://127.0.0.1:5173`; API `ready` en `http://127.0.0.1:8000` y sandbox verificado. La copia de prueba se detuvo y sus puertos se liberaron; no quedaron contenedores `pseudo-studio`.
 **Commit probado:** `5bce0a1` (automatización WSL y guía de traspaso; local, sin remote Git configurado).
 **Pendientes de cierre:** P9-17/P12-12 requieren auditoría manual WCAG; P11-F6 requiere ejecución en CI remota. RNF-10 sigue parcial por cobertura de plataformas. El bloqueo de acceso a Docker WSL está resuelto; guía y automatización para repetir la suite completa: `docs/WSL_TEST_PLAN_AGENT.md` y `bash scripts/validate_wsl.sh`. Pasos/evidencia requerida: `docs/REMAINING_GATES.md`. No se declara terminado al 100%.
 
