@@ -63,7 +63,7 @@ cd ..
 python3.12 scripts/run_official_acceptance.py
 ```
 
-El runner y pruebas end-to-end requieren OCI disponible y verificado. La aceptación emite detalle de entradas, expected/actual, salida, stderr, estado, duración y hashes en `reports/acceptance-results.json` y `.md`. El benchmark registra percentiles medidos para análisis de 100 y 1.000 líneas en `reports/compiler-performance.json` y `.md`. Consulta `docs/IMPLEMENTATION_STATUS.md` y `docs/TRACEABILITY.md` para el estado observado; una casilla solo se marca cuando existe evidencia reproducible.
+El runner y pruebas end-to-end requieren OCI disponible y verificado. La aceptación emite detalle de entradas, expected/actual, salida, stderr, estado, duración y hashes en `reports/acceptance-results.json` y `.md`. El benchmark registra percentiles medidos para análisis de 100 y 1.000 líneas en `reports/compiler-performance.json` y `.md`. Consulta `docs/IMPLEMENTATION_STATUS.md` y `docs/TRACEABILITY.md` para el estado observado; los pasos precisos para cerrar las verificaciones externas están en `docs/REMAINING_GATES.md`. Una casilla solo se marca cuando existe evidencia reproducible.
 
 ## Persistencia y privacidad local
 

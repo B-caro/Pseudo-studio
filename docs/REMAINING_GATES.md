@@ -20,7 +20,7 @@ La suite automatizada `frontend/e2e/accessibility.spec.ts` ejecuta axe en las si
 El workflow está definido en `.github/workflows/ci.yml`; `pytest`, build, Playwright, verificación del sandbox, auditorías y 30 casos oficiales se ejecutaron localmente. El checkout no tiene remote Git (`git remote -v` no devuelve entradas), por lo que no existe una ejecución de GitHub Actions observable.
 
 1. Configura el remote del repositorio, por ejemplo `git remote add origin <URL_DEL_REPOSITORIO>`.
-2. Publica el commit `48ced1a` o uno posterior a una rama que active `push`/`pull_request`.
+2. Publica el commit `4aa18fd` o uno posterior a una rama que active `push`/`pull_request`.
 3. Ejecuta `.github/workflows/ci.yml` en el runner remoto y conserva URL/ID del workflow, commit asociado y estado final.
 4. Descarga y revisa el artefacto `pseudo-studio-acceptance`; debe contener los reportes A–E y evidencia de calidad.
 

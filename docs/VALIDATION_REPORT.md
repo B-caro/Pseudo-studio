@@ -1,6 +1,6 @@
 # Informe de validación — Pseudo / Studio
 
-Fecha: 2026-10-10. Código y evidencia de nuevas pruebas en el commit local `48ced1a`. La copia temporal usada para la validación limpia fue `/tmp/pseudo-studio-validation-0o8tswmq/workspace`; se preparó sin `.git`, `.venv`, `node_modules`, `data`, `reports` ni cachés antes del bootstrap. La fuente actual, incluyendo snapshots y matriz de rutas, se sincronizó antes de la suite final.
+Fecha: 2026-10-10. Código de verificación API/runtime y snapshots en el commit local `48ced1a`; navegación de teclado ampliada, matriz de gates y evidencia E2E 6/6 en `4aa18fd`. La copia temporal usada para la validación limpia fue `/tmp/pseudo-studio-validation-0o8tswmq/workspace`; se preparó sin `.git`, `.venv`, `node_modules`, `data`, `reports` ni cachés antes del bootstrap. La fuente actual, incluyendo snapshots y matriz de rutas, se sincronizó antes de la suite final.
 
 ## Resultado ejecutado
 

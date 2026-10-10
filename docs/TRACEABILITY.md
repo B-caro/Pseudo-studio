@@ -65,6 +65,6 @@ Esta matriz refleja pruebas ejecutadas al 2026-10-10. El PDF operativo gobierna 
 
 - RF: 29/29 validados por pruebas reales del backend, runtimes o UI, con referencias individuales arriba.
 - RNF: 10/12 validados; RNF-06 y RNF-10 quedan parciales por revisión manual de accesibilidad y ejecución fuera de WSL2.
-- 202/205 tareas del plan verificadas; sólo P9-17/P12-12 (auditoría manual WCAG) y P11-F6 (CI remota) siguen abiertos en `docs/IMPLEMENTATION_STATUS.md`. El commit de código y nuevas pruebas es `48ced1a`.
+- 202/205 tareas del plan verificadas; sólo P9-17/P12-12 (auditoría manual WCAG) y P11-F6 (CI remota) siguen abiertos en `docs/IMPLEMENTATION_STATUS.md`. El código de verificación está en `48ced1a`; la navegación por teclado y gates reproducibles quedaron en `4aa18fd`.
 - A–E: 30/30 ejecuciones OCI reales; evidencia detallada en `reports/acceptance-results.json` y `reports/clean-install-acceptance-results.json`.
 - No se declara 100% ni se ocultan las verificaciones ambientales no realizadas.
