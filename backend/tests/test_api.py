@@ -378,7 +378,7 @@ def test_websocket_disconnect_kills_container_and_releases_session(tmp_path) -> 
         server_thread.join(timeout=5)
 
 
-def test_interactive_idle_input_expires_and_returns_timeout(client: TestClient) -> None:
+def test_interactive_input_wait_does_not_consume_execution_timeout(client: TestClient) -> None:
     runner = client.app.state.runner
     original_timeout = runner.timeout_seconds
     runner.timeout_seconds = 2.5
@@ -389,11 +389,14 @@ def test_interactive_idle_input_expires_and_returns_timeout(client: TestClient) 
             while True:
                 event = websocket.receive_json()
                 events.append(event)
+                if event["event"] == "input_requested":
+                    time.sleep(2.6)
+                    websocket.send_json({"type": "input", "value": "12"})
                 if event["event"] in {"exited", "error"}:
                     break
         assert any(event["event"] == "input_requested" for event in events)
         assert events[-1]["event"] == "exited"
-        assert (events[-1]["status"], events[-1]["error_code"]) == ("timed_out", "RUN_TIMEOUT")
+        assert (events[-1]["status"], events[-1]["exit_code"]) == ("completed", 0)
     finally:
         runner.timeout_seconds = original_timeout
 

@@ -19,3 +19,4 @@ frontend/playwright-report/
 *.log
 data/
 reports/runs/
+.local-resources/

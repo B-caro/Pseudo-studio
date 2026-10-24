@@ -1,0 +1,57 @@
+{
+  "generated_at": "2026-10-24T07:17:33.197436+00:00",
+  "python": "3.12.3",
+  "platform": "Linux-5.15.153.1-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+  "cpu_count": 12,
+  "targets": [],
+  "measurements": [
+    {
+      "requested_lines": 100,
+      "actual_lines": 100,
+      "source_bytes": 1363,
+      "mode": "valid_compile",
+      "diagnostic_count": 0,
+      "iterations": 30,
+      "p50_ms": 2.758,
+      "p95_ms": 3.475,
+      "min_ms": 2.526,
+      "max_ms": 5.939
+    },
+    {
+      "requested_lines": 100,
+      "actual_lines": 100,
+      "source_bytes": 1079,
+      "mode": "error_recovery",
+      "diagnostic_count": 98,
+      "iterations": 30,
+      "p50_ms": 2.246,
+      "p95_ms": 4.056,
+      "min_ms": 1.569,
+      "max_ms": 5.292
+    },
+    {
+      "requested_lines": 1000,
+      "actual_lines": 1000,
+      "source_bytes": 15759,
+      "mode": "valid_compile",
+      "diagnostic_count": 0,
+      "iterations": 30,
+      "p50_ms": 37.494,
+      "p95_ms": 50.703,
+      "min_ms": 31.441,
+      "max_ms": 57.624
+    },
+    {
+      "requested_lines": 1000,
+      "actual_lines": 1000,
+      "source_bytes": 11877,
+      "mode": "error_recovery",
+      "diagnostic_count": 998,
+      "iterations": 30,
+      "p50_ms": 18.491,
+      "p95_ms": 24.139,
+      "min_ms": 16.837,
+      "max_ms": 25.254
+    }
+  ]
+}

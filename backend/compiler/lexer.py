@@ -70,6 +70,8 @@ class Lexer:
                 self._string()
             elif char.isascii() and char.isdigit():
                 self._number()
+            elif char == "." and self._peek(1).isascii() and self._peek(1).isdigit():
+                self._number()
             elif self._is_identifier_start(char):
                 self._identifier()
             elif self.source[self.offset : self.offset + 2] in DOUBLE_OPERATORS:
@@ -165,14 +167,25 @@ class Lexer:
     def _number(self) -> None:
         start = self._position()
         begin = self.offset
-        while self.offset < self.length and self.source[self.offset].isascii() and self.source[self.offset].isdigit():
-            self._advance()
-        if self._peek() == "." and self._peek(1).isascii() and self._peek(1).isdigit():
+        if self._peek() == ".":
             self._advance()
             while (
                 self.offset < self.length and self.source[self.offset].isascii() and self.source[self.offset].isdigit()
             ):
                 self._advance()
+        else:
+            while (
+                self.offset < self.length and self.source[self.offset].isascii() and self.source[self.offset].isdigit()
+            ):
+                self._advance()
+            if self._peek() == "." and self._peek(1).isascii() and self._peek(1).isdigit():
+                self._advance()
+                while (
+                    self.offset < self.length
+                    and self.source[self.offset].isascii()
+                    and self.source[self.offset].isdigit()
+                ):
+                    self._advance()
         lexeme = self.source[begin : self.offset]
         try:
             value = float(lexeme)

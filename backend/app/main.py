@@ -24,6 +24,7 @@ from backend.test_service.differential import compare_targets
 from backend.test_service.official import official_case_requests, official_data
 from backend.test_service.reporting import report_markdown, report_pdf
 
+from .exports import diagnostics_text
 from .schemas import (
     ExportRequest,
     ProjectCreateRequest,
@@ -55,6 +56,7 @@ class ExportRegistry:
         ".psc": "text/plain; charset=utf-8",
         ".py": "text/x-python; charset=utf-8",
         ".js": "text/javascript; charset=utf-8",
+        ".txt": "text/plain; charset=utf-8",
         ".json": "application/json; charset=utf-8",
         ".md": "text/markdown; charset=utf-8",
         ".pdf": "application/pdf",
@@ -63,10 +65,13 @@ class ExportRegistry:
         "source": ".psc",
         "python": ".py",
         "javascript": ".js",
+        "python-txt": ".txt",
+        "javascript-txt": ".txt",
         "tokens": ".json",
         "ast": ".json",
         "symbols": ".json",
         "diagnostics": ".json",
+        "diagnostics-txt": ".txt",
         "phases": ".json",
         "report-json": ".json",
         "report-markdown": ".md",
@@ -551,19 +556,24 @@ def create_app(*, store: ProjectStore | None = None, runner: OciRunner | None = 
         elif kind == "source":
             content = (payload.source or "").encode("utf-8")
         else:
-            result = compile_source(payload.source or "", targets=(kind,) if kind in {"python", "javascript"} else ())
+            target = {"python-txt": "python", "javascript-txt": "javascript"}.get(kind, kind)
+            result = compile_source(
+                payload.source or "", targets=(target,) if target in {"python", "javascript"} else ()
+            )
             if kind == "tokens":
                 content = json.dumps(result.tokens, ensure_ascii=False, indent=2).encode("utf-8")
             elif kind == "diagnostics":
                 content = json.dumps(
                     [item.to_dict() for item in result.diagnostics], ensure_ascii=False, indent=2
                 ).encode("utf-8")
+            elif kind == "diagnostics-txt":
+                content = diagnostics_text(result).encode("utf-8")
             elif kind == "phases":
                 content = json.dumps(result.phases, ensure_ascii=False, indent=2).encode("utf-8")
             elif not result.translatable:
                 raise _compile_error(result)
-            elif kind in {"python", "javascript"}:
-                content = result.artifacts[kind].source.encode("utf-8")
+            elif kind in {"python", "javascript", "python-txt", "javascript-txt"}:
+                content = result.artifacts[target].source.encode("utf-8")
             elif kind == "ast":
                 content = json.dumps(result.ast, ensure_ascii=False, indent=2).encode("utf-8")
             elif kind == "symbols":
@@ -638,6 +648,8 @@ def create_app(*, store: ProjectStore | None = None, runner: OciRunner | None = 
                     "artifact_hash": artifact.artifact_hash,
                 }
             )
+            active_timeout_deadline = time.monotonic() + app.state.runner.timeout_seconds
+            input_wait_started: float | None = None
 
             async def pump_stdout() -> None:
                 nonlocal output_bytes
@@ -652,14 +664,16 @@ def create_app(*, store: ProjectStore | None = None, runner: OciRunner | None = 
                     await send({"event": "stdout", "data": chunk.decode("utf-8", errors="replace")})
 
             async def pump_stderr() -> None:
-                nonlocal output_bytes
+                nonlocal output_bytes, input_wait_started
                 assert session.process.stderr
                 buffer = bytearray()
 
                 async def handle_line(line: bytes) -> None:
-                    nonlocal output_bytes
+                    nonlocal output_bytes, input_wait_started
                     if line.startswith(b"\x1ePS_INPUT:"):
                         kind = line[len(b"\x1ePS_INPUT:") :].decode("ascii", errors="replace").strip()
+                        if input_wait_started is None:
+                            input_wait_started = time.monotonic()
                         await send({"event": "input_requested", "input_type": kind})
                     else:
                         output_bytes += len(line) + 1
@@ -683,7 +697,7 @@ def create_app(*, store: ProjectStore | None = None, runner: OciRunner | None = 
             stderr_task = asyncio.create_task(pump_stderr())
             receive_task = asyncio.create_task(websocket.receive_json())
             while session.process.returncode is None:
-                if time.monotonic() - session.started > app.state.runner.timeout_seconds:
+                if input_wait_started is None and time.monotonic() > active_timeout_deadline:
                     session.forced_status = ("timed_out", "RUN_TIMEOUT")
                     await asyncio.to_thread(app.state.runner.cancel, session.run_id)
                     break
@@ -696,6 +710,9 @@ def create_app(*, store: ProjectStore | None = None, runner: OciRunner | None = 
                 if message_type == "input" and isinstance(message.get("value"), str):
                     try:
                         await app.state.runner.send_interactive_input(session, message["value"])
+                        if input_wait_started is not None:
+                            active_timeout_deadline += time.monotonic() - input_wait_started
+                            input_wait_started = None
                     except ValueError as error:
                         await send({"event": "error", "code": "RUN_INPUT_INVALID", "message": str(error)})
                     except RuntimeError:

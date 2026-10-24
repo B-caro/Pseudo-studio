@@ -51,6 +51,11 @@ def __ps_write(*values):
     __ps_sys.stdout.write("".join(__ps_format(value) for value in values) + "\n")
     __ps_sys.stdout.flush()
 
+def __ps_check_number(value, line, column):
+    if not __ps_math.isfinite(value):
+        __ps_fail("RUN_NONFINITE", line, column, "La operación produjo un número no finito.")
+    return value
+
 def __ps_safe_int(value, line, column, label):
     if not isinstance(value, (int, float)) or not __ps_math.isfinite(value) or not float(value).is_integer() or abs(value) > 9007199254740991:
         __ps_fail("RUN_INVALID_INTEGER", line, column, label + " debe ser un entero seguro.")
@@ -101,9 +106,9 @@ try:
     __ps_write("Ingrese la cantidad de n\u00fameros a ingresar:")
     __ps_user_v_676c6f62616c006e = __ps_read_number(3, 5)
     __ps_user_v_676c6f62616c006e756d65726f73 = __ps_new_array(__ps_user_v_676c6f62616c006e, 4, 5)
-    __ps_user_v_676c6f62616c0073756d61 = 0
-    __ps_user_v_676c6f62616c006d6178 = 0
-    __ps_tmp_1_start = __ps_safe_int(1, 7, 5, 'Inicio de Para')
+    __ps_user_v_676c6f62616c0073756d61 = 0.0
+    __ps_user_v_676c6f62616c006d6178 = 0.0
+    __ps_tmp_1_start = __ps_safe_int(1.0, 7, 5, 'Inicio de Para')
     __ps_tmp_2_end = __ps_safe_int(__ps_user_v_676c6f62616c006e, 7, 5, 'Hasta de Para')
     __ps_tmp_3_step = 1 if __ps_tmp_1_start <= __ps_tmp_2_end else -1
     if __ps_tmp_3_step == 0:
@@ -112,7 +117,7 @@ try:
     while (__ps_user_v_676c6f62616c0069 <= __ps_tmp_2_end if __ps_tmp_3_step > 0 else __ps_user_v_676c6f62616c0069 >= __ps_tmp_2_end):
         __ps_write("Ingrese el n\u00famero ", __ps_user_v_676c6f62616c0069, ":")
         __ps_set(__ps_user_v_676c6f62616c006e756d65726f73, __ps_user_v_676c6f62616c0069, __ps_read_number(9, 9), 9, 9)
-        __ps_user_v_676c6f62616c0073756d61 = (__ps_user_v_676c6f62616c0073756d61 + __ps_get(__ps_user_v_676c6f62616c006e756d65726f73, __ps_user_v_676c6f62616c0069, 10, 23))
+        __ps_user_v_676c6f62616c0073756d61 = __ps_check_number((__ps_user_v_676c6f62616c0073756d61 + __ps_get(__ps_user_v_676c6f62616c006e756d65726f73, __ps_user_v_676c6f62616c0069, 10, 23)), 10, 16)
         if (__ps_get(__ps_user_v_676c6f62616c006e756d65726f73, __ps_user_v_676c6f62616c0069, 11, 12) > __ps_user_v_676c6f62616c006d6178):
             __ps_user_v_676c6f62616c006d6178 = __ps_get(__ps_user_v_676c6f62616c006e756d65726f73, __ps_user_v_676c6f62616c0069, 12, 19)
         __ps_user_v_676c6f62616c0069 += __ps_tmp_3_step

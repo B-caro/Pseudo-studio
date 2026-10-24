@@ -72,6 +72,22 @@ class LanguageConformanceTests(unittest.TestCase):
         self.assertTrue(result.diagnostics)
         self.assertLessEqual(len(result.diagnostics), 2000)
 
+    def test_multiple_nested_errors_recover_and_keep_hints_with_exact_spans(self) -> None:
+        source = "Inicio\nSi Verdadero Entonces\nEscribir @\nSino\nx =\nFinSi\nFin\n"
+        result = compile_source(source)
+        self.assertFalse(result.translatable)
+        self.assertEqual(result.artifacts, {})
+        self.assertIn("LEX_INVALID_CHAR", [item.code for item in result.diagnostics])
+        syntax_errors = [item for item in result.diagnostics if item.stage == "syntax"]
+        self.assertEqual([item.span.start_line for item in syntax_errors], [3, 5])
+        self.assertTrue(all(item.hint for item in result.diagnostics))
+
+    def test_python_spans_remain_codepoint_offsets_after_non_bmp_unicode(self) -> None:
+        source = 'Inicio\nEscribir "😀"\nEscribir falta\nFin\n'
+        result = compile_source(source, targets=())
+        diagnostic = next(item for item in result.diagnostics if item.code == "SEM_UNDEFINED_IDENTIFIER")
+        self.assertEqual(source[diagnostic.span.start : diagnostic.span.end], "falta")
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,14 +1,14 @@
 # Verificaciones pendientes para cierre total
 
-El producto y las suites locales están implementados. La auditoría WCAG manual y la cobertura de otras plataformas aún requieren evidencia específica. El usuario dispensó la ejecución CI remota; esa casilla se deja sin verificar y fuera de los gates de entrega.
+**Estado revalidado 2026-10-24:** suite backend 94 tests + 91 subtests, Playwright 10/10 y A–E 30/30 pasan; el runner OCI funciona dentro de la VM Docker Desktop y los casos extendidos pasan 54/54. La auditoría WCAG manual y la cobertura de otras plataformas aún requieren evidencia específica. El usuario dispensó la ejecución CI remota; esa casilla se deja sin verificar y fuera de los gates de entrega.
 
 ## P9-17 y P12-12 — Auditoría manual WCAG 2.2 AA
 
-La suite automatizada `frontend/e2e/accessibility.spec.ts` ejecuta axe en las siete secciones, comprueba navegación por teclado y termina sin violaciones. Falta una sesión manual con tecnología de asistencia.
+La suite automatizada `frontend/e2e/accessibility.spec.ts` ejecuta axe en las ocho secciones, comprueba navegación por teclado y termina sin violaciones. Falta una sesión manual con tecnología de asistencia.
 
 1. Inicia la app con `python3.12 scripts/manage.py start` y abre `http://127.0.0.1:5173`.
 2. Registra navegador, sistema operativo y lector de pantalla usados.
-3. Recorre Editor, Traducción, Consola, Pruebas, Proyectos, Defensa y Ayuda solo con teclado y lector de pantalla.
+3. Recorre Editor, Traducción, Consola, Pruebas, Proyectos, Defensa, Ayuda y Equivalencias solo con teclado y lector de pantalla.
 4. Comprueba nombres/roles/estados anunciados, orden y visibilidad del foco, mensajes de error y cambios de estado, y que los estados no dependan únicamente del color.
 5. Mide contraste en texto, controles, estados y foco; adjunta resultados, hallazgos y evidencia visual. Repite los flujos clave en viewport móvil.
 6. Corrige todo hallazgo que incumpla WCAG 2.2 AA y repite Playwright axe y la sesión manual antes de marcar ambas tareas.
@@ -44,5 +44,9 @@ Registra sistema, versión de Docker/rootless engine, salida de `verify` y resul
 El script completo ya se ejecutó sobre `5bce0a1` desde un clon local limpio: 76 tests + 22 subtests, Playwright 6/6, A–E 30/30, smoke y backup correctos, auditorías sin vulnerabilidades y exit 0 en sus 30 etapas. Los hashes y resultados están en `reports/wsl-validation-summary.json`. Se verificó Docker Desktop VM; esta corrida no añade evidencia de Linux rootless, macOS, CI remota ni lector de pantalla manual.
 
 El workspace principal también quedó iniciado para la auditoría: API `ready` y frontend HTTP 200 en los puertos locales 8000/5173; smoke Python/Node exit 0. Detalle: `reports/wsl-workspace-smoke.json`.
+
+### Informe académico y entrega institucional
+
+Los informes técnicos de Fases 2 y 3, el guion de defensa y el paquete con hashes están preparados. No se pudo certificar la paginación de `docs/Informe_Investigacion_Pseudo_Studio.docx` ni generar/revisar un PDF final porque no hay Word/LibreOffice en este entorno. Completar nombres/carnés reales del equipo y revisar los campos del índice en Word/LibreOffice; después presentar y defender en Aula Digital. No inventar los datos faltantes ni tratar esta lista como trabajo ya ejecutado.
 
 Se comprobó este entorno a petición del usuario: Ubuntu 24.04.1 LTS sobre WSL2, kernel `5.15.153.1-microsoft-standard-WSL2`, systemd activo, usuario `bucaro` con rangos `/etc/subuid` y `/etc/subgid` (100000:65536). `python3.12 scripts/manage.py bootstrap` terminó con exit 1: instaló/validó Python y Node, `npm ci` reportó cero vulnerabilidades y Playwright instaló Chromium, pero el pull de la imagen Python falló porque Docker no está disponible en esta distro. `python3.12 scripts/manage.py verify` terminó con exit 1: `El engine OCI no responde`; `available: false`, `engine_ready: false`, sin frontera de aislamiento ni seccomp. `python3.12 scripts/manage.py smoke` terminó con exit 1 por conexión rechazada a la API, que no estaba iniciada. `.venv/bin/pytest -q` terminó con exit 1: **47 passed, 10 subtests passed, 15 failed, 14 errors**; los errores de integración y fallos de API/runtime reportan el mismo engine OCI no disponible. La integración WSL de Docker Desktop no está activada/disponible en esta distro; el cliente informa “Docker could not be found in this WSL 2 distro”. Tampoco están instalados `dockerd-rootless.sh`, `rootlesskit`, `newuidmap`, `newgidmap` ni `slirp4netns`. El kernel WSL no expone `/sys/module/apparmor`; Docker Desktop con VM y Docker rootless no se pudieron verificar aquí. `sudo -n true` falla (no hay sudo no interactivo), por lo que no se instalaron paquetes ni se modificó el sistema. Para continuar en este WSL: activar la integración de esta distro en Docker Desktop o instalar/configurar Docker Engine rootless con los paquetes `uidmap`, `dbus-user-session` y `slirp4netns`, y volver a ejecutar los cuatro comandos. Esta comprobación no cierra RNF-10.

@@ -9,7 +9,7 @@ import { tags } from "@lezer/highlight";
 const keywords = new Set([
   "inicio", "fin", "leer", "leertexto", "escribir", "si", "entonces", "sino", "finsi",
   "para", "hasta", "paso", "hacer", "finpara", "mientras", "finmientras", "dimension",
-  "funcion", "finfuncion", "retornar", "verdadero", "falso", "y", "o", "no",
+  "funcion", "finfuncion", "retornar", "verdadero", "falso", "y", "o", "no", "modulo",
 ]);
 
 const pseudoLanguage = StreamLanguage.define({

@@ -51,6 +51,11 @@ def __ps_write(*values):
     __ps_sys.stdout.write("".join(__ps_format(value) for value in values) + "\n")
     __ps_sys.stdout.flush()
 
+def __ps_check_number(value, line, column):
+    if not __ps_math.isfinite(value):
+        __ps_fail("RUN_NONFINITE", line, column, "La operación produjo un número no finito.")
+    return value
+
 def __ps_safe_int(value, line, column, label):
     if not isinstance(value, (int, float)) or not __ps_math.isfinite(value) or not float(value).is_integer() or abs(value) > 9007199254740991:
         __ps_fail("RUN_INVALID_INTEGER", line, column, label + " debe ser un entero seguro.")
@@ -104,7 +109,7 @@ try:
     __ps_user_v_676c6f62616c0062 = __ps_read_number(5, 5)
     __ps_write("Ingrese el tercer n\u00famero:")
     __ps_user_v_676c6f62616c0063 = __ps_read_number(7, 5)
-    __ps_user_v_676c6f62616c00726573756c7461646f = (((__ps_user_v_676c6f62616c0061 + __ps_user_v_676c6f62616c0062) * __ps_user_v_676c6f62616c0063) - __ps_div(__ps_user_v_676c6f62616c0061, __ps_user_v_676c6f62616c0062, 8, 34))
+    __ps_user_v_676c6f62616c00726573756c7461646f = __ps_check_number((__ps_check_number((__ps_check_number((__ps_user_v_676c6f62616c0061 + __ps_user_v_676c6f62616c0062), 8, 19) * __ps_user_v_676c6f62616c0063), 8, 19) - __ps_div(__ps_user_v_676c6f62616c0061, __ps_user_v_676c6f62616c0062, 8, 34)), 8, 19)
     __ps_write("El resultado es: ", __ps_user_v_676c6f62616c00726573756c7461646f)
 except __ps_Fault as __ps_error:
     __ps_runtime_error(__ps_error)

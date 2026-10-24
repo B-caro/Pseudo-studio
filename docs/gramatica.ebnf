@@ -1,5 +1,6 @@
 (* Pseudo / Studio EBNF v2 — fuente normativa conforme a la sección 4.2. *)
-(* NL conserva cada fin de línea no vacío; los comentarios // llegan al fin de línea. *)
+(* NL representa los finales de línea; // inicia un comentario hasta CR o LF. *)
+(* No hay declaración de tipo: se infiere number, string o boolean desde el uso. *)
 
 programa        = "Inicio", NL+, { elemento }, "Fin", [ NL+ ] ;
 elemento        = sentencia | funcion ;
@@ -38,9 +39,22 @@ referencia      = IDENT, [ "[", expresion, "]" ] ;
 llamada         = IDENT, "(", [ argumentos ], ")" ;
 argumentos      = expresion, { ",", expresion } ;
 
-(* Convenciones terminales: *)
-(* IDENT = letra Unicode o _, seguida de letras, marcas combinantes, dígitos o _; NFC. *)
-(* NUM = dígitos decimales ASCII, opcionalmente " . " seguido de uno o más dígitos. *)
-(* STRING = comillas dobles; escapes permitidos: \\, \", \n, \t. *)
-(* Las keywords no distinguen mayúsculas; los identificadores sí. *)
+(* Reglas léxicas concretas del lexer implementado: *)
+(* DIGITO = uno de "0"..."9"; solo se aceptan dígitos ASCII en literales numéricos. *)
+(* ENTERO = DIGITO, { DIGITO }. *)
+(* DECIMAL = DIGITO, { DIGITO }, ".", DIGITO, { DIGITO } *)
+(*         | ".", DIGITO, { DIGITO }. *)
+(* NUM = ENTERO | DECIMAL; no admite coma decimal ni exponente. El signo usa unaria. *)
+(* IDENT inicia con letra Unicode (categoría L) o "_"; continúa con L, marcas M, *)
+(*       números Unicode N o "_". Los identificadores se normalizan a Unicode NFC. *)
+(* STRING abre y cierra con U+0022; no admite saltos de línea literales. *)
+(*       U+005C escapa U+005C, U+0022, "n" (LF) o "t" (tabulación). *)
+(* COMENTARIO inicia con "//" y consume hasta CR/LF; no produce token. *)
+(* Las palabras reservadas se comparan sin distinguir mayúsculas; IDENT sí distingue. *)
 (* NL+ puede omitir líneas vacías y líneas de comentario puro. Fin puede llegar a EOF. *)
+
+(* Categorías semánticas: number (ENTERO y DECIMAL), string (STRING), boolean *)
+(* (Verdadero/Falso); los arreglos son contenedores con tipo de elemento inferido. *)
+(* ENTERO y DECIMAL son formas léxicas, no tipos numéricos estáticos separados: *)
+(* ambos pertenecen a number IEEE-754 finito. Dimension e índices requieren *)
+(* un entero seguro; Leer lee number y LeerTexto lee string. *)

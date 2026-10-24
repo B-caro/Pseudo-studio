@@ -1,0 +1,109 @@
+{
+  "authority": "Pseudo / Studio implemented grammar v2; independent regression examples, not replacements for Phase 1 A-E.",
+  "valid_programs": [
+    {
+      "id": "X01-recursion-forward-call",
+      "source": "recursive_functions.psc",
+      "cases": [
+        {"id": "factorial-6", "inputs": ["factorial", "6"], "expected_stdout": "Factorial de 6 = 720\n"},
+        {"id": "factorial-base-0", "inputs": ["factorial", "0"], "expected_stdout": "Factorial de 0 = 1\n"},
+        {"id": "guard-rejects-mode", "inputs": ["otro", "4"], "expected_stdout": "Entrada no válida\n"}
+      ]
+    },
+    {
+      "id": "X02-arrays-and-loops",
+      "source": "arrays_and_loops.psc",
+      "cases": [
+        {"id": "positive-even-count", "inputs": ["4", "-4", "4", "-2", "10"], "expected_stdout": "Promedio=2\nMayor=10\nPares positivos=2\n"},
+        {"id": "negative-fractional-average", "inputs": ["3", "-8", "-3", "-2"], "expected_stdout": "Promedio=-4.33333333333333\nMayor=-2\nPares positivos=0\n"}
+      ]
+    },
+    {
+      "id": "X02-step-direction-inclusive-loop",
+      "source": "automatic_for_direction.psc",
+      "cases": [
+        {"id": "auto-descending-inclusive", "inputs": ["5", "1"], "expected_stdout": "Suma inclusiva=15\n"},
+        {"id": "auto-ascending-inclusive", "inputs": ["1", "5"], "expected_stdout": "Suma inclusiva=15\n"},
+        {"id": "auto-single-iteration", "inputs": ["3", "3"], "expected_stdout": "Suma inclusiva=3\n"}
+      ]
+    },
+    {
+      "id": "X03-unicode-nested-logic",
+      "source": "unicode_nested_logic.psc",
+      "cases": [
+        {"id": "unicode-and-precedence", "inputs": ["área", "3"], "expected_stdout": "Etiqueta: área / suma: 17\n"},
+        {"id": "nested-loop-else-path", "inputs": ["otro", "2"], "expected_stdout": "Etiqueta: otro / suma: 10\n"}
+      ]
+    },
+    {
+      "id": "X04-strings-functions-scopes",
+      "source": "strings_and_scope.psc",
+      "cases": [
+        {"id": "string-and-even-result", "inputs": ["Ada", "5"], "expected_stdout": "Hola, Ada\nMitad=7\n"},
+        {"id": "empty-string-and-odd-result", "inputs": ["", "4"], "expected_stdout": "Hola, invitado\nResultado=11\n"}
+      ]
+    },
+    {
+      "id": "X05-sort-search-array-function",
+      "source": "search_sort.psc",
+      "cases": [
+        {"id": "sort-and-find-final-value", "inputs": ["5", "4", "1", "3", "5", "2", "5"], "expected_stdout": "Ordenados:\n1\n2\n3\n4\n5\nPosición=5\n"},
+        {"id": "sort-duplicates-and-missing-value", "inputs": ["4", "-1", "7", "0", "7", "3"], "expected_stdout": "Ordenados:\n-1\n0\n7\n7\nPosición=0\n"}
+      ]
+    }
+  ],
+  "invalid_programs": [
+    {
+      "id": "N01-missing-terminator",
+      "source": "invalid/missing_terminator.psc",
+      "expected_diagnostics": [
+        {"code": "SYN_UNEXPECTED_TOKEN", "stage": "syntax", "line": 4, "column": 1},
+        {"code": "SYN_UNEXPECTED_TOKEN", "stage": "syntax", "line": 5, "column": 1}
+      ]
+    },
+    {
+      "id": "N02-undefined-identifier",
+      "source": "invalid/undefined_identifier.psc",
+      "expected_diagnostics": [
+        {"code": "SEM_UNDEFINED_IDENTIFIER", "stage": "semantic", "line": 2, "column": 10}
+      ]
+    },
+    {
+      "id": "N03-invalid-condition-type",
+      "source": "invalid/invalid_condition_type.psc",
+      "expected_diagnostics": [
+        {"code": "SEM_TYPE_MISMATCH", "stage": "semantic", "line": 2, "column": 4}
+      ]
+    },
+    {
+      "id": "N04-constant-division-by-zero",
+      "source": "invalid/constant_division_by_zero.psc",
+      "expected_diagnostics": [
+        {"code": "SEM_DIV_ZERO", "stage": "semantic", "line": 2, "column": 18}
+      ]
+    },
+    {
+      "id": "N05-uninitialized-branch-variable",
+      "source": "invalid/uninitialized_branch_variable.psc",
+      "expected_diagnostics": [
+        {"code": "SEM_UNINITIALIZED", "stage": "semantic", "line": 5, "column": 10}
+      ]
+    },
+    {
+      "id": "N06-string-function-wrong-argument-type",
+      "source": "invalid/string_function_wrong_argument.psc",
+      "expected_diagnostics": [
+        {"code": "SEM_TYPE_MISMATCH", "stage": "semantic", "line": 3, "column": 10}
+      ]
+    }
+  ],
+  "runtime_error_programs": [
+    {"id": "R01-division-by-zero", "source": "runtime-errors/division_by_zero.psc", "inputs": ["0"], "error_code": "RUN_DIV_ZERO", "error_line": 3},
+    {"id": "R02-array-bounds", "source": "runtime-errors/array_bounds.psc", "inputs": ["3"], "error_code": "RUN_BOUNDS", "error_line": 4},
+    {"id": "R03-uninitialized-array-value", "source": "runtime-errors/uninitialized_array_value.psc", "inputs": [], "error_code": "RUN_UNINITIALIZED", "error_line": 3},
+    {"id": "R04-zero-dynamic-dimension", "source": "runtime-errors/invalid_dimension.psc", "inputs": ["0"], "error_code": "RUN_INVALID_DIMENSION", "error_line": 3},
+    {"id": "R06-negative-dynamic-dimension", "source": "runtime-errors/invalid_dimension.psc", "inputs": ["-1"], "error_code": "RUN_INVALID_DIMENSION", "error_line": 3},
+    {"id": "R05-invalid-numeric-input", "source": "runtime-errors/invalid_numeric_input.psc", "inputs": ["abc"], "error_code": "RUN_INPUT_INVALID", "error_line": 2},
+    {"id": "R07-nonfinite-operation", "source": "runtime-errors/nonfinite_operation.psc", "inputs": [], "error_code": "RUN_NONFINITE", "error_line": 3}
+  ]
+}

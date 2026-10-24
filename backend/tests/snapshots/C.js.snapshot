@@ -47,6 +47,10 @@ function __ps_format(value) {
   return String(value);
 }
 function __ps_write(...values) { __ps_process.stdout.write(values.map(__ps_format).join("") + "\n"); }
+function __ps_check_number(value, line, column) {
+  if (!Number.isFinite(value)) __ps_fail("RUN_NONFINITE", line, column, "La operación produjo un número no finito.");
+  return value;
+}
 function __ps_safe_int(value, line, column, label) {
   if (!Number.isSafeInteger(value)) __ps_fail("RUN_INVALID_INTEGER", line, column, label + " debe ser un entero seguro.");
   return value;
@@ -95,8 +99,8 @@ try {
     if (__ps_tmp_3_step === 0) __ps_fail('RUN_INVALID_STEP', 6, 5, 'Paso no puede ser cero.');
     __ps_user_v_676c6f62616c0069 = __ps_tmp_1_start;
     while (__ps_tmp_3_step > 0 ? __ps_user_v_676c6f62616c0069 <= __ps_tmp_2_end : __ps_user_v_676c6f62616c0069 >= __ps_tmp_2_end) {
-        __ps_user_v_676c6f62616c00666163746f7269616c = (__ps_user_v_676c6f62616c00666163746f7269616c * __ps_user_v_676c6f62616c0069);
-        __ps_user_v_676c6f62616c0073756d61 = (__ps_user_v_676c6f62616c0073756d61 + (__ps_user_v_676c6f62616c0069 * 2));
+        __ps_user_v_676c6f62616c00666163746f7269616c = __ps_check_number((__ps_user_v_676c6f62616c00666163746f7269616c * __ps_user_v_676c6f62616c0069), 7, 21);
+        __ps_user_v_676c6f62616c0073756d61 = __ps_check_number((__ps_user_v_676c6f62616c0073756d61 + __ps_check_number((__ps_user_v_676c6f62616c0069 * 2), 8, 24)), 8, 16);
         __ps_user_v_676c6f62616c0069 += __ps_tmp_3_step;
     }
     __ps_write("El factorial es: ", __ps_user_v_676c6f62616c00666163746f7269616c);

@@ -1,0 +1,705 @@
+{
+  "generated_at": "2026-10-24T07:28:34.337374+00:00",
+  "sandbox": {
+    "available": true,
+    "status": {
+      "available": true,
+      "engine": "docker",
+      "engine_ready": true,
+      "isolation_boundary": "docker-desktop-vm",
+      "seccomp": true,
+      "images": {
+        "python": true,
+        "javascript": true
+      },
+      "runtimes": {
+        "python": "3.12.14",
+        "javascript": "v22.22.2"
+      },
+      "quotas": {
+        "timeout_seconds": 5.0,
+        "output_bytes": 1048576,
+        "concurrent_runs": 4,
+        "memory_mb": 256,
+        "cpu_limit": 1.0,
+        "pids_limit": 64
+      },
+      "reasons": []
+    },
+    "checks": {
+      "python": {
+        "passed": true,
+        "runtime_version": "3.12.14",
+        "non_root_uid": true,
+        "no_new_privileges": true,
+        "seccomp_filter": true,
+        "zero_capabilities": true,
+        "exit_code": 0,
+        "stderr": ""
+      },
+      "javascript": {
+        "passed": true,
+        "runtime_version": "v22.22.2",
+        "non_root_uid": true,
+        "no_new_privileges": true,
+        "seccomp_filter": true,
+        "zero_capabilities": true,
+        "exit_code": 0,
+        "stderr": ""
+      }
+    }
+  },
+  "total": 30,
+  "passed": 30,
+  "failed": 0,
+  "runs": [
+    {
+      "case_id": "A-1",
+      "program": "A",
+      "target": "python",
+      "inputs": [
+        "4",
+        "2",
+        "3"
+      ],
+      "expected_stdout": "Ingrese el primer número:\nIngrese el segundo número:\nIngrese el tercer número:\nEl resultado es: 16\n",
+      "actual_stdout": "Ingrese el primer número:\nIngrese el segundo número:\nIngrese el tercer número:\nEl resultado es: 16\n",
+      "stderr": "",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 660.4578030000994,
+      "source_hash": "3a5da713368c50624f98f523bc6d0cbb61fcabcb5ae9f4b8cc18d8f418d6d084",
+      "artifact_hash": "9422a499f214a5155204314e0abeec174166a1f2f40039f71649a482be03c15d",
+      "compiler_version": "0.1.0",
+      "runtime_version": "3.12.14",
+      "error_code": null,
+      "passed": true
+    },
+    {
+      "case_id": "A-1",
+      "program": "A",
+      "target": "javascript",
+      "inputs": [
+        "4",
+        "2",
+        "3"
+      ],
+      "expected_stdout": "Ingrese el primer número:\nIngrese el segundo número:\nIngrese el tercer número:\nEl resultado es: 16\n",
+      "actual_stdout": "Ingrese el primer número:\nIngrese el segundo número:\nIngrese el tercer número:\nEl resultado es: 16\n",
+      "stderr": "",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 567.2948040000847,
+      "source_hash": "3a5da713368c50624f98f523bc6d0cbb61fcabcb5ae9f4b8cc18d8f418d6d084",
+      "artifact_hash": "fc1fec952d6cb76cf8b8c2d1a0dcb47c0f509498aca3eef10db3cc47c59e200e",
+      "compiler_version": "0.1.0",
+      "runtime_version": "v22.22.2",
+      "error_code": null,
+      "passed": true
+    },
+    {
+      "case_id": "A-2",
+      "program": "A",
+      "target": "python",
+      "inputs": [
+        "10",
+        "5",
+        "2"
+      ],
+      "expected_stdout": "Ingrese el primer número:\nIngrese el segundo número:\nIngrese el tercer número:\nEl resultado es: 28\n",
+      "actual_stdout": "Ingrese el primer número:\nIngrese el segundo número:\nIngrese el tercer número:\nEl resultado es: 28\n",
+      "stderr": "",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 639.1665569999532,
+      "source_hash": "3a5da713368c50624f98f523bc6d0cbb61fcabcb5ae9f4b8cc18d8f418d6d084",
+      "artifact_hash": "9422a499f214a5155204314e0abeec174166a1f2f40039f71649a482be03c15d",
+      "compiler_version": "0.1.0",
+      "runtime_version": "3.12.14",
+      "error_code": null,
+      "passed": true
+    },
+    {
+      "case_id": "A-2",
+      "program": "A",
+      "target": "javascript",
+      "inputs": [
+        "10",
+        "5",
+        "2"
+      ],
+      "expected_stdout": "Ingrese el primer número:\nIngrese el segundo número:\nIngrese el tercer número:\nEl resultado es: 28\n",
+      "actual_stdout": "Ingrese el primer número:\nIngrese el segundo número:\nIngrese el tercer número:\nEl resultado es: 28\n",
+      "stderr": "",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 561.651317999349,
+      "source_hash": "3a5da713368c50624f98f523bc6d0cbb61fcabcb5ae9f4b8cc18d8f418d6d084",
+      "artifact_hash": "fc1fec952d6cb76cf8b8c2d1a0dcb47c0f509498aca3eef10db3cc47c59e200e",
+      "compiler_version": "0.1.0",
+      "runtime_version": "v22.22.2",
+      "error_code": null,
+      "passed": true
+    },
+    {
+      "case_id": "A-3",
+      "program": "A",
+      "target": "python",
+      "inputs": [
+        "6",
+        "3",
+        "4"
+      ],
+      "expected_stdout": "Ingrese el primer número:\nIngrese el segundo número:\nIngrese el tercer número:\nEl resultado es: 34\n",
+      "actual_stdout": "Ingrese el primer número:\nIngrese el segundo número:\nIngrese el tercer número:\nEl resultado es: 34\n",
+      "stderr": "",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 603.6001000002216,
+      "source_hash": "3a5da713368c50624f98f523bc6d0cbb61fcabcb5ae9f4b8cc18d8f418d6d084",
+      "artifact_hash": "9422a499f214a5155204314e0abeec174166a1f2f40039f71649a482be03c15d",
+      "compiler_version": "0.1.0",
+      "runtime_version": "3.12.14",
+      "error_code": null,
+      "passed": true
+    },
+    {
+      "case_id": "A-3",
+      "program": "A",
+      "target": "javascript",
+      "inputs": [
+        "6",
+        "3",
+        "4"
+      ],
+      "expected_stdout": "Ingrese el primer número:\nIngrese el segundo número:\nIngrese el tercer número:\nEl resultado es: 34\n",
+      "actual_stdout": "Ingrese el primer número:\nIngrese el segundo número:\nIngrese el tercer número:\nEl resultado es: 34\n",
+      "stderr": "",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 682.6707569998689,
+      "source_hash": "3a5da713368c50624f98f523bc6d0cbb61fcabcb5ae9f4b8cc18d8f418d6d084",
+      "artifact_hash": "fc1fec952d6cb76cf8b8c2d1a0dcb47c0f509498aca3eef10db3cc47c59e200e",
+      "compiler_version": "0.1.0",
+      "runtime_version": "v22.22.2",
+      "error_code": null,
+      "passed": true
+    },
+    {
+      "case_id": "B-1",
+      "program": "B",
+      "target": "python",
+      "inputs": [
+        "8",
+        "80"
+      ],
+      "expected_stdout": "Ingrese su nota final:\nIngrese su porcentaje de asistencia:\nAprobado\n",
+      "actual_stdout": "Ingrese su nota final:\nIngrese su porcentaje de asistencia:\nAprobado\n",
+      "stderr": "",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 649.1154770001231,
+      "source_hash": "f0a248d1e25a16c5a97e64007408b4c22d379592e6d571519feb70cb63b20a03",
+      "artifact_hash": "f551a1dad6acb71310c8afdb779d7ed45127610736463a51196bbdae0943992b",
+      "compiler_version": "0.1.0",
+      "runtime_version": "3.12.14",
+      "error_code": null,
+      "passed": true
+    },
+    {
+      "case_id": "B-1",
+      "program": "B",
+      "target": "javascript",
+      "inputs": [
+        "8",
+        "80"
+      ],
+      "expected_stdout": "Ingrese su nota final:\nIngrese su porcentaje de asistencia:\nAprobado\n",
+      "actual_stdout": "Ingrese su nota final:\nIngrese su porcentaje de asistencia:\nAprobado\n",
+      "stderr": "",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 656.3517989998218,
+      "source_hash": "f0a248d1e25a16c5a97e64007408b4c22d379592e6d571519feb70cb63b20a03",
+      "artifact_hash": "5a9e4af6457cbe7e23ba5d06ca7ac4e32d1d4860c047a93ca3c34d80b2191ec3",
+      "compiler_version": "0.1.0",
+      "runtime_version": "v22.22.2",
+      "error_code": null,
+      "passed": true
+    },
+    {
+      "case_id": "B-2",
+      "program": "B",
+      "target": "python",
+      "inputs": [
+        "7",
+        "60"
+      ],
+      "expected_stdout": "Ingrese su nota final:\nIngrese su porcentaje de asistencia:\nReprobado por asistencia\n",
+      "actual_stdout": "Ingrese su nota final:\nIngrese su porcentaje de asistencia:\nReprobado por asistencia\n",
+      "stderr": "",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 642.6556629994593,
+      "source_hash": "f0a248d1e25a16c5a97e64007408b4c22d379592e6d571519feb70cb63b20a03",
+      "artifact_hash": "f551a1dad6acb71310c8afdb779d7ed45127610736463a51196bbdae0943992b",
+      "compiler_version": "0.1.0",
+      "runtime_version": "3.12.14",
+      "error_code": null,
+      "passed": true
+    },
+    {
+      "case_id": "B-2",
+      "program": "B",
+      "target": "javascript",
+      "inputs": [
+        "7",
+        "60"
+      ],
+      "expected_stdout": "Ingrese su nota final:\nIngrese su porcentaje de asistencia:\nReprobado por asistencia\n",
+      "actual_stdout": "Ingrese su nota final:\nIngrese su porcentaje de asistencia:\nReprobado por asistencia\n",
+      "stderr": "",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 752.3451220004063,
+      "source_hash": "f0a248d1e25a16c5a97e64007408b4c22d379592e6d571519feb70cb63b20a03",
+      "artifact_hash": "5a9e4af6457cbe7e23ba5d06ca7ac4e32d1d4860c047a93ca3c34d80b2191ec3",
+      "compiler_version": "0.1.0",
+      "runtime_version": "v22.22.2",
+      "error_code": null,
+      "passed": true
+    },
+    {
+      "case_id": "B-3",
+      "program": "B",
+      "target": "python",
+      "inputs": [
+        "4",
+        "90"
+      ],
+      "expected_stdout": "Ingrese su nota final:\nIngrese su porcentaje de asistencia:\nReprobado por nota\n",
+      "actual_stdout": "Ingrese su nota final:\nIngrese su porcentaje de asistencia:\nReprobado por nota\n",
+      "stderr": "",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 651.6232730000411,
+      "source_hash": "f0a248d1e25a16c5a97e64007408b4c22d379592e6d571519feb70cb63b20a03",
+      "artifact_hash": "f551a1dad6acb71310c8afdb779d7ed45127610736463a51196bbdae0943992b",
+      "compiler_version": "0.1.0",
+      "runtime_version": "3.12.14",
+      "error_code": null,
+      "passed": true
+    },
+    {
+      "case_id": "B-3",
+      "program": "B",
+      "target": "javascript",
+      "inputs": [
+        "4",
+        "90"
+      ],
+      "expected_stdout": "Ingrese su nota final:\nIngrese su porcentaje de asistencia:\nReprobado por nota\n",
+      "actual_stdout": "Ingrese su nota final:\nIngrese su porcentaje de asistencia:\nReprobado por nota\n",
+      "stderr": "",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 599.2166440000801,
+      "source_hash": "f0a248d1e25a16c5a97e64007408b4c22d379592e6d571519feb70cb63b20a03",
+      "artifact_hash": "5a9e4af6457cbe7e23ba5d06ca7ac4e32d1d4860c047a93ca3c34d80b2191ec3",
+      "compiler_version": "0.1.0",
+      "runtime_version": "v22.22.2",
+      "error_code": null,
+      "passed": true
+    },
+    {
+      "case_id": "C-1",
+      "program": "C",
+      "target": "python",
+      "inputs": [
+        "4"
+      ],
+      "expected_stdout": "Ingrese un número entero positivo:\nEl factorial es: 24\nLa suma es: 20\n",
+      "actual_stdout": "Ingrese un número entero positivo:\nEl factorial es: 24\nLa suma es: 20\n",
+      "stderr": "",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 669.7247150004841,
+      "source_hash": "4b7639347382c12f603fdea2a21d024b6191e08adb47dcf5e60c8bfbaef4a627",
+      "artifact_hash": "a2dd3afc734a22b78a6a34f1b37c916ff8e09bdc911d95824e86c9911b2a5a2a",
+      "compiler_version": "0.1.0",
+      "runtime_version": "3.12.14",
+      "error_code": null,
+      "passed": true
+    },
+    {
+      "case_id": "C-1",
+      "program": "C",
+      "target": "javascript",
+      "inputs": [
+        "4"
+      ],
+      "expected_stdout": "Ingrese un número entero positivo:\nEl factorial es: 24\nLa suma es: 20\n",
+      "actual_stdout": "Ingrese un número entero positivo:\nEl factorial es: 24\nLa suma es: 20\n",
+      "stderr": "",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 560.1683939994473,
+      "source_hash": "4b7639347382c12f603fdea2a21d024b6191e08adb47dcf5e60c8bfbaef4a627",
+      "artifact_hash": "17398f6bc4c347171172431a3ff02d34b2cb213828d51e655c371c8e2c8594ab",
+      "compiler_version": "0.1.0",
+      "runtime_version": "v22.22.2",
+      "error_code": null,
+      "passed": true
+    },
+    {
+      "case_id": "C-2",
+      "program": "C",
+      "target": "python",
+      "inputs": [
+        "5"
+      ],
+      "expected_stdout": "Ingrese un número entero positivo:\nEl factorial es: 120\nLa suma es: 30\n",
+      "actual_stdout": "Ingrese un número entero positivo:\nEl factorial es: 120\nLa suma es: 30\n",
+      "stderr": "",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 677.0655589998569,
+      "source_hash": "4b7639347382c12f603fdea2a21d024b6191e08adb47dcf5e60c8bfbaef4a627",
+      "artifact_hash": "a2dd3afc734a22b78a6a34f1b37c916ff8e09bdc911d95824e86c9911b2a5a2a",
+      "compiler_version": "0.1.0",
+      "runtime_version": "3.12.14",
+      "error_code": null,
+      "passed": true
+    },
+    {
+      "case_id": "C-2",
+      "program": "C",
+      "target": "javascript",
+      "inputs": [
+        "5"
+      ],
+      "expected_stdout": "Ingrese un número entero positivo:\nEl factorial es: 120\nLa suma es: 30\n",
+      "actual_stdout": "Ingrese un número entero positivo:\nEl factorial es: 120\nLa suma es: 30\n",
+      "stderr": "",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 575.957611999911,
+      "source_hash": "4b7639347382c12f603fdea2a21d024b6191e08adb47dcf5e60c8bfbaef4a627",
+      "artifact_hash": "17398f6bc4c347171172431a3ff02d34b2cb213828d51e655c371c8e2c8594ab",
+      "compiler_version": "0.1.0",
+      "runtime_version": "v22.22.2",
+      "error_code": null,
+      "passed": true
+    },
+    {
+      "case_id": "C-3",
+      "program": "C",
+      "target": "python",
+      "inputs": [
+        "1"
+      ],
+      "expected_stdout": "Ingrese un número entero positivo:\nEl factorial es: 1\nLa suma es: 2\n",
+      "actual_stdout": "Ingrese un número entero positivo:\nEl factorial es: 1\nLa suma es: 2\n",
+      "stderr": "",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 646.8878429996039,
+      "source_hash": "4b7639347382c12f603fdea2a21d024b6191e08adb47dcf5e60c8bfbaef4a627",
+      "artifact_hash": "a2dd3afc734a22b78a6a34f1b37c916ff8e09bdc911d95824e86c9911b2a5a2a",
+      "compiler_version": "0.1.0",
+      "runtime_version": "3.12.14",
+      "error_code": null,
+      "passed": true
+    },
+    {
+      "case_id": "C-3",
+      "program": "C",
+      "target": "javascript",
+      "inputs": [
+        "1"
+      ],
+      "expected_stdout": "Ingrese un número entero positivo:\nEl factorial es: 1\nLa suma es: 2\n",
+      "actual_stdout": "Ingrese un número entero positivo:\nEl factorial es: 1\nLa suma es: 2\n",
+      "stderr": "",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 566.5117970002029,
+      "source_hash": "4b7639347382c12f603fdea2a21d024b6191e08adb47dcf5e60c8bfbaef4a627",
+      "artifact_hash": "17398f6bc4c347171172431a3ff02d34b2cb213828d51e655c371c8e2c8594ab",
+      "compiler_version": "0.1.0",
+      "runtime_version": "v22.22.2",
+      "error_code": null,
+      "passed": true
+    },
+    {
+      "case_id": "D-1",
+      "program": "D",
+      "target": "python",
+      "inputs": [
+        "3",
+        "4",
+        "9",
+        "2"
+      ],
+      "expected_stdout": "Ingrese la cantidad de números a ingresar:\nIngrese el número 1:\nIngrese el número 2:\nIngrese el número 3:\nEl promedio es: 5\nEl número mayor es: 9\n",
+      "actual_stdout": "Ingrese la cantidad de números a ingresar:\nIngrese el número 1:\nIngrese el número 2:\nIngrese el número 3:\nEl promedio es: 5\nEl número mayor es: 9\n",
+      "stderr": "",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 627.1727829998781,
+      "source_hash": "c1a2bcce16a91408460ba36654c27e4d714f023c2db78806bf0457aeb3334a23",
+      "artifact_hash": "b6c31020cf4ca27b0686c512e7805f1f90d2ba51d2d81412b99a7d68e4f6216f",
+      "compiler_version": "0.1.0",
+      "runtime_version": "3.12.14",
+      "error_code": null,
+      "passed": true
+    },
+    {
+      "case_id": "D-1",
+      "program": "D",
+      "target": "javascript",
+      "inputs": [
+        "3",
+        "4",
+        "9",
+        "2"
+      ],
+      "expected_stdout": "Ingrese la cantidad de números a ingresar:\nIngrese el número 1:\nIngrese el número 2:\nIngrese el número 3:\nEl promedio es: 5\nEl número mayor es: 9\n",
+      "actual_stdout": "Ingrese la cantidad de números a ingresar:\nIngrese el número 1:\nIngrese el número 2:\nIngrese el número 3:\nEl promedio es: 5\nEl número mayor es: 9\n",
+      "stderr": "",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 548.5111400003007,
+      "source_hash": "c1a2bcce16a91408460ba36654c27e4d714f023c2db78806bf0457aeb3334a23",
+      "artifact_hash": "39fa0c2958d5754e1f36814272f675c975c50e38a5a8e694498accc7ae679dae",
+      "compiler_version": "0.1.0",
+      "runtime_version": "v22.22.2",
+      "error_code": null,
+      "passed": true
+    },
+    {
+      "case_id": "D-2",
+      "program": "D",
+      "target": "python",
+      "inputs": [
+        "4",
+        "10",
+        "20",
+        "5",
+        "15"
+      ],
+      "expected_stdout": "Ingrese la cantidad de números a ingresar:\nIngrese el número 1:\nIngrese el número 2:\nIngrese el número 3:\nIngrese el número 4:\nEl promedio es: 12.5\nEl número mayor es: 20\n",
+      "actual_stdout": "Ingrese la cantidad de números a ingresar:\nIngrese el número 1:\nIngrese el número 2:\nIngrese el número 3:\nIngrese el número 4:\nEl promedio es: 12.5\nEl número mayor es: 20\n",
+      "stderr": "",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 676.120740999977,
+      "source_hash": "c1a2bcce16a91408460ba36654c27e4d714f023c2db78806bf0457aeb3334a23",
+      "artifact_hash": "b6c31020cf4ca27b0686c512e7805f1f90d2ba51d2d81412b99a7d68e4f6216f",
+      "compiler_version": "0.1.0",
+      "runtime_version": "3.12.14",
+      "error_code": null,
+      "passed": true
+    },
+    {
+      "case_id": "D-2",
+      "program": "D",
+      "target": "javascript",
+      "inputs": [
+        "4",
+        "10",
+        "20",
+        "5",
+        "15"
+      ],
+      "expected_stdout": "Ingrese la cantidad de números a ingresar:\nIngrese el número 1:\nIngrese el número 2:\nIngrese el número 3:\nIngrese el número 4:\nEl promedio es: 12.5\nEl número mayor es: 20\n",
+      "actual_stdout": "Ingrese la cantidad de números a ingresar:\nIngrese el número 1:\nIngrese el número 2:\nIngrese el número 3:\nIngrese el número 4:\nEl promedio es: 12.5\nEl número mayor es: 20\n",
+      "stderr": "",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 615.9207390001029,
+      "source_hash": "c1a2bcce16a91408460ba36654c27e4d714f023c2db78806bf0457aeb3334a23",
+      "artifact_hash": "39fa0c2958d5754e1f36814272f675c975c50e38a5a8e694498accc7ae679dae",
+      "compiler_version": "0.1.0",
+      "runtime_version": "v22.22.2",
+      "error_code": null,
+      "passed": true
+    },
+    {
+      "case_id": "D-3",
+      "program": "D",
+      "target": "python",
+      "inputs": [
+        "5",
+        "1",
+        "1",
+        "1",
+        "1",
+        "1"
+      ],
+      "expected_stdout": "Ingrese la cantidad de números a ingresar:\nIngrese el número 1:\nIngrese el número 2:\nIngrese el número 3:\nIngrese el número 4:\nIngrese el número 5:\nEl promedio es: 1\nEl número mayor es: 1\n",
+      "actual_stdout": "Ingrese la cantidad de números a ingresar:\nIngrese el número 1:\nIngrese el número 2:\nIngrese el número 3:\nIngrese el número 4:\nIngrese el número 5:\nEl promedio es: 1\nEl número mayor es: 1\n",
+      "stderr": "",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 706.4129549999052,
+      "source_hash": "c1a2bcce16a91408460ba36654c27e4d714f023c2db78806bf0457aeb3334a23",
+      "artifact_hash": "b6c31020cf4ca27b0686c512e7805f1f90d2ba51d2d81412b99a7d68e4f6216f",
+      "compiler_version": "0.1.0",
+      "runtime_version": "3.12.14",
+      "error_code": null,
+      "passed": true
+    },
+    {
+      "case_id": "D-3",
+      "program": "D",
+      "target": "javascript",
+      "inputs": [
+        "5",
+        "1",
+        "1",
+        "1",
+        "1",
+        "1"
+      ],
+      "expected_stdout": "Ingrese la cantidad de números a ingresar:\nIngrese el número 1:\nIngrese el número 2:\nIngrese el número 3:\nIngrese el número 4:\nIngrese el número 5:\nEl promedio es: 1\nEl número mayor es: 1\n",
+      "actual_stdout": "Ingrese la cantidad de números a ingresar:\nIngrese el número 1:\nIngrese el número 2:\nIngrese el número 3:\nIngrese el número 4:\nIngrese el número 5:\nEl promedio es: 1\nEl número mayor es: 1\n",
+      "stderr": "",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 596.4841929999238,
+      "source_hash": "c1a2bcce16a91408460ba36654c27e4d714f023c2db78806bf0457aeb3334a23",
+      "artifact_hash": "39fa0c2958d5754e1f36814272f675c975c50e38a5a8e694498accc7ae679dae",
+      "compiler_version": "0.1.0",
+      "runtime_version": "v22.22.2",
+      "error_code": null,
+      "passed": true
+    },
+    {
+      "case_id": "E-1",
+      "program": "E",
+      "target": "python",
+      "inputs": [
+        "5",
+        "4"
+      ],
+      "expected_stdout": "Ingrese la base:\nIngrese la altura:\nEl área es: 20\nClasificación: Pequeña\n",
+      "actual_stdout": "Ingrese la base:\nIngrese la altura:\nEl área es: 20\nClasificación: Pequeña\n",
+      "stderr": "",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 654.543743999966,
+      "source_hash": "0bdd0185df18aae5d56924e3b6a217f6c40c9295ab2e1a47d3fe64fb3afc20b6",
+      "artifact_hash": "3afabd56ecbb22641ee4de6fa7f3069ea03f95d3edb773eaa326c8a716d82226",
+      "compiler_version": "0.1.0",
+      "runtime_version": "3.12.14",
+      "error_code": null,
+      "passed": true
+    },
+    {
+      "case_id": "E-1",
+      "program": "E",
+      "target": "javascript",
+      "inputs": [
+        "5",
+        "4"
+      ],
+      "expected_stdout": "Ingrese la base:\nIngrese la altura:\nEl área es: 20\nClasificación: Pequeña\n",
+      "actual_stdout": "Ingrese la base:\nIngrese la altura:\nEl área es: 20\nClasificación: Pequeña\n",
+      "stderr": "",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 624.1461409999829,
+      "source_hash": "0bdd0185df18aae5d56924e3b6a217f6c40c9295ab2e1a47d3fe64fb3afc20b6",
+      "artifact_hash": "bd1e10d738eb70e7a9fe5d4fb2f4bf3792f87271e4d1e3242c84b1b961bc55e0",
+      "compiler_version": "0.1.0",
+      "runtime_version": "v22.22.2",
+      "error_code": null,
+      "passed": true
+    },
+    {
+      "case_id": "E-2",
+      "program": "E",
+      "target": "python",
+      "inputs": [
+        "10",
+        "8"
+      ],
+      "expected_stdout": "Ingrese la base:\nIngrese la altura:\nEl área es: 80\nClasificación: Grande\n",
+      "actual_stdout": "Ingrese la base:\nIngrese la altura:\nEl área es: 80\nClasificación: Grande\n",
+      "stderr": "",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 709.15889600019,
+      "source_hash": "0bdd0185df18aae5d56924e3b6a217f6c40c9295ab2e1a47d3fe64fb3afc20b6",
+      "artifact_hash": "3afabd56ecbb22641ee4de6fa7f3069ea03f95d3edb773eaa326c8a716d82226",
+      "compiler_version": "0.1.0",
+      "runtime_version": "3.12.14",
+      "error_code": null,
+      "passed": true
+    },
+    {
+      "case_id": "E-2",
+      "program": "E",
+      "target": "javascript",
+      "inputs": [
+        "10",
+        "8"
+      ],
+      "expected_stdout": "Ingrese la base:\nIngrese la altura:\nEl área es: 80\nClasificación: Grande\n",
+      "actual_stdout": "Ingrese la base:\nIngrese la altura:\nEl área es: 80\nClasificación: Grande\n",
+      "stderr": "",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 595.934713999668,
+      "source_hash": "0bdd0185df18aae5d56924e3b6a217f6c40c9295ab2e1a47d3fe64fb3afc20b6",
+      "artifact_hash": "bd1e10d738eb70e7a9fe5d4fb2f4bf3792f87271e4d1e3242c84b1b961bc55e0",
+      "compiler_version": "0.1.0",
+      "runtime_version": "v22.22.2",
+      "error_code": null,
+      "passed": true
+    },
+    {
+      "case_id": "E-3",
+      "program": "E",
+      "target": "python",
+      "inputs": [
+        "6",
+        "9"
+      ],
+      "expected_stdout": "Ingrese la base:\nIngrese la altura:\nEl área es: 54\nClasificación: Grande\n",
+      "actual_stdout": "Ingrese la base:\nIngrese la altura:\nEl área es: 54\nClasificación: Grande\n",
+      "stderr": "",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 656.5713489999325,
+      "source_hash": "0bdd0185df18aae5d56924e3b6a217f6c40c9295ab2e1a47d3fe64fb3afc20b6",
+      "artifact_hash": "3afabd56ecbb22641ee4de6fa7f3069ea03f95d3edb773eaa326c8a716d82226",
+      "compiler_version": "0.1.0",
+      "runtime_version": "3.12.14",
+      "error_code": null,
+      "passed": true
+    },
+    {
+      "case_id": "E-3",
+      "program": "E",
+      "target": "javascript",
+      "inputs": [
+        "6",
+        "9"
+      ],
+      "expected_stdout": "Ingrese la base:\nIngrese la altura:\nEl área es: 54\nClasificación: Grande\n",
+      "actual_stdout": "Ingrese la base:\nIngrese la altura:\nEl área es: 54\nClasificación: Grande\n",
+      "stderr": "",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 555.0192450000395,
+      "source_hash": "0bdd0185df18aae5d56924e3b6a217f6c40c9295ab2e1a47d3fe64fb3afc20b6",
+      "artifact_hash": "bd1e10d738eb70e7a9fe5d4fb2f4bf3792f87271e4d1e3242c84b1b961bc55e0",
+      "compiler_version": "0.1.0",
+      "runtime_version": "v22.22.2",
+      "error_code": null,
+      "passed": true
+    }
+  ]
+}

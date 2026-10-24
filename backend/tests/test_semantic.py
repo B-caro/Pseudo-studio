@@ -4,6 +4,7 @@ from pathlib import Path
 from backend.compiler.lexer import lex
 from backend.compiler.parser import parse
 from backend.compiler.semantic import analyze
+from backend.compiler.service import compile_source
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -25,8 +26,11 @@ class SemanticTests(unittest.TestCase):
     def test_unknown_name_and_read_before_initialization_are_diagnosed(self) -> None:
         _, unknown = semantic("Inicio\nEscribir total\nFin\n")
         self.assertIn("SEM_UNDEFINED_IDENTIFIER", [item.code for item in unknown.diagnostics])
+        self.assertIn("Declare o asigne", unknown.diagnostics[0].hint)
         _, branch = semantic("Inicio\nSi Verdadero Entonces\nx = 1\nFinSi\nEscribir x\nFin\n")
         self.assertIn("SEM_UNINITIALIZED", [item.code for item in branch.diagnostics])
+        uninitialized = next(item for item in branch.diagnostics if item.code == "SEM_UNINITIALIZED")
+        self.assertIn("antes de leerla", uninitialized.hint)
 
     def test_both_conditional_paths_initialize_symbol(self) -> None:
         _, result = semantic("Inicio\nSi Verdadero Entonces\nx = 1\nSino\nx = 2\nFinSi\nEscribir x\nFin\n")
@@ -60,6 +64,29 @@ class SemanticTests(unittest.TestCase):
         source = "Inicio\nFuncion Get()\nRetornar total\nFinFuncion\nx = Get()\ntotal = 1\nFin\n"
         _, result = semantic(source)
         self.assertIn("SEM_UNINITIALIZED", [item.code for item in result.diagnostics])
+
+    def test_array_parameter_type_is_inferred_and_scalar_arguments_are_rejected(self) -> None:
+        valid = "Inicio\nFuncion Primero(valores)\nRetornar valores[1]\nFinFuncion\nDimension datos[1]\ndatos[1] = 8\nx = Primero(datos)\nFin\n"
+        _, valid_result = semantic(valid)
+        self.assertEqual(valid_result.diagnostics, [])
+        parameter = next(
+            item for item in valid_result.symbols if item.scope == "function:Primero" and item.name == "valores"
+        )
+        self.assertEqual(parameter.type, "array")
+
+        invalid = valid.replace("x = Primero(datos)", "x = Primero(8)")
+        _, invalid_result = semantic(invalid)
+        self.assertIn("SEM_TYPE_MISMATCH", [item.code for item in invalid_result.diagnostics])
+
+    def test_array_dimensions_must_be_positive_integers(self) -> None:
+        for dimension in ("0", "-1", "1.5"):
+            with self.subTest(dimension=dimension):
+                source = f"Inicio\nDimension datos[{dimension}]\nFin\n"
+                _, result = semantic(source)
+                self.assertTrue(any(item.code == "SEM_INVALID_DIMENSION" for item in result.diagnostics))
+                compiled = compile_source(source)
+                self.assertFalse(compiled.translatable)
+                self.assertEqual(compiled.artifacts, {})
 
 
 if __name__ == "__main__":

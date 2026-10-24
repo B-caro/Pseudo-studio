@@ -47,6 +47,10 @@ function __ps_format(value) {
   return String(value);
 }
 function __ps_write(...values) { __ps_process.stdout.write(values.map(__ps_format).join("") + "\n"); }
+function __ps_check_number(value, line, column) {
+  if (!Number.isFinite(value)) __ps_fail("RUN_NONFINITE", line, column, "La operación produjo un número no finito.");
+  return value;
+}
 function __ps_safe_int(value, line, column, label) {
   if (!Number.isSafeInteger(value)) __ps_fail("RUN_INVALID_INTEGER", line, column, label + " debe ser un entero seguro.");
   return value;
@@ -91,7 +95,7 @@ try {
     __ps_user_v_676c6f62616c0062 = __ps_read_number(5, 5);
     __ps_write("Ingrese el tercer n\u00famero:");
     __ps_user_v_676c6f62616c0063 = __ps_read_number(7, 5);
-    __ps_user_v_676c6f62616c00726573756c7461646f = (((__ps_user_v_676c6f62616c0061 + __ps_user_v_676c6f62616c0062) * __ps_user_v_676c6f62616c0063) - __ps_div(__ps_user_v_676c6f62616c0061, __ps_user_v_676c6f62616c0062, 8, 34));
+    __ps_user_v_676c6f62616c00726573756c7461646f = __ps_check_number((__ps_check_number((__ps_check_number((__ps_user_v_676c6f62616c0061 + __ps_user_v_676c6f62616c0062), 8, 19) * __ps_user_v_676c6f62616c0063), 8, 19) - __ps_div(__ps_user_v_676c6f62616c0061, __ps_user_v_676c6f62616c0062, 8, 34)), 8, 19);
     __ps_write("El resultado es: ", __ps_user_v_676c6f62616c00726573756c7461646f);
 } catch (__ps_error) {
     if (__ps_error instanceof __ps_Fault) {

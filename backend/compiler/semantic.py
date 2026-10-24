@@ -357,6 +357,11 @@ class SemanticAnalyzer:
         if isinstance(expression, Index):
             array_type = self._expression(expression.array)
             index_type = self._expression(expression.index)
+            if array_type == UNKNOWN and isinstance(expression.array, Name):
+                symbol = self._resolve(expression.array.normalized)
+                if symbol and symbol.kind == "parameter":
+                    self._constrain_symbol(symbol, "array", expression.array.span)
+                    array_type = "array"
             self._require_type(array_type, "array", expression.array.span, "El acceso indexado requiere un arreglo.")
             self._require_type(index_type, "number", expression.index.span, "El índice debe ser entero.")
             element_type = UNKNOWN
@@ -392,7 +397,16 @@ class SemanticAnalyzer:
                         "SEM_TYPE_MISMATCH", "La comparación requiere números o cadenas compatibles.", expression.span
                     )
                 result = "boolean"
-            elif operator == "+" and left == right == "string":
+            elif (
+                operator == "+"
+                and left in {"string", UNKNOWN}
+                and right in {"string", UNKNOWN}
+                and "string" in {left, right}
+            ):
+                if left == UNKNOWN:
+                    self._constrain_unknown_name(expression.left, "string", expression.span)
+                if right == UNKNOWN:
+                    self._constrain_unknown_name(expression.right, "string", expression.span)
                 result = "string"
             else:
                 self._require_type(left, "number", expression.left.span, "La operación aritmética requiere números.")
@@ -460,12 +474,19 @@ class SemanticAnalyzer:
         if left != UNKNOWN and right != UNKNOWN and left != right:
             self._diag("SEM_TYPE_MISMATCH", f"Tipos incompatibles: {left} y {right}.", span)
 
+    def _constrain_unknown_name(self, expression: Expression, expected: str, span: Span) -> None:
+        if not isinstance(expression, Name):
+            return
+        symbol = self._resolve(expression.normalized)
+        if symbol and symbol.kind != "function":
+            self._constrain_symbol(symbol, expected, span)
+
     def _constrain_symbol(self, symbol: Symbol, expected: str, span: Span) -> None:
         if expected == UNKNOWN:
             return
         if symbol.type == UNKNOWN:
             symbol.type = expected
-        elif symbol.type != expected and symbol.type != "array":
+        elif symbol.type != expected:
             self._diag(
                 "SEM_TYPE_MISMATCH", f"'{symbol.name}' tiene tipo {symbol.type}; no puede usarse como {expected}.", span
             )

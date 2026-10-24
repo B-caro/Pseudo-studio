@@ -1,5 +1,70 @@
 # Informe de validación — Pseudo / Studio
 
+## Cierre de brechas de Fases 2 y 3 — 2026-10-24
+
+Esta sección registra la revalidación más reciente sobre el árbol de trabajo actual y **sustituye los reportes históricos de indisponibilidad de OCI** que siguen citados abajo con su fecha original.
+
+- `python3.12 scripts/manage.py verify`: exit 0. Docker 28.1.1 usa la frontera `docker-desktop-vm`; imágenes Python 3.12.14 y Node v22.22.2 disponibles. Ambos pasan como UID no root, `NoNewPrivs`, seccomp activo y cero capabilities. Límites declarados: 5 s, 256 MiB, 1 CPU, 64 procesos y 1 MiB de salida.
+- `python3.12 scripts/manage.py start`, `python3.12 scripts/manage.py smoke`, `python3.12 scripts/manage.py stop`: arranque y smoke reales pasan en ambos runtimes (`OK=42`); hash Python `c6ed893305c9242427dd3a3d27eb0a30997d7e4a51f93bbe08b7a01f75f03572`, JavaScript `0f82f4912b1b4d3e9d8280638c30b97f143a51b21e3f0a1311fdd032d5fd7765`. Al terminar se detuvieron frontend y API; los puertos 8000/5173 quedaron libres.
+- `.venv/bin/pytest -q`: **94 passed y 91 subtests passed**, cobertura backend 90%; un warning de deprecación de Starlette TestClient/httpx, sin fallos (165,14 s).
+- `npm run test:e2e`: **10/10** Playwright pasan en Chromium, sin reintentos. Incluye teclado y axe, las ocho secciones, carga/análisis, exportaciones TXT, error→corrección→nuevo análisis, ejecución Python/Node, stdin interactivo, proyectos, casos A–E y viewport móvil. Reporte HTML: `frontend/playwright-report/`; estado: `frontend/test-results/.last-run.json`.
+- `npm run build`: TypeScript y Vite pasan. `.venv/bin/ruff check backend scripts`, `.venv/bin/ruff format --check backend scripts` y `git diff --check`: pasan.
+- `python3.12 scripts/run_official_acceptance.py`: **30/30** ejecuciones aisladas A–E Python/Node. `python3.12 scripts/run_extended_acceptance.py`: **54/54** checks: 28 ejecuciones válidas, seis negativos con spans y catorce errores de runtime controlados. Incluye overflow numérico detectado por una prueba de regresión y corregido con `RUN_NONFINITE`. Los registros incluyen entradas, salidas, stderr, estado, duración y hashes en `reports/acceptance-results.json` y `reports/extended-acceptance-results.json`.
+- `python3.12 scripts/run_phase1_manual_acceptance.py`: **12/12** casos A/B manuales con stdin agrupado en los runtimes locales; no se cuentan como OCI.
+- `python3.12 scripts/benchmark_compile.py`: 30 mediciones por clase/tamaño. Compilación válida: 100 líneas p50/p95 2.758/3.475 ms; 1.000 líneas 37.494/50.703 ms. Recuperación de errores: 100 líneas y 98 diagnósticos 2.246/4.056 ms; 1.000 líneas y 998 diagnósticos 18.491/24.139 ms. Entorno: Python 3.12.3, WSL2, 12 CPU. JSON y Markdown: `reports/compiler-performance.*`.
+- Evidencia visual del navegador: `reports/phase2-execution-c.png` y `reports/phase2-execution-d.png`; A/B manuales: `reports/phase1-execution-python.png` y `reports/phase1-execution-javascript.png`.
+
+Los archivos `.txt` de Python/JavaScript son los artefactos completos generados por el compilador, byte por byte iguales a `.py/.js`; las pruebas API descargan esos bytes y los ejecutan en OCI. El E2E valida sus descargas, la carga UTF-8/BOM/CRLF y el reporte TXT de errores. Los detalles por requisito están en [TRACEABILITY.md](TRACEABILITY.md) y las fuentes/decisiones en [LANGUAGE_CONFORMANCE_MATRIX.md](LANGUAGE_CONFORMANCE_MATRIX.md) y [DECISIONS.md](DECISIONS.md).
+
+`python3.12 scripts/build_phase3_package.py` produjo `delivery/fase-3/` con 74 archivos registrados; los 74 hashes verifican, los diez pares nativos/TXT son idénticos y los diez `.py/.js` del paquete coinciden con los hashes de artefacto de la corrida oficial 30/30. Se conservó el resultado anterior en `reports/archive/pre-f2-f3-2026-10-24/` y su manifiesto de ocho archivos también verifica.
+
+**Límites que siguen abiertos:** no se hizo auditoría manual con lector de pantalla; no se ejecutó macOS nativo ni Linux con Docker rootless; CI remoto sigue dispensado por el usuario; el DOCX académico aún necesita abrirse en Word/LibreOffice para recalcular y revisar páginas y los datos reales del equipo. No se declara cierre global al 100%. No se creó commit en esta revalidación; HEAD observado `14b2419b3394d985b93d35514c3b800028060d9c` no incluye los cambios locales aquí verificados.
+
+## Cierre del feedback de Fase 1 — 2026-10-23
+
+- Se actualizó `docs/Informe_Investigacion_Pseudo_Studio.docx`: el título de portada ahora identifica el informe; el índice usa referencias dinámicas de página y el documento agrega número de página en el pie; se incorporaron categorías/tipos, reglas léxicas, equivalencias y justificación de Python/JavaScript; las cuatro traducciones manuales A/B incluyen comentarios.
+- `examples/phase1-translations/` contiene las cuatro traducciones manuales independientes. El JavaScript de A/B lee una línea por cada Leer usando fs.readSync; no depende de preguntas asíncronas que descartan eventos line cuando stdin llega en un lote.
+- `python3.12 scripts/run_phase1_manual_acceptance.py`: **12/12** ejecuciones locales exitosas con Python 3.12.3 y Node.js v22.22.2; los seis datasets A/B se enviaron a cada proceso en una sola escritura de stdin. stdout coincide exactamente con prompts y salida oficial, stderr queda vacío y exit code es 0. Reporte y hashes: `reports/phase1-manual-acceptance.json/.md`.
+- Se alineó el lexer con la EBNF: ahora acepta el literal decimal `.5`, además de `3.25`; la prueba de lexer y la ejecución de una fuente con `.5` producen `0.5` tanto en Python como en JavaScript.
+- `.venv/bin/pytest -q backend/tests/test_lexer.py backend/tests/test_phase1_manual_translations.py`: **9 pruebas + 12 subtests aprobados**; Ruff y `node --check` pasan en los archivos modificados.
+- Suite sin dependencias de OCI: **43 passed, 2 deselected, 33 subtests passed** con pruebas del lexer, parser, semántica, codegen, compilador, proyectos, fixtures y A/B.
+- Intento de suite completa: **51 passed, 15 failed, 16 errors, 33 subtests passed**. Los casos que fallan requieren ejecución/estado del runner OCI; `health` informa `degraded` porque Docker no responde y las pruebas de integración reportan `RUN_SANDBOX_UNAVAILABLE`. No se deshabilitaron ni alteraron esas pruebas.
+- Las imágenes `reports/phase1-execution-python.png` y `reports/phase1-execution-javascript.png` representan el stdout realmente capturado de A-1 y B-2, con entradas, runtime y exit code; se insertaron como evidencia visual en el informe.
+- El DOCX configura referencias de página y número de página como campos de Word que se actualizan al abrir. No se generó un PDF nuevo en esta sesión: no hay Microsoft Word ni LibreOffice/soffice instalado para paginar y renderizar el documento aquí.
+- En esta sesión `python3.12 scripts/manage.py verify` y `start` no pueden habilitar OCI: el engine Docker no responde. Por eso las 12 ejecuciones nuevas son en los runtimes locales y no se presentan como prueba de aislamiento. Las ejecuciones OCI oficiales 30/30 del informe anterior se conservan como evidencia histórica, no se atribuyen a esta sesión.
+
+## Revalidación de traducción con programas complejos — 2026-10-16
+
+Se agregó una batería de programas inéditos para someter el mismo compilador a combinaciones mayores de sintaxis, semántica, generación y ejecución. Las fuentes y expectativas viven en `examples/extended/`; no se alteraron los casos oficiales A–E.
+
+- `.venv/bin/pytest -q`: **80 passed, 67 subtests passed**, 90% de cobertura backend, sin fallos ni skips (112,64 s). Queda un warning de deprecación de `starlette.testclient`/`httpx`.
+- `python3.12 scripts/run_extended_acceptance.py`: **45/45 checks** en el runner OCI `docker-desktop-vm`, con Python 3.12.14 y Node v22.22.2: 5 compilaciones válidas, 24 ejecuciones válidas (12 entradas/casos en ambos runtimes), 6 diagnósticos negativos con código/fase/span exactos y 10 errores de runtime controlados en ambos runtimes. Evidencia con entradas, stdout/stderr, exit, duración y hashes en `reports/extended-acceptance-results.json/.md`.
+- `python3.12 scripts/run_official_acceptance.py`: **30/30** ejecuciones oficiales A–E en OCI después del cambio semántico; salida exacta, stderr vacío y exit 0. Evidencia regenerada en `reports/acceptance-results.json/.md`.
+- `.venv/bin/ruff check backend scripts`, `.venv/bin/ruff format --check backend scripts` y `git diff --check`: pasan; 38 archivos con formato verificado.
+- La prueba de una función que concatena texto detectó que un parámetro aún desconocido se trataba como número durante el análisis previo a la llamada. Se corrigió la inferencia en `backend/compiler/semantic.py`: `+` restringe a texto el identificador desconocido y rechaza una llamada con argumento numérico (`N06`, `SEM_TYPE_MISMATCH`, línea 3, columna 10). La salida de ambas traducciones ahora pasa en los casos X04.
+
+Para reproducir los nuevos casos: `.venv/bin/pytest -q backend/tests/test_extended_cases.py` y `python3.12 scripts/run_extended_acceptance.py`. El detalle de alcance está en `docs/EXTENDED_TESTING.md`.
+
+## Revalidación del workspace actual — 2026-10-16
+
+Se repitieron las comprobaciones sobre el checkout de trabajo después de revisar Fase 1:
+
+- `python3.12 scripts/manage.py verify`: sandbox disponible en Docker Desktop VM/WSL2; Python 3.12.14 y Node v22.22.2 con UID no privilegiado, seccomp, `NoNewPrivs` y cero capabilities.
+- `python3.12 scripts/manage.py smoke`: exit 0; Python y JavaScript devolvieron `OK=42`; API `ready` y frontend HTTP 200.
+- `python3.12 scripts/run_official_acceptance.py`: **30/30** ejecuciones OCI reales para A–E, con exit 0, salida exacta y stderr vacío. Reportes regenerados en `reports/acceptance-results.json/.md`.
+- `.venv/bin/pytest -q`: **76 passed + 22 subtests**, 90% de cobertura backend; sin fallos. Persiste un warning deprecado de `starlette.testclient` con `httpx`.
+- `npm run build`: compilación TypeScript/Vite correcta. `npm run test:e2e`: **6/6**; incluye análisis/traducción, descargas, consola interactiva, proyectos, 30 ejecuciones A–E desde UI, Defensa, navegación por teclado y axe.
+- `.venv/bin/ruff check backend scripts` y `.venv/bin/ruff format --check backend scripts`: pasan. Se aplicó el formato Ruff pendiente en `backend/generators/codegen.py` y luego pasó la suite completa.
+- `npm audit --audit-level=moderate` desde `frontend/`: cero vulnerabilidades. `pip-audit --strict --no-deps --disable-pip -r requirements.lock`: cero vulnerabilidades conocidas; conserva el aviso de que los pins Python no llevan hashes.
+- Se ejecutaron las cuatro traducciones manuales del informe académico con sus seis casos A/B por destino: Python 6/6 en runtime aislado y JavaScript 6/6 mediante entrada interactiva, todos con el resultado oficial.
+- El preview actual cargó Pseudo / Studio con `API lista` y `Sandbox verificado`; analizar A mostró 46 tokens y generar produjo Python y JavaScript con el hash vigente.
+
+### Estado editorial de la entrega académica
+
+`docs/Informe_Investigacion_Pseudo_Studio.docx` contiene los objetivos, arquitectura, gramática EBNF, especificación de Python/JavaScript, traducciones manuales A/B, conclusiones y referencias APA 7. Las cuatro traducciones manuales pasan sus casos oficiales. El índice ya usa referencias `PAGEREF` y el pie usa `PAGE`; Word debe recalcular los campos al abrir el DOCX (o con Ctrl+A, F9). No se dispone aquí de un renderizador DOCX/PDF para certificar la paginación final ni para generar el PDF. La portada conserva los espacios de integrantes sin completar porque no se recibieron sus nombres y carnés; no se inventaron datos.
+
+Los gates de accesibilidad manual, CI remota (dispensada anteriormente por el usuario) y prueba nativa en plataformas adicionales siguen como se describen en `docs/REMAINING_GATES.md`; no son parte del resultado 30/30 ni se reportan como cerrados.
+
 ## Revalidación automática WSL tras reactivar Docker
 
 El 2026-10-10 se ejecutó `bash scripts/validate_wsl.sh` sobre el commit `5bce0a1808066b9e2a156a4bb2c788a1b4b93f27`, en un clon limpio conservado en `reports/runs/wsl-20261010T175319Z-z0u3ep/workspace`. Las 30 etapas terminaron con exit 0. El resumen reproducible, commit, entorno y 22 hashes de evidencias se guardan en `reports/wsl-validation-summary.json`. Se conservaron los reportes históricos sin contarlos como resultado nuevo.

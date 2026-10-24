@@ -424,10 +424,35 @@ class Parser:
             self._advance()
 
     def _fail(self, code: str, message: str, span: Span) -> None:
-        self.diagnostics.append(
-            Diagnostic(code, "syntax", "error", message, span, "Revise la gramática y el terminador correspondiente.")
-        )
+        self.diagnostics.append(Diagnostic(code, "syntax", "error", message, span, self._syntax_hint(code, message)))
         raise ParseFailure
+
+    @staticmethod
+    def _syntax_hint(code: str, message: str) -> str:
+        if "Falta " in message:
+            expected = message.split("Falta ", 1)[1].split(" ", 1)[0].rstrip(".,")
+            return f"Agregue {expected} para cerrar o completar el bloque indicado."
+        if "Inicio" in message and "comenzar" in message:
+            return "Coloque Inicio en la primera línea del programa."
+        if "Hasta" in message:
+            return "Escriba Hasta seguido de la expresión que fija el límite del ciclo Para."
+        if "Entonces" in message:
+            return "Escriba Entonces después de la condición de Si."
+        if "Hacer" in message:
+            return "Escriba Hacer al final del encabezado del ciclo."
+        if "identificador" in message and "Para" in message:
+            return "Escriba el nombre de la variable de control después de Para."
+        if "Se esperaba '='" in message:
+            return "Coloque = entre el identificador y la expresión, o convierta la línea en una llamada válida."
+        if "expresión" in message:
+            return "Agregue un número, cadena, booleano, variable, llamada o expresión entre paréntesis."
+        if "línea nueva" in message or "al final de línea" in message:
+            return "Coloque la siguiente sentencia en una línea nueva."
+        if code == "SYN_EXPECTED_ASSIGNMENT":
+            return "Use la forma nombre = expresión o escriba una llamada válida a función."
+        if code == "SYN_EXPECTED_NEWLINE":
+            return "Termine la sentencia y coloque cada instrucción en una línea separada."
+        return "Revise el elemento señalado y complete o cierre la construcción que está escribiendo."
 
     def _expect_keyword(self, keyword: str, message: str) -> Token:
         if self._is_keyword(keyword):

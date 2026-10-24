@@ -1,0 +1,1055 @@
+{
+  "generated_at": "2026-10-17T03:47:13.315652+00:00",
+  "authority": "Pseudo / Studio implemented grammar v2; independent regression examples, not replacements for Phase 1 A-E.",
+  "sandbox": {
+    "available": true,
+    "status": {
+      "available": true,
+      "engine": "docker",
+      "engine_ready": true,
+      "isolation_boundary": "docker-desktop-vm",
+      "seccomp": true,
+      "images": {
+        "python": true,
+        "javascript": true
+      },
+      "runtimes": {
+        "python": "3.12.14",
+        "javascript": "v22.22.2"
+      },
+      "quotas": {
+        "timeout_seconds": 10.0,
+        "output_bytes": 1048576,
+        "concurrent_runs": 4,
+        "memory_mb": 256,
+        "cpu_limit": 1.0,
+        "pids_limit": 64
+      },
+      "reasons": []
+    },
+    "checks": {
+      "python": {
+        "passed": true,
+        "runtime_version": "3.12.14",
+        "non_root_uid": true,
+        "no_new_privileges": true,
+        "seccomp_filter": true,
+        "zero_capabilities": true,
+        "exit_code": 0,
+        "stderr": ""
+      },
+      "javascript": {
+        "passed": true,
+        "runtime_version": "v22.22.2",
+        "non_root_uid": true,
+        "no_new_privileges": true,
+        "seccomp_filter": true,
+        "zero_capabilities": true,
+        "exit_code": 0,
+        "stderr": ""
+      }
+    }
+  },
+  "total_checks": 45,
+  "passed_checks": 45,
+  "failed_checks": 0,
+  "summary": {
+    "valid_compilations_passed": 5,
+    "valid_compilations_total": 5,
+    "valid_runs_passed": 24,
+    "valid_runs_total": 24,
+    "invalid_passed": 6,
+    "invalid_total": 6,
+    "runtime_errors_passed": 10,
+    "runtime_errors_total": 10
+  },
+  "compilations": [
+    {
+      "program_id": "X01-recursion-forward-call",
+      "passed": true,
+      "translatable": true,
+      "source_hash": "7ab62e0e70ac7c51fba47819bb28bad23cbb1eba2d2f603ce27136bed98b3e7f",
+      "diagnostics": []
+    },
+    {
+      "program_id": "X02-arrays-and-loops",
+      "passed": true,
+      "translatable": true,
+      "source_hash": "20b7cb6d9dc9f10225fec06725cfa87aed6901a410d411a92be053201038b15f",
+      "diagnostics": []
+    },
+    {
+      "program_id": "X02-step-direction-inclusive-loop",
+      "passed": true,
+      "translatable": true,
+      "source_hash": "08ee791239751e25c06e613175719e25840393d756cb4daf148ada44179b213d",
+      "diagnostics": []
+    },
+    {
+      "program_id": "X03-unicode-nested-logic",
+      "passed": true,
+      "translatable": true,
+      "source_hash": "d75d0be8c1fdd21dc4fab3b0ad207041c26fc3286ec390d7ca4da8894b56ea34",
+      "diagnostics": []
+    },
+    {
+      "program_id": "X04-strings-functions-scopes",
+      "passed": true,
+      "translatable": true,
+      "source_hash": "a10437b6260dff988466937880d53a9f36bb608bfc414d5d52422d0c768f0569",
+      "diagnostics": []
+    }
+  ],
+  "valid_runs": [
+    {
+      "program_id": "X01-recursion-forward-call",
+      "case_id": "factorial-6",
+      "target": "python",
+      "inputs": [
+        "factorial",
+        "6"
+      ],
+      "expected_stdout": "Factorial de 6 = 720\n",
+      "actual_stdout": "Factorial de 6 = 720\n",
+      "stderr": "",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 461.7639429998235,
+      "source_hash": "7ab62e0e70ac7c51fba47819bb28bad23cbb1eba2d2f603ce27136bed98b3e7f",
+      "artifact_hash": "0e75a29e7229eca1da99cd23418c803fbfa9d2a17ba6b56f19b701f68c06fecb",
+      "runtime_version": "3.12.14",
+      "error_code": null,
+      "passed": true
+    },
+    {
+      "program_id": "X01-recursion-forward-call",
+      "case_id": "factorial-6",
+      "target": "javascript",
+      "inputs": [
+        "factorial",
+        "6"
+      ],
+      "expected_stdout": "Factorial de 6 = 720\n",
+      "actual_stdout": "Factorial de 6 = 720\n",
+      "stderr": "",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 393.29969599930337,
+      "source_hash": "7ab62e0e70ac7c51fba47819bb28bad23cbb1eba2d2f603ce27136bed98b3e7f",
+      "artifact_hash": "a94892fdad5410d637c96e6a339e939258b665a3aaa764c502313476ce4d36f0",
+      "runtime_version": "v22.22.2",
+      "error_code": null,
+      "passed": true
+    },
+    {
+      "program_id": "X01-recursion-forward-call",
+      "case_id": "factorial-base-0",
+      "target": "python",
+      "inputs": [
+        "factorial",
+        "0"
+      ],
+      "expected_stdout": "Factorial de 0 = 1\n",
+      "actual_stdout": "Factorial de 0 = 1\n",
+      "stderr": "",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 441.81570500222733,
+      "source_hash": "7ab62e0e70ac7c51fba47819bb28bad23cbb1eba2d2f603ce27136bed98b3e7f",
+      "artifact_hash": "0e75a29e7229eca1da99cd23418c803fbfa9d2a17ba6b56f19b701f68c06fecb",
+      "runtime_version": "3.12.14",
+      "error_code": null,
+      "passed": true
+    },
+    {
+      "program_id": "X01-recursion-forward-call",
+      "case_id": "factorial-base-0",
+      "target": "javascript",
+      "inputs": [
+        "factorial",
+        "0"
+      ],
+      "expected_stdout": "Factorial de 0 = 1\n",
+      "actual_stdout": "Factorial de 0 = 1\n",
+      "stderr": "",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 403.3855469970149,
+      "source_hash": "7ab62e0e70ac7c51fba47819bb28bad23cbb1eba2d2f603ce27136bed98b3e7f",
+      "artifact_hash": "a94892fdad5410d637c96e6a339e939258b665a3aaa764c502313476ce4d36f0",
+      "runtime_version": "v22.22.2",
+      "error_code": null,
+      "passed": true
+    },
+    {
+      "program_id": "X01-recursion-forward-call",
+      "case_id": "guard-rejects-mode",
+      "target": "python",
+      "inputs": [
+        "otro",
+        "4"
+      ],
+      "expected_stdout": "Entrada no válida\n",
+      "actual_stdout": "Entrada no válida\n",
+      "stderr": "",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 447.91007399908267,
+      "source_hash": "7ab62e0e70ac7c51fba47819bb28bad23cbb1eba2d2f603ce27136bed98b3e7f",
+      "artifact_hash": "0e75a29e7229eca1da99cd23418c803fbfa9d2a17ba6b56f19b701f68c06fecb",
+      "runtime_version": "3.12.14",
+      "error_code": null,
+      "passed": true
+    },
+    {
+      "program_id": "X01-recursion-forward-call",
+      "case_id": "guard-rejects-mode",
+      "target": "javascript",
+      "inputs": [
+        "otro",
+        "4"
+      ],
+      "expected_stdout": "Entrada no válida\n",
+      "actual_stdout": "Entrada no válida\n",
+      "stderr": "",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 407.6823459981824,
+      "source_hash": "7ab62e0e70ac7c51fba47819bb28bad23cbb1eba2d2f603ce27136bed98b3e7f",
+      "artifact_hash": "a94892fdad5410d637c96e6a339e939258b665a3aaa764c502313476ce4d36f0",
+      "runtime_version": "v22.22.2",
+      "error_code": null,
+      "passed": true
+    },
+    {
+      "program_id": "X02-arrays-and-loops",
+      "case_id": "positive-even-count",
+      "target": "python",
+      "inputs": [
+        "4",
+        "-4",
+        "4",
+        "-2",
+        "10"
+      ],
+      "expected_stdout": "Promedio=2\nMayor=10\nPares positivos=2\n",
+      "actual_stdout": "Promedio=2\nMayor=10\nPares positivos=2\n",
+      "stderr": "",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 463.0226829976891,
+      "source_hash": "20b7cb6d9dc9f10225fec06725cfa87aed6901a410d411a92be053201038b15f",
+      "artifact_hash": "a5945c42857ec45a98c41d68be0edbf1c120a1013cc756bdb4a0c00346d8a054",
+      "runtime_version": "3.12.14",
+      "error_code": null,
+      "passed": true
+    },
+    {
+      "program_id": "X02-arrays-and-loops",
+      "case_id": "positive-even-count",
+      "target": "javascript",
+      "inputs": [
+        "4",
+        "-4",
+        "4",
+        "-2",
+        "10"
+      ],
+      "expected_stdout": "Promedio=2\nMayor=10\nPares positivos=2\n",
+      "actual_stdout": "Promedio=2\nMayor=10\nPares positivos=2\n",
+      "stderr": "",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 410.5278319984791,
+      "source_hash": "20b7cb6d9dc9f10225fec06725cfa87aed6901a410d411a92be053201038b15f",
+      "artifact_hash": "cdc1110b3fd9c387ddba018fa8ed35c10193c6d55d6876dc307b424cc7ae6272",
+      "runtime_version": "v22.22.2",
+      "error_code": null,
+      "passed": true
+    },
+    {
+      "program_id": "X02-arrays-and-loops",
+      "case_id": "negative-fractional-average",
+      "target": "python",
+      "inputs": [
+        "3",
+        "-8",
+        "-3",
+        "-2"
+      ],
+      "expected_stdout": "Promedio=-4.33333333333333\nMayor=-2\nPares positivos=0\n",
+      "actual_stdout": "Promedio=-4.33333333333333\nMayor=-2\nPares positivos=0\n",
+      "stderr": "",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 462.2506220039213,
+      "source_hash": "20b7cb6d9dc9f10225fec06725cfa87aed6901a410d411a92be053201038b15f",
+      "artifact_hash": "a5945c42857ec45a98c41d68be0edbf1c120a1013cc756bdb4a0c00346d8a054",
+      "runtime_version": "3.12.14",
+      "error_code": null,
+      "passed": true
+    },
+    {
+      "program_id": "X02-arrays-and-loops",
+      "case_id": "negative-fractional-average",
+      "target": "javascript",
+      "inputs": [
+        "3",
+        "-8",
+        "-3",
+        "-2"
+      ],
+      "expected_stdout": "Promedio=-4.33333333333333\nMayor=-2\nPares positivos=0\n",
+      "actual_stdout": "Promedio=-4.33333333333333\nMayor=-2\nPares positivos=0\n",
+      "stderr": "",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 412.66973900201265,
+      "source_hash": "20b7cb6d9dc9f10225fec06725cfa87aed6901a410d411a92be053201038b15f",
+      "artifact_hash": "cdc1110b3fd9c387ddba018fa8ed35c10193c6d55d6876dc307b424cc7ae6272",
+      "runtime_version": "v22.22.2",
+      "error_code": null,
+      "passed": true
+    },
+    {
+      "program_id": "X02-step-direction-inclusive-loop",
+      "case_id": "auto-descending-inclusive",
+      "target": "python",
+      "inputs": [
+        "5",
+        "1"
+      ],
+      "expected_stdout": "Suma inclusiva=15\n",
+      "actual_stdout": "Suma inclusiva=15\n",
+      "stderr": "",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 493.13456600066274,
+      "source_hash": "08ee791239751e25c06e613175719e25840393d756cb4daf148ada44179b213d",
+      "artifact_hash": "ae38c496845986fe4a1d3e50aac4c58fce6a87cf0155c5493bd55081db756709",
+      "runtime_version": "3.12.14",
+      "error_code": null,
+      "passed": true
+    },
+    {
+      "program_id": "X02-step-direction-inclusive-loop",
+      "case_id": "auto-descending-inclusive",
+      "target": "javascript",
+      "inputs": [
+        "5",
+        "1"
+      ],
+      "expected_stdout": "Suma inclusiva=15\n",
+      "actual_stdout": "Suma inclusiva=15\n",
+      "stderr": "",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 466.71648499614093,
+      "source_hash": "08ee791239751e25c06e613175719e25840393d756cb4daf148ada44179b213d",
+      "artifact_hash": "25d9ff0d94e46ea0364e3957e808442249ae6cb1139c528c32edf2e0ac43e06b",
+      "runtime_version": "v22.22.2",
+      "error_code": null,
+      "passed": true
+    },
+    {
+      "program_id": "X02-step-direction-inclusive-loop",
+      "case_id": "auto-ascending-inclusive",
+      "target": "python",
+      "inputs": [
+        "1",
+        "5"
+      ],
+      "expected_stdout": "Suma inclusiva=15\n",
+      "actual_stdout": "Suma inclusiva=15\n",
+      "stderr": "",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 505.37323300522985,
+      "source_hash": "08ee791239751e25c06e613175719e25840393d756cb4daf148ada44179b213d",
+      "artifact_hash": "ae38c496845986fe4a1d3e50aac4c58fce6a87cf0155c5493bd55081db756709",
+      "runtime_version": "3.12.14",
+      "error_code": null,
+      "passed": true
+    },
+    {
+      "program_id": "X02-step-direction-inclusive-loop",
+      "case_id": "auto-ascending-inclusive",
+      "target": "javascript",
+      "inputs": [
+        "1",
+        "5"
+      ],
+      "expected_stdout": "Suma inclusiva=15\n",
+      "actual_stdout": "Suma inclusiva=15\n",
+      "stderr": "",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 431.60583000280894,
+      "source_hash": "08ee791239751e25c06e613175719e25840393d756cb4daf148ada44179b213d",
+      "artifact_hash": "25d9ff0d94e46ea0364e3957e808442249ae6cb1139c528c32edf2e0ac43e06b",
+      "runtime_version": "v22.22.2",
+      "error_code": null,
+      "passed": true
+    },
+    {
+      "program_id": "X02-step-direction-inclusive-loop",
+      "case_id": "auto-single-iteration",
+      "target": "python",
+      "inputs": [
+        "3",
+        "3"
+      ],
+      "expected_stdout": "Suma inclusiva=3\n",
+      "actual_stdout": "Suma inclusiva=3\n",
+      "stderr": "",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 487.68810099863913,
+      "source_hash": "08ee791239751e25c06e613175719e25840393d756cb4daf148ada44179b213d",
+      "artifact_hash": "ae38c496845986fe4a1d3e50aac4c58fce6a87cf0155c5493bd55081db756709",
+      "runtime_version": "3.12.14",
+      "error_code": null,
+      "passed": true
+    },
+    {
+      "program_id": "X02-step-direction-inclusive-loop",
+      "case_id": "auto-single-iteration",
+      "target": "javascript",
+      "inputs": [
+        "3",
+        "3"
+      ],
+      "expected_stdout": "Suma inclusiva=3\n",
+      "actual_stdout": "Suma inclusiva=3\n",
+      "stderr": "",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 793.8474799957476,
+      "source_hash": "08ee791239751e25c06e613175719e25840393d756cb4daf148ada44179b213d",
+      "artifact_hash": "25d9ff0d94e46ea0364e3957e808442249ae6cb1139c528c32edf2e0ac43e06b",
+      "runtime_version": "v22.22.2",
+      "error_code": null,
+      "passed": true
+    },
+    {
+      "program_id": "X03-unicode-nested-logic",
+      "case_id": "unicode-and-precedence",
+      "target": "python",
+      "inputs": [
+        "área",
+        "3"
+      ],
+      "expected_stdout": "Etiqueta: área / suma: 17\n",
+      "actual_stdout": "Etiqueta: área / suma: 17\n",
+      "stderr": "",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 483.7109329964733,
+      "source_hash": "d75d0be8c1fdd21dc4fab3b0ad207041c26fc3286ec390d7ca4da8894b56ea34",
+      "artifact_hash": "2dea94f6d0c968b474e57f872ddef3abdbbf12ab681d855409d6a319fa170b71",
+      "runtime_version": "3.12.14",
+      "error_code": null,
+      "passed": true
+    },
+    {
+      "program_id": "X03-unicode-nested-logic",
+      "case_id": "unicode-and-precedence",
+      "target": "javascript",
+      "inputs": [
+        "área",
+        "3"
+      ],
+      "expected_stdout": "Etiqueta: área / suma: 17\n",
+      "actual_stdout": "Etiqueta: área / suma: 17\n",
+      "stderr": "",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 442.60465500701685,
+      "source_hash": "d75d0be8c1fdd21dc4fab3b0ad207041c26fc3286ec390d7ca4da8894b56ea34",
+      "artifact_hash": "3eac933ae7f4c6e9302309382fa594f3b47446814b812a30a939ec2e5cae59e2",
+      "runtime_version": "v22.22.2",
+      "error_code": null,
+      "passed": true
+    },
+    {
+      "program_id": "X03-unicode-nested-logic",
+      "case_id": "nested-loop-else-path",
+      "target": "python",
+      "inputs": [
+        "otro",
+        "2"
+      ],
+      "expected_stdout": "Etiqueta: otro / suma: 10\n",
+      "actual_stdout": "Etiqueta: otro / suma: 10\n",
+      "stderr": "",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 468.4822790004546,
+      "source_hash": "d75d0be8c1fdd21dc4fab3b0ad207041c26fc3286ec390d7ca4da8894b56ea34",
+      "artifact_hash": "2dea94f6d0c968b474e57f872ddef3abdbbf12ab681d855409d6a319fa170b71",
+      "runtime_version": "3.12.14",
+      "error_code": null,
+      "passed": true
+    },
+    {
+      "program_id": "X03-unicode-nested-logic",
+      "case_id": "nested-loop-else-path",
+      "target": "javascript",
+      "inputs": [
+        "otro",
+        "2"
+      ],
+      "expected_stdout": "Etiqueta: otro / suma: 10\n",
+      "actual_stdout": "Etiqueta: otro / suma: 10\n",
+      "stderr": "",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 469.0051899960963,
+      "source_hash": "d75d0be8c1fdd21dc4fab3b0ad207041c26fc3286ec390d7ca4da8894b56ea34",
+      "artifact_hash": "3eac933ae7f4c6e9302309382fa594f3b47446814b812a30a939ec2e5cae59e2",
+      "runtime_version": "v22.22.2",
+      "error_code": null,
+      "passed": true
+    },
+    {
+      "program_id": "X04-strings-functions-scopes",
+      "case_id": "string-and-even-result",
+      "target": "python",
+      "inputs": [
+        "Ada",
+        "5"
+      ],
+      "expected_stdout": "Hola, Ada\nMitad=7\n",
+      "actual_stdout": "Hola, Ada\nMitad=7\n",
+      "stderr": "",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 485.1854789958452,
+      "source_hash": "a10437b6260dff988466937880d53a9f36bb608bfc414d5d52422d0c768f0569",
+      "artifact_hash": "2713ea8749fcaacb35563cbd5419f24188b46aa6b5080d2db05135f799c59bb6",
+      "runtime_version": "3.12.14",
+      "error_code": null,
+      "passed": true
+    },
+    {
+      "program_id": "X04-strings-functions-scopes",
+      "case_id": "string-and-even-result",
+      "target": "javascript",
+      "inputs": [
+        "Ada",
+        "5"
+      ],
+      "expected_stdout": "Hola, Ada\nMitad=7\n",
+      "actual_stdout": "Hola, Ada\nMitad=7\n",
+      "stderr": "",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 425.07161300454754,
+      "source_hash": "a10437b6260dff988466937880d53a9f36bb608bfc414d5d52422d0c768f0569",
+      "artifact_hash": "5db64f69ad186f75b4ce843da0b172d50385cb83b1b68824a26b08b41bc9f92a",
+      "runtime_version": "v22.22.2",
+      "error_code": null,
+      "passed": true
+    },
+    {
+      "program_id": "X04-strings-functions-scopes",
+      "case_id": "empty-string-and-odd-result",
+      "target": "python",
+      "inputs": [
+        "",
+        "4"
+      ],
+      "expected_stdout": "Hola, invitado\nResultado=11\n",
+      "actual_stdout": "Hola, invitado\nResultado=11\n",
+      "stderr": "",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 488.3984599946416,
+      "source_hash": "a10437b6260dff988466937880d53a9f36bb608bfc414d5d52422d0c768f0569",
+      "artifact_hash": "2713ea8749fcaacb35563cbd5419f24188b46aa6b5080d2db05135f799c59bb6",
+      "runtime_version": "3.12.14",
+      "error_code": null,
+      "passed": true
+    },
+    {
+      "program_id": "X04-strings-functions-scopes",
+      "case_id": "empty-string-and-odd-result",
+      "target": "javascript",
+      "inputs": [
+        "",
+        "4"
+      ],
+      "expected_stdout": "Hola, invitado\nResultado=11\n",
+      "actual_stdout": "Hola, invitado\nResultado=11\n",
+      "stderr": "",
+      "status": "completed",
+      "exit_code": 0,
+      "duration_ms": 440.35892599640647,
+      "source_hash": "a10437b6260dff988466937880d53a9f36bb608bfc414d5d52422d0c768f0569",
+      "artifact_hash": "5db64f69ad186f75b4ce843da0b172d50385cb83b1b68824a26b08b41bc9f92a",
+      "runtime_version": "v22.22.2",
+      "error_code": null,
+      "passed": true
+    }
+  ],
+  "invalid_programs": [
+    {
+      "id": "N01-missing-terminator",
+      "passed": true,
+      "source_hash": "ebee7d04b92969adf3b5a2253d8de455d755c549072b4ecd89b32dfa35556128",
+      "expected_diagnostics": [
+        {
+          "code": "SYN_UNEXPECTED_TOKEN",
+          "stage": "syntax",
+          "line": 4,
+          "column": 1
+        },
+        {
+          "code": "SYN_UNEXPECTED_TOKEN",
+          "stage": "syntax",
+          "line": 5,
+          "column": 1
+        }
+      ],
+      "actual_diagnostics": [
+        {
+          "code": "SYN_UNEXPECTED_TOKEN",
+          "stage": "syntax",
+          "line": 4,
+          "column": 1
+        },
+        {
+          "code": "SYN_UNEXPECTED_TOKEN",
+          "stage": "syntax",
+          "line": 5,
+          "column": 1
+        }
+      ],
+      "diagnostic_messages": [
+        {
+          "code": "SYN_UNEXPECTED_TOKEN",
+          "stage": "syntax",
+          "severity": "error",
+          "line": 4,
+          "column": 1,
+          "end_line": 4,
+          "end_column": 4,
+          "message": "Falta FinSi para cerrar Si."
+        },
+        {
+          "code": "SYN_UNEXPECTED_TOKEN",
+          "stage": "syntax",
+          "severity": "error",
+          "line": 5,
+          "column": 1,
+          "end_line": 5,
+          "end_column": 1,
+          "message": "Falta Fin para cerrar el programa."
+        }
+      ]
+    },
+    {
+      "id": "N02-undefined-identifier",
+      "passed": true,
+      "source_hash": "84033f5d3f56b7aa1af625ab43bd86df651a30fe3ddafb993fa082891da8d0ad",
+      "expected_diagnostics": [
+        {
+          "code": "SEM_UNDEFINED_IDENTIFIER",
+          "stage": "semantic",
+          "line": 2,
+          "column": 10
+        }
+      ],
+      "actual_diagnostics": [
+        {
+          "code": "SEM_UNDEFINED_IDENTIFIER",
+          "stage": "semantic",
+          "line": 2,
+          "column": 10
+        }
+      ],
+      "diagnostic_messages": [
+        {
+          "code": "SEM_UNDEFINED_IDENTIFIER",
+          "stage": "semantic",
+          "severity": "error",
+          "line": 2,
+          "column": 10,
+          "end_line": 2,
+          "end_column": 17,
+          "message": "Variable 'ausente' no definida."
+        }
+      ]
+    },
+    {
+      "id": "N03-invalid-condition-type",
+      "passed": true,
+      "source_hash": "a1cf111adcf6bee0a8287fddc24f6ffca15d46d859b63cef8bec6d68ac7cc713",
+      "expected_diagnostics": [
+        {
+          "code": "SEM_TYPE_MISMATCH",
+          "stage": "semantic",
+          "line": 2,
+          "column": 4
+        }
+      ],
+      "actual_diagnostics": [
+        {
+          "code": "SEM_TYPE_MISMATCH",
+          "stage": "semantic",
+          "line": 2,
+          "column": 4
+        }
+      ],
+      "diagnostic_messages": [
+        {
+          "code": "SEM_TYPE_MISMATCH",
+          "stage": "semantic",
+          "severity": "error",
+          "line": 2,
+          "column": 4,
+          "end_line": 2,
+          "end_column": 5,
+          "message": "La condición Si debe ser booleana."
+        }
+      ]
+    },
+    {
+      "id": "N04-constant-division-by-zero",
+      "passed": true,
+      "source_hash": "2601708d33a1191b6e4500b5d63c915c3b79df00f779bc2c18ddbdd4a803e609",
+      "expected_diagnostics": [
+        {
+          "code": "SEM_DIV_ZERO",
+          "stage": "semantic",
+          "line": 2,
+          "column": 18
+        }
+      ],
+      "actual_diagnostics": [
+        {
+          "code": "SEM_DIV_ZERO",
+          "stage": "semantic",
+          "line": 2,
+          "column": 18
+        }
+      ],
+      "diagnostic_messages": [
+        {
+          "code": "SEM_DIV_ZERO",
+          "stage": "semantic",
+          "severity": "error",
+          "line": 2,
+          "column": 18,
+          "end_line": 2,
+          "end_column": 19,
+          "message": "División constante entre cero."
+        }
+      ]
+    },
+    {
+      "id": "N05-uninitialized-branch-variable",
+      "passed": true,
+      "source_hash": "978ae6af03c703ec69677f31aed8a965695dd40213be3ea7ab171fd8978bf000",
+      "expected_diagnostics": [
+        {
+          "code": "SEM_UNINITIALIZED",
+          "stage": "semantic",
+          "line": 5,
+          "column": 10
+        }
+      ],
+      "actual_diagnostics": [
+        {
+          "code": "SEM_UNINITIALIZED",
+          "stage": "semantic",
+          "line": 5,
+          "column": 10
+        }
+      ],
+      "diagnostic_messages": [
+        {
+          "code": "SEM_UNINITIALIZED",
+          "stage": "semantic",
+          "severity": "error",
+          "line": 5,
+          "column": 10,
+          "end_line": 5,
+          "end_column": 17,
+          "message": "'parcial' puede usarse antes de inicializarse."
+        }
+      ]
+    },
+    {
+      "id": "N06-string-function-wrong-argument-type",
+      "passed": true,
+      "source_hash": "14c9c580cced9c187855f52404ef2d538aefaa21b24f843faf465da89784c487",
+      "expected_diagnostics": [
+        {
+          "code": "SEM_TYPE_MISMATCH",
+          "stage": "semantic",
+          "line": 3,
+          "column": 10
+        }
+      ],
+      "actual_diagnostics": [
+        {
+          "code": "SEM_TYPE_MISMATCH",
+          "stage": "semantic",
+          "line": 3,
+          "column": 10
+        }
+      ],
+      "diagnostic_messages": [
+        {
+          "code": "SEM_TYPE_MISMATCH",
+          "stage": "semantic",
+          "severity": "error",
+          "line": 3,
+          "column": 10,
+          "end_line": 3,
+          "end_column": 25,
+          "message": "'persona' tiene tipo string; no puede usarse como number."
+        }
+      ]
+    }
+  ],
+  "runtime_errors": [
+    {
+      "id": "R01-division-by-zero",
+      "target": "python",
+      "inputs": [
+        "0"
+      ],
+      "expected_error_code": "RUN_DIV_ZERO",
+      "expected_error_line": 3,
+      "status": "runtime_error",
+      "exit_code": 70,
+      "error_code": "RUN_DIV_ZERO",
+      "duration_ms": 476.67940700193867,
+      "source_hash": "1dbcbba4e396abb2d5ec17a0bb0ec9a4c00eca14e084b418a5b56a1cc0cb5b43",
+      "artifact_hash": "3e466385c5230ceffc2e813285318c2fdf7062e24f94b6d5ba060ca80ea0c630",
+      "runtime_version": "3.12.14",
+      "actual_diagnostic": {
+        "code": "RUN_DIV_ZERO",
+        "line": 3,
+        "column": 13,
+        "message": "División entre cero."
+      },
+      "stderr": "PSEUDO_RUNTIME_ERROR {\"code\": \"RUN_DIV_ZERO\", \"line\": 3, \"column\": 13, \"message\": \"División entre cero.\"}\n",
+      "passed": true
+    },
+    {
+      "id": "R01-division-by-zero",
+      "target": "javascript",
+      "inputs": [
+        "0"
+      ],
+      "expected_error_code": "RUN_DIV_ZERO",
+      "expected_error_line": 3,
+      "status": "runtime_error",
+      "exit_code": 70,
+      "error_code": "RUN_DIV_ZERO",
+      "duration_ms": 437.5778889952926,
+      "source_hash": "1dbcbba4e396abb2d5ec17a0bb0ec9a4c00eca14e084b418a5b56a1cc0cb5b43",
+      "artifact_hash": "c6192080d1028bfdf2887316d98d743518958db27f2b38f14a9ea79c35e81059",
+      "runtime_version": "v22.22.2",
+      "actual_diagnostic": {
+        "code": "RUN_DIV_ZERO",
+        "line": 3,
+        "column": 13,
+        "message": "División entre cero."
+      },
+      "stderr": "PSEUDO_RUNTIME_ERROR {\"code\":\"RUN_DIV_ZERO\",\"line\":3,\"column\":13,\"message\":\"División entre cero.\"}\n",
+      "passed": true
+    },
+    {
+      "id": "R02-array-bounds",
+      "target": "python",
+      "inputs": [
+        "3"
+      ],
+      "expected_error_code": "RUN_BOUNDS",
+      "expected_error_line": 4,
+      "status": "runtime_error",
+      "exit_code": 70,
+      "error_code": "RUN_BOUNDS",
+      "duration_ms": 455.45571600086987,
+      "source_hash": "6970a878275fdd962bcd3f8cd201c14928c23b08d1f1c4eb3e37968c79521e66",
+      "artifact_hash": "c1d32f79fc1d5f8cf69c1039476090239f5d090a346628b1d50a5365d6674601",
+      "runtime_version": "3.12.14",
+      "actual_diagnostic": {
+        "code": "RUN_BOUNDS",
+        "line": 4,
+        "column": 10,
+        "message": "Índice fuera del rango 1..2."
+      },
+      "stderr": "PSEUDO_RUNTIME_ERROR {\"code\": \"RUN_BOUNDS\", \"line\": 4, \"column\": 10, \"message\": \"Índice fuera del rango 1..2.\"}\n",
+      "passed": true
+    },
+    {
+      "id": "R02-array-bounds",
+      "target": "javascript",
+      "inputs": [
+        "3"
+      ],
+      "expected_error_code": "RUN_BOUNDS",
+      "expected_error_line": 4,
+      "status": "runtime_error",
+      "exit_code": 70,
+      "error_code": "RUN_BOUNDS",
+      "duration_ms": 417.4360600009095,
+      "source_hash": "6970a878275fdd962bcd3f8cd201c14928c23b08d1f1c4eb3e37968c79521e66",
+      "artifact_hash": "7ce0ece8a82732e7fad7835950b4eedc94b31778e22b2110ed8615a2cf83dcfa",
+      "runtime_version": "v22.22.2",
+      "actual_diagnostic": {
+        "code": "RUN_BOUNDS",
+        "line": 4,
+        "column": 10,
+        "message": "Índice fuera del rango 1..2."
+      },
+      "stderr": "PSEUDO_RUNTIME_ERROR {\"code\":\"RUN_BOUNDS\",\"line\":4,\"column\":10,\"message\":\"Índice fuera del rango 1..2.\"}\n",
+      "passed": true
+    },
+    {
+      "id": "R03-uninitialized-array-value",
+      "target": "python",
+      "inputs": [],
+      "expected_error_code": "RUN_UNINITIALIZED",
+      "expected_error_line": 3,
+      "status": "runtime_error",
+      "exit_code": 70,
+      "error_code": "RUN_UNINITIALIZED",
+      "duration_ms": 447.1680830029072,
+      "source_hash": "53a886a06ab43839910e91b1114c8d298e19a17729835f65fb0651fba0fa9242",
+      "artifact_hash": "dfba5c868eca1bde3e89ef8fab0f0a6fad2976ef7da868b16fb056f27d52c990",
+      "runtime_version": "3.12.14",
+      "actual_diagnostic": {
+        "code": "RUN_UNINITIALIZED",
+        "line": 3,
+        "column": 10,
+        "message": "La posición del arreglo no se ha inicializado."
+      },
+      "stderr": "PSEUDO_RUNTIME_ERROR {\"code\": \"RUN_UNINITIALIZED\", \"line\": 3, \"column\": 10, \"message\": \"La posición del arreglo no se ha inicializado.\"}\n",
+      "passed": true
+    },
+    {
+      "id": "R03-uninitialized-array-value",
+      "target": "javascript",
+      "inputs": [],
+      "expected_error_code": "RUN_UNINITIALIZED",
+      "expected_error_line": 3,
+      "status": "runtime_error",
+      "exit_code": 70,
+      "error_code": "RUN_UNINITIALIZED",
+      "duration_ms": 405.93162800360005,
+      "source_hash": "53a886a06ab43839910e91b1114c8d298e19a17729835f65fb0651fba0fa9242",
+      "artifact_hash": "efb3ffaf1eb6739caba8c7ca1086ab9495d3382d5366da43f1044711b6ac4c5e",
+      "runtime_version": "v22.22.2",
+      "actual_diagnostic": {
+        "code": "RUN_UNINITIALIZED",
+        "line": 3,
+        "column": 10,
+        "message": "La posición del arreglo no se ha inicializado."
+      },
+      "stderr": "PSEUDO_RUNTIME_ERROR {\"code\":\"RUN_UNINITIALIZED\",\"line\":3,\"column\":10,\"message\":\"La posición del arreglo no se ha inicializado.\"}\n",
+      "passed": true
+    },
+    {
+      "id": "R04-invalid-dynamic-dimension",
+      "target": "python",
+      "inputs": [
+        "0"
+      ],
+      "expected_error_code": "RUN_INVALID_DIMENSION",
+      "expected_error_line": 3,
+      "status": "runtime_error",
+      "exit_code": 70,
+      "error_code": "RUN_INVALID_DIMENSION",
+      "duration_ms": 456.4140820002649,
+      "source_hash": "d3b2cb0c607ab6712dd428d6b846cf9c362e3ef0ed2e821faf360b285cb39b05",
+      "artifact_hash": "4d5b2a31358c0f6b701217763b24b09eb72e226828e576ba13afd502f562b1a7",
+      "runtime_version": "3.12.14",
+      "actual_diagnostic": {
+        "code": "RUN_INVALID_DIMENSION",
+        "line": 3,
+        "column": 1,
+        "message": "Dimension requiere un tamaño positivo."
+      },
+      "stderr": "PSEUDO_RUNTIME_ERROR {\"code\": \"RUN_INVALID_DIMENSION\", \"line\": 3, \"column\": 1, \"message\": \"Dimension requiere un tamaño positivo.\"}\n",
+      "passed": true
+    },
+    {
+      "id": "R04-invalid-dynamic-dimension",
+      "target": "javascript",
+      "inputs": [
+        "0"
+      ],
+      "expected_error_code": "RUN_INVALID_DIMENSION",
+      "expected_error_line": 3,
+      "status": "runtime_error",
+      "exit_code": 70,
+      "error_code": "RUN_INVALID_DIMENSION",
+      "duration_ms": 409.9367950038868,
+      "source_hash": "d3b2cb0c607ab6712dd428d6b846cf9c362e3ef0ed2e821faf360b285cb39b05",
+      "artifact_hash": "05b19120e21ed84be7d45c4fb859fe7dec7b60618603fbad84f3d109ceb9669d",
+      "runtime_version": "v22.22.2",
+      "actual_diagnostic": {
+        "code": "RUN_INVALID_DIMENSION",
+        "line": 3,
+        "column": 1,
+        "message": "Dimension requiere un tamaño positivo."
+      },
+      "stderr": "PSEUDO_RUNTIME_ERROR {\"code\":\"RUN_INVALID_DIMENSION\",\"line\":3,\"column\":1,\"message\":\"Dimension requiere un tamaño positivo.\"}\n",
+      "passed": true
+    },
+    {
+      "id": "R05-invalid-numeric-input",
+      "target": "python",
+      "inputs": [
+        "abc"
+      ],
+      "expected_error_code": "RUN_INPUT_INVALID",
+      "expected_error_line": 2,
+      "status": "runtime_error",
+      "exit_code": 70,
+      "error_code": "RUN_INPUT_INVALID",
+      "duration_ms": 466.28985599818407,
+      "source_hash": "ebd67d2079eb7704d2a76438a39ff9325d2c780bc8b7cebd0db8fce2d97acb6a",
+      "artifact_hash": "603efc5fafa537e8ff3c234fd113f2b2c28446b08ae3a2ea07e564b70c12493f",
+      "runtime_version": "3.12.14",
+      "actual_diagnostic": {
+        "code": "RUN_INPUT_INVALID",
+        "line": 2,
+        "column": 1,
+        "message": "Se esperaba un número decimal finito."
+      },
+      "stderr": "PSEUDO_RUNTIME_ERROR {\"code\": \"RUN_INPUT_INVALID\", \"line\": 2, \"column\": 1, \"message\": \"Se esperaba un número decimal finito.\"}\n",
+      "passed": true
+    },
+    {
+      "id": "R05-invalid-numeric-input",
+      "target": "javascript",
+      "inputs": [
+        "abc"
+      ],
+      "expected_error_code": "RUN_INPUT_INVALID",
+      "expected_error_line": 2,
+      "status": "runtime_error",
+      "exit_code": 70,
+      "error_code": "RUN_INPUT_INVALID",
+      "duration_ms": 413.47532700456213,
+      "source_hash": "ebd67d2079eb7704d2a76438a39ff9325d2c780bc8b7cebd0db8fce2d97acb6a",
+      "artifact_hash": "52b154fa10cb2586e456e8140e3567a623f006dee9cd20b62bee504391aceb28",
+      "runtime_version": "v22.22.2",
+      "actual_diagnostic": {
+        "code": "RUN_INPUT_INVALID",
+        "line": 2,
+        "column": 1,
+        "message": "Se esperaba un número decimal finito."
+      },
+      "stderr": "PSEUDO_RUNTIME_ERROR {\"code\":\"RUN_INPUT_INVALID\",\"line\":2,\"column\":1,\"message\":\"Se esperaba un número decimal finito.\"}\n",
+      "passed": true
+    }
+  ]
+}

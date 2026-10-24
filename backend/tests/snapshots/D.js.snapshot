@@ -47,6 +47,10 @@ function __ps_format(value) {
   return String(value);
 }
 function __ps_write(...values) { __ps_process.stdout.write(values.map(__ps_format).join("") + "\n"); }
+function __ps_check_number(value, line, column) {
+  if (!Number.isFinite(value)) __ps_fail("RUN_NONFINITE", line, column, "La operación produjo un número no finito.");
+  return value;
+}
 function __ps_safe_int(value, line, column, label) {
   if (!Number.isSafeInteger(value)) __ps_fail("RUN_INVALID_INTEGER", line, column, label + " debe ser un entero seguro.");
   return value;
@@ -98,7 +102,7 @@ try {
     while (__ps_tmp_3_step > 0 ? __ps_user_v_676c6f62616c0069 <= __ps_tmp_2_end : __ps_user_v_676c6f62616c0069 >= __ps_tmp_2_end) {
         __ps_write("Ingrese el n\u00famero ", __ps_user_v_676c6f62616c0069, ":");
         __ps_set(__ps_user_v_676c6f62616c006e756d65726f73, __ps_user_v_676c6f62616c0069, __ps_read_number(9, 9), 9, 9);
-        __ps_user_v_676c6f62616c0073756d61 = (__ps_user_v_676c6f62616c0073756d61 + __ps_get(__ps_user_v_676c6f62616c006e756d65726f73, __ps_user_v_676c6f62616c0069, 10, 23));
+        __ps_user_v_676c6f62616c0073756d61 = __ps_check_number((__ps_user_v_676c6f62616c0073756d61 + __ps_get(__ps_user_v_676c6f62616c006e756d65726f73, __ps_user_v_676c6f62616c0069, 10, 23)), 10, 16);
         if ((__ps_get(__ps_user_v_676c6f62616c006e756d65726f73, __ps_user_v_676c6f62616c0069, 11, 12) > __ps_user_v_676c6f62616c006d6178)) {
             __ps_user_v_676c6f62616c006d6178 = __ps_get(__ps_user_v_676c6f62616c006e756d65726f73, __ps_user_v_676c6f62616c0069, 12, 19);
         }

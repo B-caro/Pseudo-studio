@@ -38,7 +38,7 @@ Si el runtime informa sandbox degradado, no habilita la ejecución: confirma Doc
 
 1. Escribe o abre `.psc`; **Analizar** genera tokens, AST, símbolos, spans y diagnósticos a partir del compilador.
 2. **Traducir** produce archivos Python y JavaScript independientes, junto con hashes y mapas de líneas.
-3. **Consola** ejecuta ambos targets en contenedores aislados, permite entrada interactiva por WebSocket y cancelación efectiva.
+3. **Consola** ejecuta ambos targets en contenedores aislados, permite entrada interactiva por WebSocket y cancelación efectiva. La espera de stdin no consume el presupuesto de ejecución; el límite sigue activo mientras el programa calcula sin pedir entrada.
 4. **Pruebas** corre los ejemplos oficiales A–E o casos propios en ambos runtimes y compara stdout/stderr/estado. El informe conserva los diffs crudos Python↔Node y presenta aparte la equivalencia que solo normaliza CRLF/CR a LF.
 5. **Proyectos** guarda código en SQLite, conserva versiones e historial de ejecución y permite recuperar el proyecto tras recargar.
 6. Exporta fuentes, generadores, AST, símbolos, diagnósticos y reportes JSON/Markdown/PDF desde los paneles correspondientes.
@@ -63,7 +63,10 @@ npm run build
 npm run test:e2e
 cd ..
 python3.12 scripts/run_official_acceptance.py
+python3.12 scripts/run_extended_acceptance.py
 ```
+
+La suite de programas inéditos, spans de errores y ejecuciones diferenciales en ambos runtimes está descrita en [docs/EXTENDED_TESTING.md](docs/EXTENDED_TESTING.md). Sus fuentes y entradas se mantienen separadas de los casos oficiales A–E en `examples/extended/`.
 
 El runner y pruebas end-to-end requieren OCI disponible y verificado. La aceptación emite detalle de entradas, expected/actual, salida, stderr, estado, duración y hashes en `reports/acceptance-results.json` y `.md`. El benchmark registra percentiles medidos para análisis de 100 y 1.000 líneas en `reports/compiler-performance.json` y `.md`. Consulta `docs/IMPLEMENTATION_STATUS.md` y `docs/TRACEABILITY.md` para el estado observado; los pasos precisos para cerrar las verificaciones externas están en `docs/REMAINING_GATES.md`. Una casilla solo se marca cuando existe evidencia reproducible.
 

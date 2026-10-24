@@ -47,6 +47,10 @@ function __ps_format(value) {
   return String(value);
 }
 function __ps_write(...values) { __ps_process.stdout.write(values.map(__ps_format).join("") + "\n"); }
+function __ps_check_number(value, line, column) {
+  if (!Number.isFinite(value)) __ps_fail("RUN_NONFINITE", line, column, "La operación produjo un número no finito.");
+  return value;
+}
 function __ps_safe_int(value, line, column, label) {
   if (!Number.isSafeInteger(value)) __ps_fail("RUN_INVALID_INTEGER", line, column, label + " debe ser un entero seguro.");
   return value;
