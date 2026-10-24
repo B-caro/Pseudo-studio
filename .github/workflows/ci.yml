@@ -45,7 +45,8 @@ jobs:
             echo "Rootful Docker is still active; refusing to continue with an unisolated runner."
             exit 1
           fi
-          curl -fsSL https://get.docker.com/rootless | sh
+          # The installer starts RootlessKit before it returns, so load its AppArmor
+          # exception first (the binary is installed at this path by the installer).
           if [ -r /sys/module/apparmor/parameters/enabled ] && grep -q '^Y' /sys/module/apparmor/parameters/enabled; then
             profile_name="$(printf '%s' "$HOME/bin/rootlesskit" | sed 's#^/##; s#/#.#g')"
             {
@@ -54,7 +55,7 @@ jobs:
             } | sudo tee "/etc/apparmor.d/${profile_name}" >/dev/null
             sudo systemctl restart apparmor.service
           fi
-          dockerd-rootless-setuptool.sh install
+          curl -fsSL https://get.docker.com/rootless | sh
           runner_uid="$(id -u)"
           sudo loginctl enable-linger "$runner_user"
           export XDG_RUNTIME_DIR="/run/user/${runner_uid}"
