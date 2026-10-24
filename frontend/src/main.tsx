@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { Editor, type EditorHandle } from "./Editor";
+import "./ast.css";
 import "./style.css";
 
 type Span = { start: number; end: number; start_line: number; start_column: number; end_line: number; end_column: number };
@@ -8,10 +9,13 @@ type Diagnostic = { code: string; stage: string; severity: string; message: stri
 type CompileResult = {
   compiler_version: string; source_hash: string; translatable: boolean; tokens: Array<Record<string, any>>;
   ast: Record<string, any> | null; symbols: Array<Record<string, any>>; diagnostics: Diagnostic[];
-  phases: Record<string, { status: string; duration_ms: number }>; artifacts: Record<string, { source: string; artifact_hash: string; source_map?: Array<{ generated_line: number; source_span: Span }> }>;
+  phases: Record<string, { status: string; duration_ms: number }>; artifacts: Record<string, {
+    source: string; artifact_hash: string; source_map?: Array<{ generated_line: number; source_span: Span }>;
+    program_source?: string; program_source_map?: Array<{ generated_line: number; source_span: Span }>;
+  }>;
 };
 type Project = { id: string; name: string; source: string; source_hash: string; version: number; updated_at: string };
-type NavTab = "editor" | "translate" | "console" | "tests" | "projects" | "defense" | "help";
+type NavTab = "editor" | "translate" | "equivalences" | "console" | "tests" | "projects" | "defense" | "help";
 type Run = { run_id: string; target: string; status: string; stdout: string; stderr: string; exit_code: number | null; duration_ms: number; error_code: string | null; source_hash: string; artifact_hash: string; runtime_version: string };
 type EditableTestCase = { id: string; inputs: string; expected_stdout: string };
 
@@ -23,9 +27,95 @@ Fin
 `;
 const INVALID_SAMPLE = "Inicio\nEscribir @\nFin\n";
 const labels: Record<NavTab, string> = {
-  editor: "Editor", translate: "Traducción", console: "Consola", tests: "Pruebas",
+  editor: "Editor", translate: "Traducción", equivalences: "Equivalencias", console: "Consola", tests: "Pruebas",
   projects: "Proyectos", defense: "Defensa", help: "Ayuda",
 };
+const equivalences = [
+  {
+    group: "Operadores",
+    source: "a + b   a - b   a * b",
+    python: "a + b   a - b   a * b",
+    javascript: "a + b   a - b   a * b",
+    note: "Se conservan los operadores aritméticos básicos.",
+  },
+  {
+    group: "Operadores",
+    source: "a / b   ·   a Modulo b",
+    python: "__ps_div(a, b, línea, columna)\n__ps_mod(a, b, línea, columna)",
+    javascript: "__ps_div(a, b, línea, columna)\n__ps_mod(a, b, línea, columna)",
+    note: "Las funciones auxiliares detectan división o módulo entre cero y reportan la ubicación del pseudocódigo.",
+  },
+  {
+    group: "Lógica y valores",
+    source: "a Y b   ·   a O b   ·   No a",
+    python: "a and b   ·   a or b   ·   not a",
+    javascript: "a && b   ·   a || b   ·   !a",
+    note: "Y, O y No conservan su significado lógico en cada destino.",
+  },
+  {
+    group: "Lógica y valores",
+    source: "Verdadero   ·   Falso",
+    python: "True   ·   False",
+    javascript: "true   ·   false",
+    note: "Los literales booleanos adoptan la escritura de cada lenguaje.",
+  },
+  {
+    group: "Entrada y salida",
+    source: "Leer numero",
+    python: "numero = __ps_read_number(línea, columna)",
+    javascript: "numero = __ps_read_number(línea, columna);",
+    note: "El runtime solicita y valida una entrada numérica antes de asignarla.",
+  },
+  {
+    group: "Entrada y salida",
+    source: "LeerTexto nombre",
+    python: "nombre = __ps_read_text(línea, columna)",
+    javascript: "nombre = __ps_read_text(línea, columna);",
+    note: "Lee texto y lo asigna a la variable indicada.",
+  },
+  {
+    group: "Entrada y salida",
+    source: 'Escribir "Hola", nombre',
+    python: '__ps_write("Hola", nombre)',
+    javascript: '__ps_write("Hola", nombre);',
+    note: "El helper de salida da el mismo formato a números y valores lógicos en ambos runtimes.",
+  },
+  {
+    group: "Control de flujo",
+    source: "Si condicion Entonces\n  ...\nSino\n  ...\nFinSi",
+    python: "if condicion:\n    ...\nelse:\n    ...",
+    javascript: "if (condicion) {\n  ...\n} else {\n  ...\n}",
+    note: "El generador conserva las ramas y la condición del AST.",
+  },
+  {
+    group: "Control de flujo",
+    source: "Mientras condicion Hacer\n  ...\nFinMientras",
+    python: "while condicion:\n    ...",
+    javascript: "while (condicion) {\n  ...\n}",
+    note: "El cuerpo se repite mientras la condición sea verdadera.",
+  },
+  {
+    group: "Control de flujo",
+    source: "Para i = inicio Hasta limite Paso 1 Hacer\n  ...\nFinPara",
+    python: "# calcula inicio, limite y paso\nwhile i <= limite:\n    ...\n    i += paso",
+    javascript: "// calcula inicio, limite y paso\nwhile (i <= limite) {\n  ...\n  i += paso;\n}",
+    note: "Se genera un while con límites inclusivos y control del paso para preservar la semántica del pseudocódigo.",
+  },
+  {
+    group: "Arreglos",
+    source: "Dimension datos[5]   ·   datos[i]",
+    python: "datos = __ps_new_array(5, línea, columna)\n__ps_get(datos, i, línea, columna)",
+    javascript: "datos = __ps_new_array(5, línea, columna);\n__ps_get(datos, i, línea, columna);",
+    note: "Los helpers mantienen índices desde 1 y comprueban dimensiones y límites.",
+  },
+  {
+    group: "Funciones",
+    source: "Funcion doble(x)\n  Retornar x * 2\nFinFuncion",
+    python: "def doble(x):\n    return x * 2",
+    javascript: "function doble(x) {\n  return x * 2;\n}",
+    note: "Parámetros y valor de retorno pasan a la definición de función del destino.",
+  },
+];
 const exampleTitles: Record<string, string> = {
   A: "Operaciones aritméticas", B: "Condicional anidado", C: "Para y acumuladores",
   D: "Arreglos 1-based", E: "Funciones y retorno",
@@ -60,10 +150,12 @@ function downloadText(name: string, content: string, mime = "text/plain;charset=
 function App() {
   const [tab, setTab] = useState<NavTab>("editor");
   const [source, setSource] = useState(() => localStorage.getItem("pseudo-studio:draft") ?? STARTER);
+  const [sourceReady, setSourceReady] = useState(() => Boolean(localStorage.getItem("pseudo-studio:draft")));
   const [analysis, setAnalysis] = useState<CompileResult | null>(null);
   const [analysisRevision, setAnalysisRevision] = useState(-1);
   const [translation, setTranslation] = useState<CompileResult | null>(null);
   const [translationRevision, setTranslationRevision] = useState(-1);
+  const [codeView, setCodeView] = useState<"complete" | "program">("complete");
   const [selectedInspector, setSelectedInspector] = useState<"tokens" | "ast" | "symbols" | "diagnostics" | "phases">("tokens");
   const [revision, setRevision] = useState(0);
   const [health, setHealth] = useState<Record<string, any> | null>(null);
@@ -90,6 +182,7 @@ function App() {
   const [defenseStep, setDefenseStep] = useState(-1);
   const [defenseLog, setDefenseLog] = useState<Array<{ phase: string; result: string; source_hash?: string }>>([]);
   const editorRef = useRef<EditorHandle>(null);
+  const terminalRef = useRef<HTMLPreElement>(null);
   const wsRef = useRef<WebSocket | null>(null);
   const autoSaveTimer = useRef<number | undefined>(undefined);
   const sourceWasEdited = useRef(false);
@@ -97,8 +190,15 @@ function App() {
   const translationIsStale = translation !== null && translationRevision !== revision;
   const currentCompileInvalid = analysis !== null && analysisRevision === revision && !analysis.translatable;
 
+  useEffect(() => {
+    if (terminalRef.current) {
+      terminalRef.current.scrollTop = terminalRef.current.scrollHeight;
+    }
+  }, [consoleText, inputRequested]);
+
   const setSourceChanged = useCallback((value: string) => {
     sourceWasEdited.current = true;
+    setSourceReady(true);
     setSource(value);
     setRevision((current) => current + 1);
     setProjectState("Cambios pendientes");
@@ -182,10 +282,12 @@ function App() {
     void fetch(`${API}/grammar`).then((response) => response.ok ? response.text() : "").then(setGrammar).catch(() => setGrammar(""));
     if (!localStorage.getItem("pseudo-studio:draft")) {
       void request<{ source: string }>("/examples/A").then((result) => {
-        if (sourceWasEdited.current) return;
-        setSource(result.source);
-        localStorage.setItem("pseudo-studio:draft", result.source);
-      }).catch(() => undefined);
+        if (!sourceWasEdited.current) {
+          setSource(result.source);
+          localStorage.setItem("pseudo-studio:draft", result.source);
+        }
+        setSourceReady(true);
+      }).catch(() => setSourceReady(true));
     }
     const healthTimer = window.setInterval(() => void refreshHealth(), 15_000);
     return () => window.clearInterval(healthTimer);
@@ -540,7 +642,8 @@ function App() {
 
   const focusSpan = (span?: Span) => {
     if (!span) return;
-    editorRef.current?.focusSpan(span.start, span.end);
+    const codePointToUtf16 = (offset: number) => Array.from(source).slice(0, offset).join("").length;
+    editorRef.current?.focusSpan(codePointToUtf16(span.start), codePointToUtf16(span.end));
     setTab("editor");
   };
 
@@ -550,6 +653,7 @@ function App() {
     if (!analysis || analysisRevision !== revision) return "Sin análisis actual";
     return Object.entries(analysis.phases).map(([name, phase]) => `${name} ${phase.status}`).join(" · ");
   }, [analysis, analysisRevision, revision]);
+  const isNoticeError = Boolean(notice && /no se pudo|bloquead|error|falló|conflicto|supera el límite/i.test(notice));
 
   return <div className="app-shell">
     <header className="topbar">
@@ -572,7 +676,7 @@ function App() {
       <span className={`sandbox-indicator ${sandboxStatus ? "online" : "offline"}`}><i />{sandboxStatus ? "Sandbox verificado" : "Sandbox no disponible"}</span>
     </nav>
 
-    {notice && <div className="notice" role="status"><span>{notice}</span><button aria-label="Cerrar aviso" onClick={() => setNotice("")}>×</button></div>}
+    {notice && <div className={`notice ${isNoticeError ? "notice-error" : ""}`} role="status"><span>{notice}</span><button aria-label="Cerrar aviso" onClick={() => setNotice("")}>×</button></div>}
 
     <main className="page-content">
       {tab === "editor" && <section className="workbench">
@@ -582,19 +686,26 @@ function App() {
             <label className="select-wrap"><span className="sr-only">Abrir ejemplo académico</span><select value={exampleId} onChange={(event) => void loadExample(event.target.value)} aria-label="Abrir ejemplo académico" disabled={busy === "example"}>
               {examples.map((item) => <option key={item.id} value={item.id}>{item.id} · {exampleTitles[item.id] ?? item.title}</option>)}
             </select><b>⌄</b></label>
-            <button className="button button-light" onClick={() => void analyze()} disabled={Boolean(busy)}>{busy === "analyze" ? "Analizando…" : "◎ Analizar"}</button>
-            <button className="button button-accent" onClick={() => void translate()} disabled={Boolean(busy) || currentCompileInvalid} title={currentCompileInvalid ? "Corrige los diagnósticos antes de traducir." : undefined}>{busy === "translate" ? "Generando…" : "Traducir ↗"}</button>
+            <button className="button button-light" onClick={() => void analyze()} disabled={!sourceReady || Boolean(busy)} title={!sourceReady ? "Cargando el ejemplo inicial…" : undefined}>{busy === "analyze" ? "Analizando…" : "◎ Analizar"}</button>
+            <button className="button button-accent" onClick={() => void translate()} disabled={!sourceReady || Boolean(busy) || currentCompileInvalid} title={!sourceReady ? "Cargando el ejemplo inicial…" : currentCompileInvalid ? "Corrige los diagnósticos antes de traducir." : undefined}>{busy === "translate" ? "Generando…" : "Traducir ↗"}</button>
           </div>
         </div>
         <div className="editor-layout">
           <section className="panel editor-panel" aria-label="Editor fuente">
             <div className="panel-bar"><div className="file-tab"><span className="file-icon">⌘</span>{project?.name ? `${project.name}.psc` : "programa.psc"}<span className="dirty-dot" title={projectState}>{projectState === "Guardado" || projectState === "Guardado automáticamente" ? "" : "●"}</span></div>
               <div className="panel-bar-actions"><span className="language-badge">PSEUDOCÓDIGO</span><label className="upload-button" title="Abrir archivo local">Abrir archivo<input type="file" accept=".psc,.txt" onChange={async (event) => {
-                const file = event.currentTarget.files?.[0];
+                const input = event.currentTarget;
+                const file = input.files?.[0];
                 if (!file) return;
-                if (file.size > 1_000_000) { setNotice("El archivo supera el límite de 1 MB."); event.currentTarget.value = ""; return; }
-                setSourceChanged(await file.text()); setProject(null); setProjectName(file.name.replace(/\.(psc|txt)$/i, "")); setProjectState("Archivo local · borrador");
-                event.currentTarget.value = "";
+                if (file.size > 1_000_000) { setNotice("El archivo supera el límite de 1 MB."); input.value = ""; return; }
+                try {
+                  const decoded = new TextDecoder("utf-8", { fatal: true }).decode(await file.arrayBuffer()).replace(/^\uFEFF/, "");
+                  setSourceChanged(decoded); setProject(null); setProjectName(file.name.replace(/\.(psc|txt)$/i, "")); setProjectState("Archivo local · borrador");
+                } catch {
+                  setNotice("No se pudo abrir el archivo: guárdelo como texto UTF-8 válido.");
+                } finally {
+                  input.value = "";
+                }
               }} /></label>
               </div>
             </div>
@@ -608,7 +719,7 @@ function App() {
               {(["tokens", "ast", "symbols", "diagnostics", "phases"] as const).map((panel) => <button role="tab" aria-selected={selectedInspector === panel} className={selectedInspector === panel ? "selected" : ""} key={panel} onClick={() => setSelectedInspector(panel)}>{panel === "symbols" ? "Símbolos" : panel === "diagnostics" ? "Errores" : panel === "phases" ? "Fases" : panel === "ast" ? "AST" : "Tokens"}{panel === "diagnostics" && analysis?.diagnostics.length ? <span className="tab-count">{analysis.diagnostics.length}</span> : null}</button>)}
             </div>
             <div className="inspector-content" role="tabpanel">
-              {sourceIsStale && <div className="stale-banner">La fuente cambió. Vuelve a analizar para actualizar estos datos.</div>}
+              {sourceIsStale && <div className="stale-banner"><span>La fuente cambió. Vuelve a analizar para actualizar estos datos.</span><button className="text-button" onClick={() => void analyze()}>Reanalizar ahora</button></div>}
               {!analysis && <div className="empty-state"><span className="empty-symbol">⌁</span><strong>Resultados calculados por el compilador</strong><p>Pulsa «Analizar» para obtener tokens, AST, símbolos y diagnósticos desde la API local.</p></div>}
               {analysis && selectedInspector === "tokens" && <div className="token-table"><div className="mini-table-head"><span>{analysis.tokens.length} tokens</span><span>línea:columna</span></div>{analysis.tokens.map((token: any, index) => <button key={`${token.span?.start}-${index}`} className="token-row" onClick={() => focusSpan(token.span)}><code>{token.lexeme || "∅"}</code><span className={`token-kind kind-${String(token.kind).toLowerCase()}`}>{token.kind}</span><small>{token.span?.start_line}:{token.span?.start_column}</small></button>)}</div>}
               {analysis && selectedInspector === "ast" && <div className="tree-view"><AstNode node={analysis.ast} onSelect={focusSpan} depth={0} /></div>}
@@ -616,46 +727,77 @@ function App() {
               {analysis && selectedInspector === "diagnostics" && <div className="diagnostic-list">{analysis.diagnostics.map((item, index) => <button className="diagnostic-card" key={`${item.code}-${index}`} onClick={() => focusSpan(item.span)}><span className="diagnostic-code">{item.code} · {item.stage}</span><strong>{item.message}</strong><small>{item.span ? `Línea ${item.span.start_line}, columna ${item.span.start_column}` : "Sin ubicación"}</small>{item.hint && <p>{item.hint}</p>}</button>)}{!analysis.diagnostics.length && <div className="success-state">✓ Sin diagnósticos para la fuente analizada.</div>}</div>}
               {analysis && selectedInspector === "phases" && <div className="phase-list"><div className="phase-summary">{activePhaseLabel}</div>{Object.entries(analysis.phases).map(([name, phase]) => <div className="phase-row" key={name}><span className={`phase-dot ${phase.status}`} /><div><strong>{name}</strong><small>{phase.status}</small></div><b>{phase.duration_ms.toFixed(2)} ms</b></div>)}<div className="hash-card"><span>SHA-256 de fuente</span><code>{analysis.source_hash}</code><small>Compilador {analysis.compiler_version}</small></div></div>}
             </div>
-            <div className="inspector-footer"><span>{analysis ? `Fuente ${analysis.source_hash.slice(0, 12)}` : "API de análisis"}</span><button className="text-button" onClick={() => void exportArtifact(selectedInspector)}>Exportar JSON ↓</button></div>
+            <div className="inspector-footer"><span>{analysis ? `Fuente ${analysis.source_hash.slice(0, 12)}` : "API de análisis"}</span><div className="export-actions"><button className="text-button" onClick={() => void exportArtifact(selectedInspector)}>Exportar JSON ↓</button>{selectedInspector === "diagnostics" && <button className="text-button" onClick={() => void exportArtifact("diagnostics-txt")}>Exportar errores .txt</button>}</div></div>
           </section>
         </div>
         <div className="quick-actions"><div className="quick-copy"><span className="quick-icon">◇</span><div><strong>Runtime aislado</strong><small>{sandboxStatus ? "OCI · sin red · cuotas activas" : "Consulta el estado del sandbox"}</small></div></div>
-          <div className="quick-buttons"><button className="button button-light" onClick={() => void runBatch("python")} disabled={!sandboxStatus || Boolean(busy)}>▶ Ejecutar Python</button><button className="button button-light" onClick={() => void runBatch("javascript")} disabled={!sandboxStatus || Boolean(busy)}>▶ Ejecutar JavaScript</button><button className="button button-quiet" onClick={() => setTab("console")}>Consola ↗</button></div>
+          <div className="quick-buttons"><button className="button button-light" onClick={() => void runBatch("python")} disabled={!sourceReady || !sandboxStatus || Boolean(busy)}>▶ Ejecutar Python</button><button className="button button-light" onClick={() => void runBatch("javascript")} disabled={!sourceReady || !sandboxStatus || Boolean(busy)}>▶ Ejecutar JavaScript</button><button className="button button-quiet" onClick={() => setTab("console")}>Consola ↗</button></div>
         </div>
       </section>}
 
       {tab === "translate" && <section className="subpage">
-        <div className="section-heading"><div><div className="eyebrow">GENERACIÓN DESDE AST VALIDADO</div><h1>Dos destinos, una fuente.</h1><p>{translation ? `Hash de entrada ${translation.source_hash}` : "Traduce el texto actual a código ejecutable y autocontenido."}{translationIsStale && <strong className="stale-inline"> · desactualizado</strong>}</p></div><div className="heading-actions"><button className="button button-light" onClick={() => void translate()} disabled={Boolean(busy)}>↻ Generar código</button><button className="button button-accent" onClick={() => void exportArtifact("source")}>Descargar .psc ↓</button></div></div>
-        {!translation && <div className="empty-card"><strong>Generación pendiente</strong><p>El backend valida la fuente, construye el AST y genera los dos artefactos a partir de él.</p><button className="button button-accent" onClick={() => void translate()} disabled={Boolean(busy) || currentCompileInvalid}>Traducir fuente actual</button></div>}
+        <div className="section-heading"><div><div className="eyebrow">GENERACIÓN DESDE AST VALIDADO</div><h1>Dos destinos, una fuente.</h1><p>{translation ? `Hash de entrada ${translation.source_hash}` : "Traduce el texto actual a código ejecutable y autocontenido."}{translationIsStale && <strong className="stale-inline"> · desactualizado</strong>}</p></div><div className="heading-actions"><button className="button button-light" onClick={() => void translate()} disabled={!sourceReady || Boolean(busy)}>↻ Generar código</button><button className="button button-accent" onClick={() => void exportArtifact("source")} disabled={!sourceReady}>Descargar .psc ↓</button></div></div>
+        {!translation && <div className="empty-card"><strong>Generación pendiente</strong><p>El backend valida la fuente, construye el AST y genera los dos artefactos a partir de él.</p><button className="button button-accent" onClick={() => void translate()} disabled={!sourceReady || Boolean(busy) || currentCompileInvalid}>Traducir fuente actual</button></div>}
+        {translation && <div className="generated-view-toolbar">
+          <div><strong>Vista del código</strong><small>{codeView === "complete" ? "Archivo autónomo, con runtime y manejo de errores." : "Fragmento generado desde el AST, sin el runtime auxiliar."}</small></div>
+          <div className="segmented code-view-segmented" role="group" aria-label="Vista del código traducido">
+            <button type="button" className={codeView === "program" ? "active" : ""} aria-pressed={codeView === "program"} onClick={() => setCodeView("program")}>Solo programa</button>
+            <button type="button" className={codeView === "complete" ? "active" : ""} aria-pressed={codeView === "complete"} onClick={() => setCodeView("complete")}>Archivo completo</button>
+          </div>
+          {codeView === "program" && <p className="generated-view-note">Este fragmento puede usar funciones auxiliares del archivo completo. La descarga conserva el artefacto ejecutable.</p>}
+        </div>}
         {translation && <div className="code-comparison">
           <article className="panel code-pane source-pane">
             <div className="code-pane-head"><div><span className="runtime-icon source-icon">PSC</span><strong>Fuente actual</strong><small>{translation.source_hash.slice(0, 16)}</small></div><button className="button button-light" onClick={() => void exportArtifact("source")}>Descargar .psc ↓</button></div>
             <MappedCode code={source} mappings={[]} onSelect={() => { setTab("editor"); }} />
             <div className="code-pane-foot"><span>Span original · línea y columna</span><button className="text-button" onClick={() => { setTab("editor"); setSelectedInspector("tokens"); }}>Editar fuente ↗</button></div>
           </article>
-          {(["python", "javascript"] as const).map((target) => <article className="panel code-pane" key={target}>
-            <div className="code-pane-head"><div><span className="runtime-icon">{target === "python" ? "Py" : "JS"}</span><strong>{target === "python" ? "Python 3" : "JavaScript · Node.js"}</strong><small>{translation.artifacts[target].artifact_hash.slice(0, 16)}</small></div><div><button className="icon-button" aria-label={`Copiar código ${target}`} onClick={async () => { await navigator.clipboard.writeText(translation.artifacts[target].source); setNotice(`Código ${target} copiado.`); }}>▣</button><button className="button button-light" onClick={() => void exportArtifact(target, source)}>Descargar .{target === "python" ? "py" : "js"} ↓</button></div></div>
-            <MappedCode code={translation.artifacts[target].source} mappings={translation.artifacts[target].source_map ?? []} onSelect={focusSpan} />
-            <div className="code-pane-foot"><span>Artefacto autónomo · hash verificado</span><span>{translation.artifacts[target].source_map?.length ?? 0} líneas mapeadas</span></div>
-          </article>)}
+          {(["python", "javascript"] as const).map((target) => {
+            const artifact = translation.artifacts[target];
+            const displayedCode = codeView === "complete" ? artifact.source : artifact.program_source ?? "";
+            const displayedMap = codeView === "complete" ? artifact.source_map ?? [] : artifact.program_source_map ?? [];
+            return <article className={`panel code-pane target-pane target-pane-${target}`} key={target}>
+              <div className="code-pane-head"><div><span className={`runtime-icon runtime-icon-${target}`}>{target === "python" ? "Py" : "JS"}</span><strong>{target === "python" ? "Python 3" : "JavaScript · Node.js"}</strong><small>{artifact.artifact_hash.slice(0, 16)}</small></div><div className="code-export-actions"><button className="icon-button" aria-label={`Copiar código ${target}`} onClick={async () => { await navigator.clipboard.writeText(displayedCode); setNotice(`Código ${target} copiado.`); }}>▣</button><button className="button button-light" title="Descarga el artefacto autónomo completo" onClick={() => void exportArtifact(target, source)}>Descargar .{target === "python" ? "py" : "js"} ↓</button><button className="button button-light" title="Descarga el código autónomo completo como archivo de texto" onClick={() => void exportArtifact(`${target}-txt`, source)}>Descargar {target === "python" ? "Python" : "JavaScript"} .txt ↓</button></div></div>
+              <MappedCode code={displayedCode} mappings={displayedMap} onSelect={focusSpan} />
+              <div className="code-pane-foot"><span>{codeView === "complete" ? "Artefacto autónomo · hash verificado" : "Fragmento del programa · generado desde AST"}</span><span>{displayedMap.length} líneas mapeadas</span></div>
+            </article>;
+          })}
         </div>}
         {translation && <div className="source-map-card"><strong>Mapas de origen</strong><span>Selecciona un token o diagnóstico del inspector para enfocar su span en el editor. El generador adjunta mapa por destino.</span><button onClick={() => { setTab("editor"); setSelectedInspector("phases"); }}>Ver hashes y fases →</button></div>}
       </section>}
 
+      {tab === "equivalences" && <section className="subpage equivalences-page">
+        <div className="section-heading"><div><div className="eyebrow">GUÍA COMPARATIVA DEL COMPILADOR</div><h1>Un lenguaje, dos traducciones.</h1><p>Consulta cómo las instrucciones de Pseudo Studio se representan en Python y JavaScript.</p></div><button className="button button-accent" onClick={() => void translate()} disabled={Boolean(busy)}>{busy === "translate" ? "Generando…" : "Traducir mi programa ↗"}</button></div>
+        <div className="equivalence-intro panel"><span className="equivalence-intro-icon">⇄</span><p>Estas equivalencias resumen las reglas del generador. Para comparar tu propio programa, usa <strong>Traducir mi programa</strong>: la pestaña Traducción mostrará la fuente junto a los dos artefactos reales.</p></div>
+        <div className="equivalence-table-wrap panel">
+          <table className="equivalence-table">
+            <caption className="sr-only">Equivalencias entre pseudocódigo Pseudo Studio, Python y JavaScript</caption>
+            <thead><tr><th scope="col">Elemento</th><th scope="col">Pseudo Studio</th><th scope="col">Python</th><th scope="col">JavaScript</th></tr></thead>
+            <tbody>{equivalences.map((item, index) => <tr key={`${item.group}-${index}`}>
+              <th scope="row"><span className="equivalence-group">{item.group}</span><small>{item.note}</small></th>
+              <td><pre><code>{item.source}</code></pre></td>
+              <td><pre><code>{item.python}</code></pre></td>
+              <td><pre><code>{item.javascript}</code></pre></td>
+            </tr>)}</tbody>
+          </table>
+        </div>
+        <p className="equivalence-footnote"><strong>Sobre los helpers:</strong> nombres como <code>__ps_read_number</code>, <code>__ps_div</code> y <code>__ps_get</code> son funciones reales que el archivo completo incluye para validar entradas, división y límites de arreglos. “línea” y “columna” representan la ubicación del pseudocódigo que el generador adjunta automáticamente.</p>
+      </section>}
+
       {tab === "console" && <section className="subpage console-page">
         <div className="section-heading"><div><div className="eyebrow">EJECUCIÓN REAL · CONTENEDOR EFÍMERO</div><h1>Consola de ejecución.</h1><p>Entradas y salida de procesos Python o Node aislados con stdin/stdout/stderr reales.</p></div><div className="run-status"><i className={busy.startsWith("run-") || busy.startsWith("interactive-") ? "working" : sandboxStatus ? "ready" : "offline"} />{busy.startsWith("run-") || busy.startsWith("interactive-") ? "Ejecutando" : sandboxStatus ? "Sandbox listo" : "No disponible"}</div></div>
-        <div className="console-controls panel"><div className="input-field"><label htmlFor="batch-inputs">Entradas por lote · un valor por línea</label><textarea id="batch-inputs" value={batchInputs} onChange={(event) => setBatchInputs(event.target.value)} placeholder="Ej. 41" rows={3} /></div><div className="console-actions"><button className="button button-dark" onClick={() => void runBatch("python")} disabled={!sandboxStatus || Boolean(busy) || currentCompileInvalid}>▶ Python lote</button><button className="button button-dark" onClick={() => void runBatch("javascript")} disabled={!sandboxStatus || Boolean(busy) || currentCompileInvalid}>▶ JavaScript lote</button><button className="button button-light" onClick={() => startInteractive("python")} disabled={!sandboxStatus || Boolean(busy) || currentCompileInvalid}>◉ Python interactivo</button><button className="button button-light" onClick={() => startInteractive("javascript")} disabled={!sandboxStatus || Boolean(busy) || currentCompileInvalid}>◉ JS interactivo</button>{(Boolean(activeRunId) || Boolean(wsRef.current) || busy.startsWith("run-") || busy.startsWith("interactive-")) && <button className="button button-danger" onClick={() => void cancelRun()}>■ Detener</button>}</div></div>
-        <div className="terminal panel"><div className="terminal-head"><div><i /><i /><i /></div><span>{busy ? "PROCESO ACTIVO" : "SALIDA DEL RUNTIME"}</span><button className="text-button" onClick={() => setConsoleText("")}>Limpiar</button></div><pre className="terminal-output" aria-live="polite">{consoleText || <span className="terminal-placeholder">La salida real aparecerá aquí al ejecutar el programa.</span>}</pre>{inputRequested && <form className="terminal-input" onSubmit={sendInteractiveInput}><label htmlFor="interactive-value">El programa solicita entrada</label><input id="interactive-value" autoFocus value={interactiveInput} onChange={(event) => setInteractiveInput(event.target.value)} /><button className="button button-accent" type="submit">Enviar ↵</button></form>}</div>
-        <section className="run-history"><div className="list-heading"><div><div className="eyebrow">TRAZABILIDAD</div><h2>Sesiones recientes</h2></div><span>Los valores de entrada no se guardan en el historial.</span></div>{runs.length ? <div className="run-table"><div className="run-table-head"><span>Destino</span><span>Estado</span><span>Exit</span><span>Duración</span><span>Versión</span><span>Hash de fuente</span></div>{runs.map((run) => <div className="run-table-row" key={run.run_id}><span>{run.target}</span><span className={run.status === "completed" ? "text-good" : "text-bad"}>{run.status}</span><span>{run.exit_code ?? "—"}</span><span>{Number(run.duration_ms).toFixed(1)} ms</span><span>{run.runtime_version}</span><code>{run.source_hash.slice(0, 12)}</code></div>)}</div> : <p className="muted">Aún no hay ejecuciones en esta sesión.</p>}</section>
+        <div className="console-controls panel"><div className="input-field"><label htmlFor="batch-inputs">Entradas por lote · un valor por línea</label><textarea id="batch-inputs" value={batchInputs} onChange={(event) => setBatchInputs(event.target.value)} placeholder="Ej. 41" rows={3} /></div><div className="console-actions"><button className="button button-dark" onClick={() => void runBatch("python")} disabled={!sourceReady || !sandboxStatus || Boolean(busy) || currentCompileInvalid}>▶ Python lote</button><button className="button button-dark" onClick={() => void runBatch("javascript")} disabled={!sourceReady || !sandboxStatus || Boolean(busy) || currentCompileInvalid}>▶ JavaScript lote</button><button className="button button-light" onClick={() => startInteractive("python")} disabled={!sourceReady || !sandboxStatus || Boolean(busy) || currentCompileInvalid}>◉ Python interactivo</button><button className="button button-light" onClick={() => startInteractive("javascript")} disabled={!sourceReady || !sandboxStatus || Boolean(busy) || currentCompileInvalid}>◉ JS interactivo</button>{(Boolean(activeRunId) || Boolean(wsRef.current) || busy.startsWith("run-") || busy.startsWith("interactive-")) && <button className="button button-danger" onClick={() => void cancelRun()}>■ Detener</button>}</div></div>
+        <div className="terminal panel"><div className="terminal-head"><div><i /><i /><i /></div><span className={busy.startsWith("run-") || busy.startsWith("interactive-") ? "working" : ""}>{busy ? "PROCESO ACTIVO" : "SALIDA DEL RUNTIME"}</span><button className="text-button" onClick={() => setConsoleText("")}>Limpiar</button></div><pre ref={terminalRef} className="terminal-output" aria-live="polite">{consoleText || <span className="terminal-placeholder">La salida real aparecerá aquí al ejecutar el programa.</span>}</pre>{inputRequested && <form className="terminal-input" onSubmit={sendInteractiveInput}><label htmlFor="interactive-value">El programa solicita entrada</label><input id="interactive-value" autoFocus value={interactiveInput} onChange={(event) => setInteractiveInput(event.target.value)} /><button className="button button-accent" type="submit">Enviar ↵</button></form>}</div>
+        <section className="run-history"><div className="list-heading"><div><div className="eyebrow">TRAZABILIDAD</div><h2>Sesiones recientes</h2></div><span>Los valores de entrada no se guardan en el historial.</span></div>{runs.length ? <div className="run-table"><div className="run-table-head"><span>Destino</span><span>Estado</span><span>Exit</span><span>Duración</span><span>Versión</span><span>Hash de fuente</span></div>{runs.map((run) => <div className="run-table-row" key={run.run_id}><span><span className={`target-badge target-badge-${run.target}`}>{run.target}</span></span><span className={run.status === "completed" ? "text-good" : "text-bad"}>{run.status}</span><span>{run.exit_code ?? "—"}</span><span>{Number(run.duration_ms).toFixed(1)} ms</span><span>{run.runtime_version}</span><code>{run.source_hash.slice(0, 12)}</code></div>)}</div> : <p className="muted">Aún no hay ejecuciones en esta sesión.</p>}</section>
       </section>}
 
       {tab === "tests" && <section className="subpage">
         <div className="section-heading"><div><div className="eyebrow">PYTHON + NODE.JS · COMPARACIÓN EXACTA</div><h1>Pruebas académicas y propias.</h1><p>Cada prueba ejecuta el mismo programa en los dos runtimes y compara stdout completo.</p></div><div className="heading-actions"><button className="button button-light" onClick={() => report && void exportArtifact("report-json", source, report.report_id)} disabled={!report}>JSON ↓</button><button className="button button-light" onClick={() => report && void exportArtifact("report-markdown", source, report.report_id)} disabled={!report}>Markdown ↓</button><button className="button button-accent" onClick={() => report && void exportArtifact("report-pdf", source, report.report_id)} disabled={!report}>PDF ↓</button></div></div>
         <div className="test-layout"><div className="panel test-card"><div className="eyebrow">BIBLIOTECA OFICIAL</div><h2>Casos A–E</h2><p>Casos y salidas oficiales cargados desde fixtures reproducibles.</p><label htmlFor="official-example">Programa</label><select id="official-example" value={exampleId} onChange={(event) => setExampleId(event.target.value)}>{examples.map((item) => <option key={item.id} value={item.id}>{item.id} · {exampleTitles[item.id]}</option>)}</select><button className="button button-dark full-button" onClick={() => void runTests(true)} disabled={!sandboxStatus || Boolean(busy)}>{busy === "tests" ? "Ejecutando…" : `Ejecutar ${exampleId} en ambos destinos`}</button><small>6 ejecuciones OCI reales · 3 casos × Python y Node.js</small></div>
-          <div className="panel test-card"><div className="eyebrow">MATRIZ EDITABLE</div><div className="list-heading"><h2>Casos propios</h2><button className="text-button" onClick={() => setTestCases((current) => [...current, { id: `propio-${current.length + 1}`, inputs: "", expected_stdout: "" }])}>＋ Añadir caso</button></div><p>Las entradas se suministran por línea; la salida esperada se compara literalmente.</p>{testCases.map((item, index) => <div className="editable-case" key={`${index}-${item.id}`}><div className="editable-case-heading"><label htmlFor={`case-id-${index}`}>Caso {index + 1}<input id={`case-id-${index}`} value={item.id} onChange={(event) => setTestCases((current) => current.map((caseItem, caseIndex) => caseIndex === index ? { ...caseItem, id: event.target.value } : caseItem))} /></label>{testCases.length > 1 && <button className="text-button remove-case" onClick={() => setTestCases((current) => current.filter((_, caseIndex) => caseIndex !== index))}>Eliminar</button>}</div><label htmlFor={`case-inputs-${index}`}>Entradas</label><textarea id={`case-inputs-${index}`} aria-label={`Entradas del caso ${index + 1}`} rows={2} value={item.inputs} onChange={(event) => setTestCases((current) => current.map((caseItem, caseIndex) => caseIndex === index ? { ...caseItem, inputs: event.target.value } : caseItem))} /><label htmlFor={`case-expected-${index}`}>stdout esperado, incluye saltos de línea</label><textarea id={`case-expected-${index}`} aria-label={`stdout esperado del caso ${index + 1}`} rows={3} value={item.expected_stdout} onChange={(event) => setTestCases((current) => current.map((caseItem, caseIndex) => caseIndex === index ? { ...caseItem, expected_stdout: event.target.value } : caseItem))} /></div>)}<button className="button button-accent full-button" onClick={() => void runTests(false)} disabled={!sandboxStatus || Boolean(busy) || currentCompileInvalid}>Ejecutar casos propios en Python + JS</button></div></div>
+          <div className="panel test-card"><div className="eyebrow">MATRIZ EDITABLE</div><div className="list-heading"><h2>Casos propios</h2><button className="text-button" onClick={() => setTestCases((current) => [...current, { id: `propio-${current.length + 1}`, inputs: "", expected_stdout: "" }])}>＋ Añadir caso</button></div><p>Las entradas se suministran por línea; la salida esperada se compara literalmente.</p>{testCases.map((item, index) => <div className="editable-case" key={`${index}-${item.id}`}><div className="editable-case-heading"><label htmlFor={`case-id-${index}`}>Caso {index + 1}<input id={`case-id-${index}`} value={item.id} onChange={(event) => setTestCases((current) => current.map((caseItem, caseIndex) => caseIndex === index ? { ...caseItem, id: event.target.value } : caseItem))} /></label>{testCases.length > 1 && <button className="text-button remove-case" onClick={() => setTestCases((current) => current.filter((_, caseIndex) => caseIndex !== index))}>Eliminar</button>}</div><label htmlFor={`case-inputs-${index}`}>Entradas</label><textarea id={`case-inputs-${index}`} aria-label={`Entradas del caso ${index + 1}`} rows={2} value={item.inputs} onChange={(event) => setTestCases((current) => current.map((caseItem, caseIndex) => caseIndex === index ? { ...caseItem, inputs: event.target.value } : caseItem))} /><label htmlFor={`case-expected-${index}`}>stdout esperado, incluye saltos de línea</label><textarea id={`case-expected-${index}`} aria-label={`stdout esperado del caso ${index + 1}`} rows={3} value={item.expected_stdout} onChange={(event) => setTestCases((current) => current.map((caseItem, caseIndex) => caseIndex === index ? { ...caseItem, expected_stdout: event.target.value } : caseItem))} /></div>)}<button className="button button-accent full-button" onClick={() => void runTests(false)} disabled={!sourceReady || !sandboxStatus || Boolean(busy) || currentCompileInvalid}>{busy === "tests" ? "Ejecutando…" : "Ejecutar casos propios en Python + JS"}</button></div></div>
         {report && <div className="report-result"><div className="report-summary"><div className={`result-mark ${report.failed ? "failed" : "passed"}`}>{report.failed ? "!" : "✓"}</div><div><div className="eyebrow">INFORME · {report.source_hash?.slice(0, 12)}</div><h2>{report.passed} / {report.total} ejecuciones aprobadas</h2><p>{report.failed ? `${report.failed} diferencias detectadas.` : "Las salidas coinciden con los resultados esperados."}</p></div><button className="text-button" onClick={() => downloadText("pseudo-studio-report.json", JSON.stringify(report, null, 2), "application/json")}>Guardar JSON local ↓</button></div>
           {report.comparisons?.length > 0 && <section className="target-comparisons" aria-label="Comparación Python y JavaScript"><h3>Comparación Python ↔ Node</h3>{report.comparisons.map((item: any) => <div className="target-comparison" key={item.case_id}><strong>{item.case_id}</strong><span className={item.equivalent ? "text-good" : "text-bad"}>{item.equivalent ? "Equivalentes" : item.reason === "MISSING_TARGET" ? "Falta un destino" : "Difieren"}</span><small>stdout {item.raw_stdout_match ? "idéntico" : item.normalized_stdout_match ? "solo cambia el fin de línea" : "distinto"} · stderr {item.raw_stderr_match ? "idéntico" : item.normalized_stderr_match ? "solo cambia el fin de línea" : "distinto"}</small>{item.stdout_diff && <pre>{item.stdout_diff}</pre>}{item.stderr_diff && <pre>{item.stderr_diff}</pre>}</div>)}</section>}
-          <div className="case-results">{report.runs?.map((item: any, index: number) => <details className="case-result" key={`${item.case_id}-${item.target}-${index}`}><summary><span className={`result-dot ${item.passed ? "passed" : "failed"}`} /><strong>{item.case_id}</strong><span>{item.target}</span><span className={item.passed ? "text-good" : "text-bad"}>{item.passed ? "Aprobado" : "Falló"}</span><small>{Number(item.duration_ms).toFixed(1)} ms · exit {item.exit_code}</small></summary><div className="result-diff"><div><strong>Esperado</strong><pre>{item.expected_stdout}</pre></div><div><strong>Real</strong><pre>{item.actual_stdout}</pre></div>{item.stderr && <div><strong>stderr · {item.error_code}</strong><pre>{item.stderr}</pre></div>}{item.diff && <pre>{item.diff}</pre>}<code>artifact SHA-256 {item.artifact_hash}</code></div></details>)}</div></div>}
+          <div className="case-results">{report.runs?.map((item: any, index: number) => <details className="case-result" key={`${item.case_id}-${item.target}-${index}`}><summary><span className={`result-dot ${item.passed ? "passed" : "failed"}`} /><strong>{item.case_id}</strong><span className={`target-badge target-badge-${item.target}`}>{item.target}</span><span className={item.passed ? "text-good" : "text-bad"}>{item.passed ? "Aprobado" : "Falló"}</span><small>{Number(item.duration_ms).toFixed(1)} ms · exit {item.exit_code}</small></summary><div className="result-diff"><div><strong>Esperado</strong><pre>{item.expected_stdout}</pre></div><div><strong>Real</strong><pre>{item.actual_stdout}</pre></div>{item.stderr && <div><strong>stderr · {item.error_code}</strong><pre>{item.stderr}</pre></div>}{item.diff && <pre>{item.diff}</pre>}<code>artifact SHA-256 {item.artifact_hash}</code></div></details>)}</div></div>}
       </section>}
 
       {tab === "projects" && <section className="subpage">
@@ -665,7 +807,7 @@ function App() {
       </section>}
 
       {tab === "defense" && <section className="subpage">
-        <div className="section-heading"><div><div className="eyebrow">RECORRIDO GUIADO · PIPELINE REAL</div><h1>Modo defensa.</h1><p>Avanza por las fases del compilador, inspecciona evidencia y prueba una entrada válida o una fuente con error.</p></div><div className="heading-actions"><button className="button button-light" onClick={() => { setDefenseLog([]); setDefenseStep(-1); }}>Reiniciar recorrido</button><button className="button button-accent" onClick={() => void runDefenseStep()} disabled={Boolean(busy)}>Siguiente fase →</button></div></div>
+        <div className="section-heading"><div><div className="eyebrow">RECORRIDO GUIADO · PIPELINE REAL</div><h1>Modo defensa.</h1><p>Avanza por las fases del compilador, inspecciona evidencia y prueba una entrada válida o una fuente con error.</p></div><div className="heading-actions"><button className="button button-light" onClick={() => { setDefenseLog([]); setDefenseStep(-1); }}>Reiniciar recorrido</button><button className="button button-accent" onClick={() => void runDefenseStep()} disabled={!sourceReady || Boolean(busy)}>Siguiente fase →</button></div></div>
         <div className="defense-layout"><div className="panel defense-setup"><div className="eyebrow">FUENTE DE DEMOSTRACIÓN</div><div className="segmented"><button className={defenseCase === "valid" ? "active" : ""} onClick={() => { setDefenseCase("valid"); setDefenseStep(-1); setDefenseLog([]); void loadExample("A"); }}>Caso válido · A</button><button className={defenseCase === "invalid" ? "active" : ""} onClick={() => { setDefenseCase("invalid"); setDefenseStep(-1); setDefenseLog([]); setSourceChanged(INVALID_SAMPLE); setProject(null); setProjectName("Caso de error léxico"); setAnalysis(null); setTranslation(null); setNotice("Fuente de ejemplo con error léxico. El servicio calculará su diagnóstico al avanzar."); }}>Caso con error</button></div><p>El recorrido usará la fuente del editor y solicitará cada fase a la API real. Estado actual: {defenseStep < 0 ? "pendiente" : `fase ${defenseStep + 1} de 5`}.</p><button className="button button-light" onClick={() => setTab("editor")}>Abrir fuente en editor ↗</button></div>
           <div className="panel defense-log"><div className="list-heading"><div><div className="eyebrow">BITÁCORA</div><h2>Evidencia calculada</h2></div><button className="text-button" onClick={() => downloadText("pseudo-studio-defense.json", JSON.stringify(defenseLog, null, 2), "application/json")}>Exportar ↓</button></div>{defenseLog.length ? defenseLog.map((item, index) => <article className="defense-entry" key={`${item.phase}-${index}`}><span>{String(index + 1).padStart(2, "0")}</span><div><strong>{item.phase}</strong><p>{item.result}</p>{item.source_hash && <code>SHA {item.source_hash}</code>}</div><small>calculado</small></article>) : <div className="empty-state compact"><strong>Sin fases ejecutadas</strong><p>Pulsa “Siguiente fase” para comenzar el recorrido.</p></div>}</div></div>
       </section>}
@@ -684,10 +826,32 @@ Fin`}</pre><p>Una sentencia termina al final de línea. Los bloques usan termina
 
 function AstNode({ node, onSelect, depth }: { node: any; onSelect: (span?: Span) => void; depth: number }) {
   if (!node || typeof node !== "object") return <span className="muted">AST no disponible.</span>;
-  const children = Object.entries(node).filter(([key, value]) => key !== "span" && (Array.isArray(value) ? value.some((item) => item && typeof item === "object" && "kind" in item) : value && typeof value === "object" && "kind" in (value as object)));
-  return <details className="ast-node" open={depth < 2} style={{ marginLeft: `${depth * 10}px` }}><summary onClick={() => onSelect(node.span)}><span className="ast-kind">{node.kind}</span><code>{node.node_id}</code><small>{node.span?.start_line}:{node.span?.start_column}</small></summary><div>{children.map(([key, value]) => Array.isArray(value)
-    ? value.filter((item) => item && typeof item === "object" && "kind" in item).map((item, index) => <AstNode key={`${key}-${index}`} node={item} onSelect={onSelect} depth={depth + 1} />)
-    : <AstNode key={key} node={value} onSelect={onSelect} depth={depth + 1} />)}</div></details>;
+  const isNode = (value: any) => value && typeof value === "object" && !Array.isArray(value) && typeof value.kind === "string";
+  const children: Array<{ key: string; node: any; index?: number }> = [];
+  for (const [key, value] of Object.entries(node)) {
+    if (isNode(value)) children.push({ key, node: value });
+    else if (Array.isArray(value)) value.forEach((item, index) => { if (isNode(item)) children.push({ key, node: item, index }); });
+  }
+  const childKeys = new Set(children.map((child) => child.key));
+  const fields = Object.entries(node).filter(([key, value]) => {
+    if (["kind", "node_id", "span"].includes(key) || childKeys.has(key) || value == null) return false;
+    return typeof value !== "object" || (Array.isArray(value) && value.every((item) => item == null || ["string", "number", "boolean"].includes(typeof item)));
+  });
+  const labels: Record<string, string> = {
+    body: "cuerpo", values: "valores", value: "valor", left: "izquierda", right: "derecha", operand: "operando",
+    condition: "condición", then_body: "entonces", else_body: "sino", target: "destino", start: "inicio",
+    end: "límite", step: "paso", size: "tamaño", array: "arreglo", index: "índice", arguments: "argumentos",
+    parameters: "parámetros", normalized_parameters: "parámetros normalizados", inferred_type: "tipo inferido",
+  };
+  const display = (key: string, value: any) => {
+    const rendered = Array.isArray(value) ? value.map(String).join(", ") : typeof value === "string" ? value : String(value);
+    return key === "value" && typeof value === "string" ? JSON.stringify(value) : rendered;
+  };
+  return <details className="ast-node" open={depth < 2} style={{ marginLeft: `${depth * 10}px` }}>
+    <summary onClick={() => onSelect(node.span)}><span className="ast-kind">{node.kind}</span><code>{node.node_id}</code><small>{node.span?.start_line}:{node.span?.start_column}</small></summary>
+    {fields.length > 0 && <div className="ast-fields">{fields.map(([key, value]) => <span className="ast-field" key={key}><b>{labels[key] ?? key}:</b> {display(key, value)}</span>)}</div>}
+    {children.length > 0 && <div className="ast-children">{children.map((child, index) => <div className="ast-child" key={`${child.key}-${child.index ?? index}`}><span className="ast-edge">{labels[child.key] ?? child.key}{child.index == null ? "" : ` [${child.index + 1}]`}</span><AstNode node={child.node} onSelect={onSelect} depth={depth + 1} /></div>)}</div>}
+  </details>;
 }
 
 function MappedCode({ code, mappings, onSelect }: {

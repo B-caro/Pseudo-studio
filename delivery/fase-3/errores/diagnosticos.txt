@@ -1,0 +1,15 @@
+Pseudo / Studio · Reporte de análisis
+SHA-256 de la fuente: c3af7956f030aa076ea16222febe0f2fe45f69b8aa2aa9fbce81ac6496882330
+Versión del compilador: 0.1.0
+Estado: con errores
+Diagnósticos: 2
+
+1. [ERROR] LEX_INVALID_CHAR · lexical
+   Ubicación: línea 2, columna 10
+   Carácter no permitido: '@'
+   Sugerencia: Elimine el carácter o sustitúyalo por un símbolo de la gramática.
+
+2. [ERROR] SYN_EXPECTED_EXPRESSION · syntax
+   Ubicación: línea 2, columna 11
+   Se esperaba una expresión.
+   Sugerencia: Agregue un número, cadena, booleano, variable, llamada o expresión entre paréntesis.

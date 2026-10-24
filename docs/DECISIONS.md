@@ -43,7 +43,7 @@ Este registro documenta decisiones iniciales de implementación. Una decisión n
 
 - **Estado:** verificada con Playwright Chromium; T3 permite evaluación DOM pero su snapshot falla en el cliente.
 - **Decisión:** las interacciones del editor, consola, pruebas, proyectos, defensa, ayuda y descargas se verifican en Chromium real mediante `frontend/e2e/workbench.spec.ts`. T3 preview se usa para la vista compartida y para leer estado DOM.
-- **Evidencia:** `preview_status` y `preview_evaluate` confirmaron título, API lista, sandbox verificado, siete pestañas y ausencia de scroll horizontal; `preview_snapshot(includeImage=false)` devolvió `PreviewAutomationExecutionError` del cliente. Playwright ejecutó 6/6 pruebas desde copia limpia, incluyendo axe en siete secciones y navegación completa por teclado; guardó captura real bajo `reports/`.
+- **Evidencia:** Playwright ejecutó 10/10 pruebas en Chromium, con axe y teclado para ocho secciones, y guardó capturas reales en `reports/`. La interacción no depende de la inspección por snapshot.
 - **Límite restante:** el snapshot/render de la herramienta T3 es un problema del cliente que no impide la interacción automatizada independiente; se mantiene registrado y no se afirma inspección visual nativa por snapshot.
 
 ## ADR-007 — La desconexión requiere cancelación resistente a la carrera de arranque OCI
@@ -59,3 +59,38 @@ Este registro documenta decisiones iniciales de implementación. Una decisión n
 - **Decisión:** el job de Ubuntu instala Docker rootless, añade un perfil AppArmor para `rootlesskit` cuando AppArmor está habilitado y exige que `docker info` declare `rootless`. Después ejecuta `manage.py verify` antes de permitir los tests OCI.
 - **Motivo:** Ubuntu 24.04 restringe user namespaces no privilegiados bajo AppArmor; el instalador rootless sin paquetes necesita un perfil explícito de `rootlesskit`. La carga falla cerrada si no se confirma el daemon rootless.
 - **Evidencia:** `.github/workflows/ci.yml` pasó parse de PyYAML y `bash -n`; Docker documenta el requisito para Ubuntu 24.04 en [Rootless troubleshooting](https://docs.docker.com/engine/security/rootless/troubleshoot/). El workflow se publicó en `B-caro/Pseudo-studio`; el usuario dispensó la verificación remota. P11-F6 queda sin verificar, no completada.
+
+## ADR-009 — La concatenación textual también infiere parámetros de función
+
+- **Estado:** implementada y cubierta por regresión.
+- **Decisión:** si una concatenación `+` combina texto con un identificador cuyo tipo aún es desconocido, el análisis semántico infiere que el identificador debe ser texto. Una llamada posterior con argumento numérico se rechaza antes de generar código.
+- **Motivo:** las firmas se predeclaran para permitir llamadas adelantadas y recursión; los cuerpos se analizan antes de que algunos tipos de argumentos estén disponibles. La restricción evita falsos errores con funciones textuales y mantiene la comprobación de incompatibilidad.
+- **Evidencia:** `backend/compiler/semantic.py`, `backend/tests/test_extended_cases.py` y los casos N06/X04 en `examples/extended/cases.json`; el parámetro textual acepta `LeerTexto` y rechaza un argumento numérico con `SEM_TYPE_MISMATCH`.
+
+## ADR-010 — Python y JavaScript como destinos comparables y ejecutables
+
+- **Estado:** aceptada.
+- **Decisión:** los dos destinos se generan desde el mismo AST y se documentan con sus runtimes explícitos: Python 3.12 y JavaScript en Node.js 22. La categoría numérica fuente number incluye literales enteros y decimales; cadenas y booleanos mantienen tipos separados.
+- **Motivo:** Python permite presentar traducciones legibles y cercanas a los algoritmos de aula. JavaScript demuestra una segunda sintaxis con operadores, valores y entrada/salida distintos, y Node.js ofrece un runtime autónomo alineado con el ecosistema web de la interfaz. La diferencia pedagógica muestra que la salida proviene de un modelo común y no de reemplazos de texto.
+- **Evidencia:** examples/phase1-translations/, backend/tests/test_phase1_manual_translations.py y docs/Informe_Investigacion_Pseudo_Studio.docx. Los seis casos A/B se ejecutan con entradas enviadas juntas a ambos runtimes.
+
+## ADR-011 — Literales numéricos y parámetros arreglo preservan el contrato común
+
+- **Estado:** implementado y equivalencia de ejecución verificada en OCI el 2026-10-24.
+- **Decisión:** emitir literales numéricos integrales como flotantes en Python para mantener el tipo de doble precisión de JavaScript. Inferir parámetros usados como arreglos y rechazar argumentos escalares; copiar el arreglo 1D al entrar a la función (`list` en Python, `slice` en JavaScript).
+- **Motivo:** Python integers tienen precisión arbitraria y, sin conversión, podían divergir de JavaScript alrededor de `2^53`. Los arreglos son referencias mutables, de modo que pasar el objeto directamente no cumple paso por valor.
+- **Evidencia:** `backend/tests/test_codegen.py` prueba las emisiones; `test_semantic.py` comprueba tipo de parámetro, argumento inválido y dimensiones; `test_runner_integration.py` confirma valores cercanos a 2^53, productos grandes y copia de arreglos. Un caso con un producto `1e308 * 10` encontró salida no finita sin diagnóstico; `BaseEmitter.expression` ahora enruta suma/resta/multiplicación numéricas por `__ps_check_number`. `examples/extended/runtime-errors/nonfinite_operation.psc` verifica que Python y Node devuelvan `RUN_NONFINITE` en OCI.
+
+## ADR-012 — Contrato explícito para archivos de texto
+
+- **Estado:** implementación API/UI y pruebas API listas; E2E del navegador se registra por separado.
+- **Decisión:** aceptar archivos `.psc` y `.txt` como UTF-8 estricto; quitar un BOM inicial y conservar CRLF/LF. Exportar el artefacto completo vigente de cada destino como `python-txt` y `javascript-txt`, idéntico byte a byte al `.py`/`.js`. Exportar diagnósticos en `diagnostics-txt` con hash, fase, código, ubicación, mensaje y sugerencia.
+- **Motivo:** permitir los intercambios solicitados por la rúbrica, mantener las descargas nativas y evitar reemplazos invisibles de bytes que alterarían los spans y hashes.
+- **Evidencia:** `backend/tests/test_exports_txt.py` prueba bytes/MIME/archivo inválido/diagnósticos; `frontend/e2e/compiler-exports.spec.ts` y `workbench.spec.ts` recorre controles, archivo BOM/CRLF y errores UTF-8. El build TypeScript se verificó; la corrida E2E final se registra en `VALIDATION_REPORT.md`.
+
+## ADR-013 — Convertir spans Python a offsets UTF-16 en el editor
+
+- **Estado:** implementado; E2E visual pendiente de ejecución en esta revisión.
+- **Decisión:** conservar los spans de backend como offsets de puntos de código y convertirlos a longitud UTF-16 antes de seleccionar el rango en CodeMirror.
+- **Motivo:** JavaScript y CodeMirror cuentan una letra fuera del plano multilingüe como dos unidades UTF-16; Python la cuenta como un punto de código. Sin conversión, el editor enfocaba una columna anterior.
+- **Evidencia:** `frontend/src/main.tsx::focusSpan` y el E2E con `😀` seguido de un identificador faltante prueban que se selecciona el identificador completo.

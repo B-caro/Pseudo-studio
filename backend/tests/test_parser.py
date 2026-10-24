@@ -51,6 +51,7 @@ class ParserTests(unittest.TestCase):
         parsed = parse(lex("Inicio\nSi Verdadero Entonces\nEscribir 1\nFin\n").tokens)
         self.assertTrue(any(item.code == "SYN_UNEXPECTED_TOKEN" for item in parsed.diagnostics))
         self.assertLess(parsed.diagnostics[0].span.start_line, 5)
+        self.assertIn("FinSi", parsed.diagnostics[0].hint)
 
 
 if __name__ == "__main__":

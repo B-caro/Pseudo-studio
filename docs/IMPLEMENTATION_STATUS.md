@@ -1,14 +1,37 @@
 # Estado de implementación — Pseudo / Studio
 
-**Actualizado:** 2026-10-10
-**Hito actual:** P13 — auditoría de entrega y cierre de evidencia.
-**Tareas verificadas:** 202 / 205; dos requieren evidencia manual WCAG. P11-F6 sigue sin marcarse como verificada; el usuario dispensó la ejecución CI remota.
-**RF implementados y probados:** 29 / 29 en flujos principales; la evidencia individual está en `docs/TRACEABILITY.md`.
-**RNF:** 10 verificados, 2 parciales (accesibilidad manual y cobertura multiplataforma); VM equivalente WSL2 verificada para el runner.
-**Pruebas:** nueva corrida WSL sobre `5bce0a1`: 30 etapas con exit 0; `pytest`: 76 passed + 22 subtests, sin fallos/errores/skips y 89,82 % de cobertura de backend; Playwright: 6/6 sin retries; lint/format/build, smoke y backup pasan; pip-audit y npm audit: 0 vulnerabilidades; A–E: 30/30 OCI reales desde instalación limpia. Evidencia: `reports/wsl-validation-summary.json`.
-**Servicios:** app del workspace principal activa para revisión manual en `http://127.0.0.1:5173`; API `ready` en `http://127.0.0.1:8000` y sandbox verificado. La copia de prueba se detuvo y sus puertos se liberaron; no quedaron contenedores `pseudo-studio`.
-**Commits publicados en `origin/main`:** `a472179` al hacer push; automatización probada en `5bce0a1`; evidencia local posterior en `a472179`. El remoto es `https://github.com/B-caro/Pseudo-studio.git`.
-**Pendientes de cierre:** P9-17/P12-12 requieren auditoría manual WCAG; el usuario dispensó la ejecución CI de P11-F6, que permanece sin verificar. RNF-10 sigue parcial por cobertura de plataformas. El bloqueo de acceso a Docker WSL está resuelto; procedimiento y automatización: `docs/WSL_TEST_PLAN.md` y `bash scripts/validate_wsl.sh`. Pasos/evidencia requerida: `docs/REMAINING_GATES.md`. No se declara terminado al 100%.
+**Actualizado:** 2026-10-24
+**Hito actual:** cierre técnico C08 verificado; C09 preparado con revisión editorial/PDF y ensayos humanos todavía pendientes.
+**Revalidación vigente:** `manage.py verify/start/smoke/stop` pasa con Docker Desktop VM. Suite backend 94 tests + 91 subtests, E2E Playwright 10/10, build, Ruff, A–E 30/30 OCI y ampliados 54/54 pasan; la consola y ambos runtimes se detuvieron tras la validación. A/B manual adicional: 12/12 en Python/Node locales.
+**Plan de cierre fases 2/3:** C00–C06 y los criterios técnicos ejecutables de C07–C08 están verificados en `docs/PLAN_CIERRE_FASES_2_3.md`. Quedan C07 render/revisión DOCX y C08 bootstrap desde instalación limpia; C09 tiene paquete reproducible, pero no certifica paginación final ni defensa humana.
+**RF implementados y probados:** 29 / 29 en flujos locales automatizados; la evidencia individual está en `docs/TRACEABILITY.md`. Esto no implica cierre de todos los RNF ni aceptación académica final.
+**RNF:** 10 verificados, 2 parciales (auditoría manual de accesibilidad y cobertura macOS/Linux rootless). CI remoto sigue dispensado y sin resultado registrado.
+**Pruebas:** resultados, comandos, salidas y métricas en `docs/VALIDATION_REPORT.md`; artefactos detallados A–E/extendidos en `reports/acceptance-results.json/.md` y `reports/extended-acceptance-results.json/.md`.
+**Estado de código:** HEAD observado `14b2419b3394d985b93d35514c3b800028060d9c`; checkout con cambios del trabajo actual y anteriores, sin commit nuevo. No atribuir la evidencia al HEAD limpio.
+**Pendientes:** lector de pantalla/WCAG manual; Linux rootless/macOS nativos; CI remota dispensada; render/revisión final del DOCX con nombres reales; entrega y defensa en Aula Digital. `reports/archive/pre-f2-f3-2026-10-24/` preserva los informes reemplazados antes de la revalidación.
+
+## Cierre del feedback de Fase 1 — 2026-10-23
+
+| Observación | Cambio/evidencia | Estado |
+|---|---|---|
+| Faltaban formas de entero, decimal, cadena, identificador y comentario | Reglas léxicas y categorías semánticas en `docs/gramatica.ebnf`, `docs/MANUAL.md` e informe académico | Cerrado |
+| Tabla sin equivalencias de tipos ni justificación de destinos | Tabla de mapeo Entero/Decimal/Cadena/Lógico/Arreglo y ADR-010 | Cerrado |
+| JavaScript perdía entradas enviadas juntas | Traducciones A/B usan lectura síncrona por línea; 12 ejecuciones y 12 subtests pasan con stdin completo | Cerrado localmente; OCI no disponible en esta sesión |
+| Portada, índice, comentarios y evidencia visual | DOCX actualizado; índice usa PAGEREF/PAGE dinámicos, código manual comentado y dos transcripciones de stdout real | Cerrado; Word actualiza los números de página al abrir |
+
+## Evidencia histórica de revalidación — 2026-10-16
+
+| Verificación | Resultado | Evidencia |
+|---|---:|---|
+| Compilaciones válidas de programas ampliados | 5/5 | `examples/extended/cases.json`; `backend/tests/test_extended_cases.py` |
+| Ejecuciones válidas (12 casos, Python y JavaScript) | 24/24 | `reports/extended-acceptance-results.json/.md` |
+| Diagnósticos negativos con etapa, código y span | 6/6 | casos N01–N06 del reporte extendido |
+| Errores de runtime controlados, ambos destinos | 10/10 | casos R01–R05 del reporte extendido |
+| Suite backend completa | 80 tests + 67 subtests | salida de `.venv/bin/pytest -q`, 90% de cobertura |
+| A–E oficiales después de la corrección | 30/30 | `reports/acceptance-results.json/.md` |
+| Ruff, formato y whitespace | pasan | `.venv/bin/ruff check backend scripts`; `.venv/bin/ruff format --check backend scripts`; `git diff --check` |
+
+Los ejemplos agregados ejercitan recursión y llamadas adelantadas, arreglos, ciclos anidados y dirección automática, booleanos/precedencia, Unicode, funciones y ámbitos, entradas inválidas, fallos aritméticos, límites y elementos de arreglo sin inicializar. La corrección semántica y sus decisiones están descritas en ADR-009 de `docs/DECISIONS.md`.
 
 ## Inventario inicial observado (línea base histórica)
 
@@ -240,4 +263,4 @@ Los servicios no se presentan como instalados o disponibles por el hecho de exis
 
 P9-17 y P12-12 requieren evidencia manual WCAG con lector de pantalla y contraste. P11-F6 permanece sin verificar y la ejecución CI remota se dispensó por instrucción del usuario. RNF-10 sigue parcial por no haber comprobado macOS ni Linux rootless. Los pasos están en `docs/REMAINING_GATES.md`. Las verificaciones locales están cubiertas por la matriz de rutas, suite N-01..N-12, snapshots y pruebas de desconexión.
 
-El repo público `B-caro/Pseudo-studio` tiene `main` publicado; el workflow se conserva, pero el usuario dispensó la comprobación de CI remota, así que P11-F6 sigue sin marcarse como verificada. El runner se probó en WSL2 con Docker Desktop y frontera VM; macOS nativo y Linux con Docker rootless no se ejecutaron. Axe automatizado pasa en siete secciones y teclado/foco pasan; la evaluación manual de lector de pantalla sigue pendiente. `Context/` continúa local y fuera del push. No se declara el plan cerrado al 100%.
+El repo público `B-caro/Pseudo-studio` tiene `main` publicado; el workflow se conserva, pero el usuario dispensó la comprobación de CI remota, así que P11-F6 sigue sin marcarse como verificada. El runner se probó en WSL2 con Docker Desktop y frontera VM; macOS nativo y Linux con Docker rootless no se ejecutaron. Axe automatizado y navegación por teclado pasan en ocho secciones; la evaluación manual con lector de pantalla sigue pendiente. `Context/` continúa local y fuera del push. No se declara el plan cerrado al 100%.

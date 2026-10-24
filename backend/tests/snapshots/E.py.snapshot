@@ -51,6 +51,11 @@ def __ps_write(*values):
     __ps_sys.stdout.write("".join(__ps_format(value) for value in values) + "\n")
     __ps_sys.stdout.flush()
 
+def __ps_check_number(value, line, column):
+    if not __ps_math.isfinite(value):
+        __ps_fail("RUN_NONFINITE", line, column, "La operación produjo un número no finito.")
+    return value
+
 def __ps_safe_int(value, line, column, label):
     if not isinstance(value, (int, float)) or not __ps_math.isfinite(value) or not float(value).is_integer() or abs(value) > 9007199254740991:
         __ps_fail("RUN_INVALID_INTEGER", line, column, label + " debe ser un entero seguro.")
@@ -98,11 +103,11 @@ def __ps_runtime_error(error):
     __ps_sys.stderr.write("PSEUDO_RUNTIME_ERROR " + __ps_json.dumps(data, ensure_ascii=False) + "\n")
     __ps_sys.stderr.flush()
 def __ps_user_f_43616c63756c617241726561(__ps_user_v_66756e6374696f6e3a43616c63756c6172417265610062617365, __ps_user_v_66756e6374696f6e3a43616c63756c61724172656100616c74757261):
-    __ps_user_v_66756e6374696f6e3a43616c63756c6172417265610061726561 = (__ps_user_v_66756e6374696f6e3a43616c63756c6172417265610062617365 * __ps_user_v_66756e6374696f6e3a43616c63756c61724172656100616c74757261)
+    __ps_user_v_66756e6374696f6e3a43616c63756c6172417265610061726561 = __ps_check_number((__ps_user_v_66756e6374696f6e3a43616c63756c6172417265610062617365 * __ps_user_v_66756e6374696f6e3a43616c63756c61724172656100616c74757261), 3, 16)
     return __ps_user_v_66756e6374696f6e3a43616c63756c6172417265610061726561
 
 def __ps_user_f_436c617369666963617241726561(__ps_user_v_66756e6374696f6e3a436c6173696669636172417265610061726561):
-    if (__ps_user_v_66756e6374696f6e3a436c6173696669636172417265610061726561 > 50):
+    if (__ps_user_v_66756e6374696f6e3a436c6173696669636172417265610061726561 > 50.0):
         __ps_user_v_66756e6374696f6e3a436c61736966696361724172656100636c6173696669636163696f6e = "Grande"
     else:
         __ps_user_v_66756e6374696f6e3a436c61736966696361724172656100636c6173696669636163696f6e = "Peque\u00f1a"

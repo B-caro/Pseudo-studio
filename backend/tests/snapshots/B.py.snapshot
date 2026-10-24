@@ -51,6 +51,11 @@ def __ps_write(*values):
     __ps_sys.stdout.write("".join(__ps_format(value) for value in values) + "\n")
     __ps_sys.stdout.flush()
 
+def __ps_check_number(value, line, column):
+    if not __ps_math.isfinite(value):
+        __ps_fail("RUN_NONFINITE", line, column, "La operación produjo un número no finito.")
+    return value
+
 def __ps_safe_int(value, line, column, label):
     if not isinstance(value, (int, float)) or not __ps_math.isfinite(value) or not float(value).is_integer() or abs(value) > 9007199254740991:
         __ps_fail("RUN_INVALID_INTEGER", line, column, label + " debe ser un entero seguro.")
@@ -102,10 +107,10 @@ try:
     __ps_user_v_676c6f62616c006e6f7461 = __ps_read_number(3, 5)
     __ps_write("Ingrese su porcentaje de asistencia:")
     __ps_user_v_676c6f62616c006173697374656e636961 = __ps_read_number(5, 5)
-    if ((__ps_user_v_676c6f62616c006e6f7461 >= 6) and (__ps_user_v_676c6f62616c006173697374656e636961 >= 75)):
+    if ((__ps_user_v_676c6f62616c006e6f7461 >= 6.0) and (__ps_user_v_676c6f62616c006173697374656e636961 >= 75.0)):
         __ps_write("Aprobado")
     else:
-        if ((__ps_user_v_676c6f62616c006e6f7461 >= 6) and (__ps_user_v_676c6f62616c006173697374656e636961 < 75)):
+        if ((__ps_user_v_676c6f62616c006e6f7461 >= 6.0) and (__ps_user_v_676c6f62616c006173697374656e636961 < 75.0)):
             __ps_write("Reprobado por asistencia")
         else:
             __ps_write("Reprobado por nota")

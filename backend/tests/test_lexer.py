@@ -33,10 +33,19 @@ class LexerTests(unittest.TestCase):
         self.assertEqual((result.diagnostics[0].span.start_line, result.diagnostics[0].span.start_column), (1, 10))
 
     def test_numbers_are_decimal_without_exponent_or_nonfinite_literals(self) -> None:
-        result = lex("12 3.25 4e2")
-        self.assertEqual([token.lexeme for token in result.tokens if token.kind == "NUMBER"], ["12", "3.25", "4"])
+        result = lex("12 3.25 .5 4e2")
+        self.assertEqual([token.lexeme for token in result.tokens if token.kind == "NUMBER"], ["12", "3.25", ".5", "4"])
+        self.assertEqual([token.value for token in result.tokens if token.kind == "NUMBER"], [12.0, 3.25, 0.5, 4.0])
         self.assertEqual([token.value for token in result.tokens if token.kind == "IDENT"], ["e2"])
         self.assertEqual(result.diagnostics, [])
+
+    def test_lexical_diagnostics_include_actionable_suggestions(self) -> None:
+        invalid = lex("@")
+        self.assertEqual([item.code for item in invalid.diagnostics], ["LEX_INVALID_CHAR"])
+        self.assertIn("Elimine", invalid.diagnostics[0].hint)
+        nonfinite = lex("9" * 400)
+        self.assertEqual(nonfinite.diagnostics[0].code, "LEX_INVALID_NUMBER")
+        self.assertIn("finito", nonfinite.diagnostics[0].hint)
 
     def test_numeric_literals_use_ascii_digits(self) -> None:
         result = lex("١")

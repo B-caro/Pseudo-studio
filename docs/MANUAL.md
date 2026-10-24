@@ -27,6 +27,19 @@ Fin
 
 Las palabras reservadas no distinguen mayúsculas/minúsculas; los identificadores sí y se normalizan a Unicode NFC. Los strings usan comillas dobles; los escapes implementados son `\\`, `\"`, `\n` y `\t`. La gramática completa está en [gramatica.ebnf](gramatica.ebnf).
 
+### Tipos de datos y forma de los literales
+
+Pseudo / Studio no tiene declaraciones explícitas de variables: la fase semántica infiere el tipo a partir de la primera asignación, de Leer/LeerTexto y de las operaciones donde se usa el valor.
+
+| Categoría fuente | Escritura | Significado y restricciones |
+|---|---|---|
+| Entero | 0, 27, 2048 | Forma léxica numérica sin punto. Pertenece al tipo semántico number; no existe un tipo entero estático separado. En dimensiones e índices se exige además que el valor sea entero seguro y positivo cuando aplique. |
+| Decimal | 3.14, .5, -0.25 | Forma léxica numérica con punto; el signo se analiza como operador unario. Usa punto, no coma, y no admite exponente. Pertenece a number. |
+| Cadena | “Hola”, “línea seguida” | Tipo semántico string; delimitada por comillas dobles. Se admiten escapes para barra invertida, comilla doble, salto de línea y tabulación. |
+| Lógico | Verdadero, Falso | Tipo semántico boolean; operadores Y, O y No. |
+
+El análisis semántico usa una categoría numérica `number`: entero y decimal son formas léxicas, no tipos estáticos distintos. En Python, el generador conserva como `int` los literales sin parte fraccionaria y usa `float` para decimales y entradas `Leer`; JavaScript representa ambos como `Number`. Los tamaños e índices de arreglos se limitan a enteros seguros, donde ambos runtimes coinciden. Los identificadores comienzan con letra Unicode o guion bajo y continúan con letras, marcas combinantes, dígitos Unicode o guion bajo; se normalizan a NFC. La secuencia de dos barras diagonales inicia un comentario hasta el final de la línea.
+
 ### Expresiones y control
 
 - Operadores aritméticos: `+`, `-`, `*`, `/`, `%` y `Modulo`; `%` sigue el resto con signo del dividendo.

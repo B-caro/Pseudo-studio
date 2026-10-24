@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 
 const sourceWithInput = `Inicio
@@ -24,6 +25,11 @@ test("analyze and translate real source, show diagnostics and provide working do
   await expect(page.locator(".cm-content")).toBeFocused();
   await page.getByRole("tab", { name: "AST" }).click();
   await expect(page.getByText("Program", { exact: true })).toBeVisible();
+  const assignmentNode = page.locator(".ast-node").filter({ has: page.getByText("Assign", { exact: true }) }).last();
+  const binaryNode = assignmentNode.locator(":scope > .ast-children > .ast-child > .ast-node").filter({ has: page.getByText("Binary", { exact: true }) }).first();
+  await binaryNode.locator(":scope > summary").click();
+  await expect(binaryNode.getByText("operator: -")).toBeVisible();
+  await expect(binaryNode.locator(":scope > .ast-children > .ast-child > .ast-edge").first()).toHaveText("izquierda");
   await page.locator(".ast-node > summary").first().click();
   await expect(page.locator(".cm-content")).toBeFocused();
   await page.screenshot({ path: resolve(process.cwd(), "../reports/ui-workbench.png"), fullPage: true });
@@ -40,10 +46,24 @@ test("analyze and translate real source, show diagnostics and provide working do
   await page.getByRole("button", { name: "Traducción" }).click();
   const downloadPromise = page.waitForEvent("download");
   await page.getByRole("button", { name: "Descargar .py" }).click();
-  expect((await downloadPromise).suggestedFilename()).toContain("pseudo-studio-python-");
+  const pythonDownload = await downloadPromise;
+  expect(pythonDownload.suggestedFilename()).toContain("pseudo-studio-python-");
+  const pythonBytes = await readFile((await pythonDownload.path())!);
+  const pythonTextPromise = page.waitForEvent("download");
+  await page.getByRole("button", { name: "Descargar Python .txt ↓" }).click();
+  const pythonTextDownload = await pythonTextPromise;
+  expect(pythonTextDownload.suggestedFilename()).toContain("python-txt-");
+  expect(await readFile((await pythonTextDownload.path())!)).toEqual(pythonBytes);
   const jsDownloadPromise = page.waitForEvent("download");
   await page.getByRole("button", { name: "Descargar .js" }).click();
-  expect((await jsDownloadPromise).suggestedFilename()).toContain("pseudo-studio-javascript-");
+  const javascriptDownload = await jsDownloadPromise;
+  expect(javascriptDownload.suggestedFilename()).toContain("pseudo-studio-javascript-");
+  const javascriptBytes = await readFile((await javascriptDownload.path())!);
+  const javascriptTextPromise = page.waitForEvent("download");
+  await page.getByRole("button", { name: "Descargar JavaScript .txt ↓" }).click();
+  const javascriptTextDownload = await javascriptTextPromise;
+  expect(javascriptTextDownload.suggestedFilename()).toContain("javascript-txt-");
+  expect(await readFile((await javascriptTextDownload.path())!)).toEqual(javascriptBytes);
   const sourceDownloadPromise = page.waitForEvent("download");
   await page.getByRole("button", { name: "Descargar .psc ↓" }).first().click();
   expect((await sourceDownloadPromise).suggestedFilename()).toContain("pseudo-studio-source-");
@@ -65,10 +85,31 @@ test("analyze and translate real source, show diagnostics and provide working do
   const diagnosticsDownload = page.waitForEvent("download");
   await page.getByRole("button", { name: "Exportar JSON ↓" }).click();
   expect((await diagnosticsDownload).suggestedFilename()).toContain("diagnostics");
+  const diagnosticTextDownload = page.waitForEvent("download");
+  await page.getByRole("button", { name: "Exportar errores .txt" }).click();
+  const diagnosticText = await diagnosticTextDownload;
+  expect(diagnosticText.suggestedFilename()).toContain("diagnostics-txt-");
+  const diagnosticTextContents = await readFile((await diagnosticText.path())!, "utf8");
+  expect(diagnosticTextContents).toContain("LEX_INVALID_CHAR");
+  expect(diagnosticTextContents).toContain("Sugerencia:");
+  await replaceSource(page, 'Inicio\nEscribir "😀"\nEscribir falta\nFin\n');
+  await page.getByRole("button", { name: "◎ Analizar" }).click();
+  await page.getByRole("tab", { name: /Errores/ }).click();
+  await page.locator(".diagnostic-card").first().click();
+  await expect.poll(() => page.evaluate(() => window.getSelection()?.toString() ?? "")).toBe("falta");
   await page.getByRole("button", { name: "Cerrar aviso" }).click();
   await expect(page.getByRole("status")).toHaveCount(0);
+  for (const name of ["A", "B", "C", "D", "E"]) {
+    const original = await readFile(resolve(process.cwd(), `../examples/${name}.psc`), "utf8");
+    const windowsText = original.replace(/\n/g, "\r\n");
+    await page.locator('input[type="file"]').setInputFiles({
+      name: `${name}.txt`, mimeType: "text/plain", buffer: Buffer.concat([Buffer.from([0xef, 0xbb, 0xbf]), Buffer.from(windowsText)]),
+    });
+    await page.getByRole("button", { name: "◎ Analizar" }).click();
+    await expect(page.getByText(/tokens ·/)).toBeVisible();
+  }
   await page.locator('input[type="file"]').setInputFiles({
-    name: "cargado.psc", mimeType: "text/plain", buffer: Buffer.from('Inicio\nEscribir "archivo abierto"\nFin\n'),
+    name: "cargado.txt", mimeType: "text/plain", buffer: Buffer.concat([Buffer.from([0xef, 0xbb, 0xbf]), Buffer.from('Inicio\r\nEscribir "archivo abierto"\r\nFin\r\n')]),
   });
   await expect(page.locator(".cm-content")).toContainText("archivo abierto");
   await page.getByRole("button", { name: "◎ Analizar" }).click();
@@ -80,6 +121,17 @@ test("analyze and translate real source, show diagnostics and provide working do
   await expect(page.locator(".terminal-output")).toContainText("archivo abierto");
   await page.getByRole("button", { name: "Limpiar" }).click();
   await expect(page.locator(".terminal-placeholder")).toContainText("La salida real aparecerá aquí");
+});
+
+test("file loader rejects malformed UTF-8 without replacing the current source", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.locator(".status-pill")).toContainText(/API lista|API degraded/);
+  await page.locator(".cm-content").fill('Inicio\nEscribir "conservar"\nFin\n');
+  await page.locator('input[type="file"]').setInputFiles({
+    name: "malformado.txt", mimeType: "text/plain", buffer: Buffer.from([0x49, 0x6e, 0x69, 0xff, 0x63, 0x69, 0x6f]),
+  });
+  await expect(page.getByRole("status")).toContainText("texto UTF-8 válido");
+  await expect(page.locator(".cm-content")).toContainText("conservar");
 });
 
 test("run both targets, stream interactive input, test cases, projects and report exports", async ({ page }) => {
@@ -222,6 +274,9 @@ test("official test panel runs every official A-E case through Python and Node",
     expect(report.comparisons.every((comparison: { equivalent: boolean }) => comparison.equivalent)).toBeTruthy();
     await expect(page.getByText("6 / 6 ejecuciones aprobadas")).toBeVisible({ timeout: 60_000 });
     await expect(page.getByRole("heading", { name: "Comparación Python ↔ Node" })).toBeVisible();
+    if (program === "C" || program === "D") {
+      await page.screenshot({ path: resolve(process.cwd(), `../reports/phase2-execution-${program.toLowerCase()}.png`), fullPage: true });
+    }
   }
   await expect(page.locator(".case-result summary").getByText("E-1", { exact: true })).toHaveCount(2);
   await expect(page.locator(".case-result summary").getByText("E-3", { exact: true })).toHaveCount(2);

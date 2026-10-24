@@ -5,7 +5,7 @@ test("workbench editor meets automated WCAG 2.2 A/AA checks", async ({ page }) =
   await page.goto("/");
   await expect(page.getByText("API lista")).toBeVisible();
   const violations = [];
-  for (const tab of ["Editor", "Traducción", "Consola", "Pruebas", "Proyectos", "Defensa", "Ayuda"]) {
+  for (const tab of ["Editor", "Traducción", "Equivalencias", "Consola", "Pruebas", "Proyectos", "Defensa", "Ayuda"]) {
     await page.getByRole("button", { name: tab, exact: true }).click();
     const results = await new AxeBuilder({ page })
       .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"])
@@ -28,6 +28,7 @@ test("every workspace section can be reached and activated by keyboard", async (
   await page.goto("/");
   const sections = [
     ["Traducción", "Dos destinos, una fuente."],
+    ["Equivalencias", "Un lenguaje, dos traducciones."],
     ["Consola", "Consola de ejecución."],
     ["Pruebas", "Pruebas académicas y propias."],
     ["Proyectos", "Tus proyectos."],

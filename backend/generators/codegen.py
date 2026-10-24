@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import keyword
 from dataclasses import dataclass
 
 from backend.compiler.model import (
@@ -42,6 +43,8 @@ class GeneratedArtifact:
     artifact_hash: str
     source_map: list[dict[str, object]]
     extension: str
+    program_source: str
+    program_source_map: list[dict[str, object]]
 
     def to_dict(self) -> dict[str, object]:
         return {
@@ -50,6 +53,8 @@ class GeneratedArtifact:
             "artifact_hash": self.artifact_hash,
             "source_map": self.source_map,
             "extension": self.extension,
+            "program_source": self.program_source,
+            "program_source_map": self.program_source_map,
         }
 
 
@@ -105,6 +110,11 @@ def __ps_format(value):
 def __ps_write(*values):
     __ps_sys.stdout.write("".join(__ps_format(value) for value in values) + "\n")
     __ps_sys.stdout.flush()
+
+def __ps_check_number(value, line, column):
+    if not __ps_math.isfinite(value):
+        __ps_fail("RUN_NONFINITE", line, column, "La operación produjo un número no finito.")
+    return value
 
 def __ps_safe_int(value, line, column, label):
     if not isinstance(value, (int, float)) or not __ps_math.isfinite(value) or not float(value).is_integer() or abs(value) > 9007199254740991:
@@ -204,6 +214,10 @@ function __ps_format(value) {
   return String(value);
 }
 function __ps_write(...values) { __ps_process.stdout.write(values.map(__ps_format).join("") + "\n"); }
+function __ps_check_number(value, line, column) {
+  if (!Number.isFinite(value)) __ps_fail("RUN_NONFINITE", line, column, "La operación produjo un número no finito.");
+  return value;
+}
 function __ps_safe_int(value, line, column, label) {
   if (!Number.isSafeInteger(value)) __ps_fail("RUN_INVALID_INTEGER", line, column, label + " debe ser un entero seguro.");
   return value;
@@ -244,6 +258,49 @@ function __ps_runtime_error(error) {
 
 
 class Emitter:
+    JS_RESERVED = {
+        "await",
+        "break",
+        "case",
+        "catch",
+        "class",
+        "const",
+        "continue",
+        "debugger",
+        "default",
+        "delete",
+        "do",
+        "else",
+        "enum",
+        "export",
+        "extends",
+        "false",
+        "finally",
+        "for",
+        "function",
+        "if",
+        "import",
+        "in",
+        "instanceof",
+        "let",
+        "new",
+        "null",
+        "return",
+        "static",
+        "super",
+        "switch",
+        "this",
+        "throw",
+        "true",
+        "try",
+        "typeof",
+        "var",
+        "void",
+        "while",
+        "with",
+        "yield",
+    }
+
     def __init__(self, target: str, symbols: list[Symbol], functions: list[Function]) -> None:
         self.target = target
         self.symbols = symbols
@@ -252,6 +309,26 @@ class Emitter:
         self.source_map: list[dict[str, object]] = []
         self.current_scope = "global"
         self.temp_index = 0
+        self.program_lines: list[str] = []
+        self.program_source_map: list[dict[str, object]] = []
+        self.capturing_program = False
+        self.program_indent_offset = 0
+        self.program_replacements: dict[str, str] = {}
+
+    def begin_program_capture(self, *, indent_offset: int = 0) -> None:
+        self.capturing_program = True
+        self.program_indent_offset = indent_offset
+
+    def end_program_capture(self) -> None:
+        self.capturing_program = False
+        self.program_indent_offset = 0
+
+    def _readable_name(self, name: str) -> str:
+        reserved = keyword.iskeyword(name) if self.target == "python" else name in self.JS_RESERVED
+        if name.isidentifier() and not reserved and not name.startswith("__ps_"):
+            return name
+        encoded = self._encoded(name)
+        return f"pseudo_{encoded}"
 
     @staticmethod
     def _encoded(name: str) -> str:
@@ -261,12 +338,25 @@ class Emitter:
         scope = self.current_scope
         if scope != "global" and (scope, name) not in {(symbol.scope, symbol.name) for symbol in self.symbols}:
             scope = "global"
-        return "__ps_user_v_" + self._encoded(scope + "\x00" + name)
+        encoded = "__ps_user_v_" + self._encoded(scope + "\x00" + name)
+        if self.capturing_program:
+            self.program_replacements[encoded] = self._readable_name(name)
+        return encoded
 
     def function(self, name: str) -> str:
-        return "__ps_user_f_" + self._encoded(name)
+        encoded = "__ps_user_f_" + self._encoded(name)
+        if self.capturing_program:
+            self.program_replacements[encoded] = self._readable_name(name)
+        return encoded
 
-    def emit(self, line: str = "", indent: int = 0, source: Span | None = None) -> None:
+    def emit(
+        self,
+        line: str = "",
+        indent: int = 0,
+        source: Span | None = None,
+        *,
+        program_line: str | None = None,
+    ) -> None:
         self.lines.append("    " * indent + line)
         if source is not None:
             self.source_map.append(
@@ -275,10 +365,29 @@ class Emitter:
                     "source_span": source.to_dict(),
                 }
             )
+        if self.capturing_program:
+            visible_line = line if program_line is None else program_line
+            for internal, readable in sorted(
+                self.program_replacements.items(), key=lambda item: len(item[0]), reverse=True
+            ):
+                visible_line = visible_line.replace(internal, readable)
+            visible_indent = max(0, indent - self.program_indent_offset)
+            self.program_lines.append("    " * visible_indent + visible_line)
+            if source is not None:
+                self.program_source_map.append(
+                    {
+                        "generated_line": len(self.program_lines),
+                        "source_span": source.to_dict(),
+                    }
+                )
 
     def temp(self, suffix: str) -> str:
         self.temp_index += 1
-        return f"__ps_tmp_{self.temp_index}_{suffix}"
+        name = f"__ps_tmp_{self.temp_index}_{suffix}"
+        if self.capturing_program:
+            label = {"start": "inicio", "end": "limite", "step": "paso"}.get(suffix, suffix)
+            self.program_replacements[name] = f"{label}_{self.temp_index}"
+        return name
 
 
 def generate(program: Program, symbols: list[Symbol], target: str, *, validated: bool) -> GeneratedArtifact:
@@ -289,8 +398,19 @@ def generate(program: Program, symbols: list[Symbol], target: str, *, validated:
     emitter = Emitter(target, symbols, [stmt for stmt in program.body if isinstance(stmt, Function)])
     (PythonEmitter if target == "python" else JavaScriptEmitter)(emitter).program(program)
     source = "\n".join(emitter.lines).rstrip() + "\n"
+    program_source = "\n".join(emitter.program_lines).strip()
+    if program_source:
+        program_source += "\n"
     digest = hashlib.sha256(source.encode("utf-8")).hexdigest()
-    return GeneratedArtifact(target, source, digest, emitter.source_map, ".py" if target == "python" else ".js")
+    return GeneratedArtifact(
+        target,
+        source,
+        digest,
+        emitter.source_map,
+        ".py" if target == "python" else ".js",
+        program_source,
+        emitter.program_source_map,
+    )
 
 
 class BaseEmitter:
@@ -308,6 +428,14 @@ class BaseEmitter:
     def function_definition(self, function: Function) -> None:
         raise NotImplementedError
 
+    def array_parameters(self, function: Function) -> set[str]:
+        scope = f"function:{function.normalized_name}"
+        return {
+            symbol.name
+            for symbol in self.e.symbols
+            if symbol.scope == scope and symbol.kind == "parameter" and symbol.type == "array"
+        }
+
     def statement(self, node: Statement, indent: int) -> None:
         raise NotImplementedError
 
@@ -321,6 +449,8 @@ class BaseEmitter:
                     ("True" if node.value else "False") if e.target == "python" else ("true" if node.value else "false")
                 )
             value = float(node.value)
+            if e.target == "python":
+                return repr(value)
             return str(int(value)) if value.is_integer() else repr(value)
         if isinstance(node, Name):
             return e.variable(node.normalized)
@@ -335,6 +465,8 @@ class BaseEmitter:
                 return f"__ps_div({left}, {right}, {node.span.start_line}, {node.span.start_column})"
             if op == "%":
                 return f"__ps_mod({left}, {right}, {node.span.start_line}, {node.span.start_column})"
+            if op in {"+", "-", "*"} and node.inferred_type == "number":
+                return f"__ps_check_number(({left} {op} {right}), {node.span.start_line}, {node.span.start_column})"
             if op in {"y", "o"}:
                 op = {"y": "and" if e.target == "python" else "&&", "o": "or" if e.target == "python" else "||"}[op]
             return f"({left} {op} {right})"
@@ -354,11 +486,15 @@ class BaseEmitter:
 class PythonEmitter(BaseEmitter):
     def program(self, program: Program) -> None:
         self.e.lines.extend(PY_HELPERS.splitlines())
+        self.e.begin_program_capture()
         self.functions(program)
+        self.e.end_program_capture()
         self.e.emit("try:")
+        self.e.begin_program_capture(indent_offset=1)
         for statement in program.body:
             if not isinstance(statement, Function):
                 self.statement(statement, 1)
+        self.e.end_program_capture()
         self.e.emit("except __ps_Fault as __ps_error:")
         self.e.emit("__ps_runtime_error(__ps_error)", 1)
         self.e.emit("__ps_sys.exit(70)", 1)
@@ -373,6 +509,10 @@ class PythonEmitter(BaseEmitter):
         self.e.current_scope = f"function:{function.normalized_name}"
         params = ", ".join(self.e.variable(name) for name in function.normalized_parameters)
         self.e.emit(f"def {self.e.function(function.normalized_name)}({params}):", source=function.span)
+        for parameter in function.normalized_parameters:
+            if parameter in self.array_parameters(function):
+                variable = self.e.variable(parameter)
+                self.e.emit(f"{variable} = list({variable})", 1, function.span)
         if not function.body:
             self.e.emit("pass", 1)
         else:
@@ -408,7 +548,12 @@ class PythonEmitter(BaseEmitter):
                 e.emit(f"{self.target_name(node.target)} = {value}", indent, node.span)
         elif isinstance(node, Write):
             values = ", ".join(self.expression(value) for value in node.values)
-            e.emit(f"__ps_write({values})", indent, node.span)
+            program_line = None
+            if e.capturing_program and len(node.values) == 1:
+                value = node.values[0]
+                if isinstance(value, Literal) and value.literal_kind == "string":
+                    program_line = f"print({values})"
+            e.emit(f"__ps_write({values})", indent, node.span, program_line=program_line)
         elif isinstance(node, If):
             e.emit(f"if {self.expression(node.condition)}:", indent, node.span)
             self._body(node.then_body, indent + 1)
@@ -462,6 +607,7 @@ class PythonEmitter(BaseEmitter):
 class JavaScriptEmitter(BaseEmitter):
     def program(self, program: Program) -> None:
         self.e.lines.extend(JS_HELPERS.splitlines())
+        self.e.begin_program_capture()
         globals_ = sorted(
             [symbol for symbol in self.e.symbols if symbol.scope == "global" and symbol.kind in {"variable", "array"}],
             key=lambda item: item.name,
@@ -469,10 +615,13 @@ class JavaScriptEmitter(BaseEmitter):
         if globals_:
             self.e.emit("let " + ", ".join(self.e.variable(item.name) for item in globals_) + ";")
         self.functions(program)
+        self.e.end_program_capture()
         self.e.emit("try {")
+        self.e.begin_program_capture(indent_offset=1)
         for statement in program.body:
             if not isinstance(statement, Function):
                 self.statement(statement, 1)
+        self.e.end_program_capture()
         self.e.emit("} catch (__ps_error) {")
         self.e.emit("if (__ps_error instanceof __ps_Fault) {", 1)
         self.e.emit("__ps_runtime_error(__ps_error);", 2)
@@ -497,6 +646,10 @@ class JavaScriptEmitter(BaseEmitter):
         )
         if local_names:
             self.e.emit("let " + ", ".join(self.e.variable(item.name) for item in local_names) + ";", 1)
+        for parameter in function.normalized_parameters:
+            if parameter in self.array_parameters(function):
+                variable = self.e.variable(parameter)
+                self.e.emit(f"{variable} = {variable}.slice();", 1, function.span)
         for statement in function.body:
             self.statement(statement, 1)
         self.e.emit("}")
@@ -530,7 +683,12 @@ class JavaScriptEmitter(BaseEmitter):
                 e.emit(f"{self.target_name(node.target)} = {value};", indent, node.span)
         elif isinstance(node, Write):
             values = ", ".join(self.expression(value) for value in node.values)
-            e.emit(f"__ps_write({values});", indent, node.span)
+            program_line = None
+            if e.capturing_program and len(node.values) == 1:
+                value = node.values[0]
+                if isinstance(value, Literal) and value.literal_kind == "string":
+                    program_line = f"console.log({values});"
+            e.emit(f"__ps_write({values});", indent, node.span, program_line=program_line)
         elif isinstance(node, If):
             e.emit(f"if ({self.expression(node.condition)}) {{", indent, node.span)
             self._body(node.then_body, indent + 1)

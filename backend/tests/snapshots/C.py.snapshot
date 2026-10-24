@@ -51,6 +51,11 @@ def __ps_write(*values):
     __ps_sys.stdout.write("".join(__ps_format(value) for value in values) + "\n")
     __ps_sys.stdout.flush()
 
+def __ps_check_number(value, line, column):
+    if not __ps_math.isfinite(value):
+        __ps_fail("RUN_NONFINITE", line, column, "La operación produjo un número no finito.")
+    return value
+
 def __ps_safe_int(value, line, column, label):
     if not isinstance(value, (int, float)) or not __ps_math.isfinite(value) or not float(value).is_integer() or abs(value) > 9007199254740991:
         __ps_fail("RUN_INVALID_INTEGER", line, column, label + " debe ser un entero seguro.")
@@ -100,17 +105,17 @@ def __ps_runtime_error(error):
 try:
     __ps_write("Ingrese un n\u00famero entero positivo:")
     __ps_user_v_676c6f62616c006e = __ps_read_number(3, 5)
-    __ps_user_v_676c6f62616c00666163746f7269616c = 1
-    __ps_user_v_676c6f62616c0073756d61 = 0
-    __ps_tmp_1_start = __ps_safe_int(1, 6, 5, 'Inicio de Para')
+    __ps_user_v_676c6f62616c00666163746f7269616c = 1.0
+    __ps_user_v_676c6f62616c0073756d61 = 0.0
+    __ps_tmp_1_start = __ps_safe_int(1.0, 6, 5, 'Inicio de Para')
     __ps_tmp_2_end = __ps_safe_int(__ps_user_v_676c6f62616c006e, 6, 5, 'Hasta de Para')
     __ps_tmp_3_step = 1 if __ps_tmp_1_start <= __ps_tmp_2_end else -1
     if __ps_tmp_3_step == 0:
         __ps_fail('RUN_INVALID_STEP', 6, 5, 'Paso no puede ser cero.')
     __ps_user_v_676c6f62616c0069 = __ps_tmp_1_start
     while (__ps_user_v_676c6f62616c0069 <= __ps_tmp_2_end if __ps_tmp_3_step > 0 else __ps_user_v_676c6f62616c0069 >= __ps_tmp_2_end):
-        __ps_user_v_676c6f62616c00666163746f7269616c = (__ps_user_v_676c6f62616c00666163746f7269616c * __ps_user_v_676c6f62616c0069)
-        __ps_user_v_676c6f62616c0073756d61 = (__ps_user_v_676c6f62616c0073756d61 + (__ps_user_v_676c6f62616c0069 * 2))
+        __ps_user_v_676c6f62616c00666163746f7269616c = __ps_check_number((__ps_user_v_676c6f62616c00666163746f7269616c * __ps_user_v_676c6f62616c0069), 7, 21)
+        __ps_user_v_676c6f62616c0073756d61 = __ps_check_number((__ps_user_v_676c6f62616c0073756d61 + __ps_check_number((__ps_user_v_676c6f62616c0069 * 2.0), 8, 24)), 8, 16)
         __ps_user_v_676c6f62616c0069 += __ps_tmp_3_step
     __ps_write("El factorial es: ", __ps_user_v_676c6f62616c00666163746f7269616c)
     __ps_write("La suma es: ", __ps_user_v_676c6f62616c0073756d61)

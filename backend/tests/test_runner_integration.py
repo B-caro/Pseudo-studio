@@ -101,6 +101,32 @@ class OciRunnerIntegrationTests(unittest.TestCase):
         self.assertFalse(invalid_dimension.translatable)
         self.assertTrue(invalid_dimension.diagnostics)
 
+    def test_python_and_javascript_share_binary64_semantics_for_large_integral_values(self) -> None:
+        source = "Inicio\nEscribir 9007199254740992 + 1\nEscribir 9007199254740992 * 2\nFin\n"
+        for target in ("python", "javascript"):
+            result = self._run(source, [], target)
+            self.assertEqual(
+                (result.status, result.exit_code, result.stdout, result.stderr),
+                ("completed", 0, "9007199254740992\n18014398509481984\n", ""),
+            )
+
+    def test_array_argument_is_copied_before_function_mutates_it(self) -> None:
+        source = """Inicio
+Funcion mutar(datos)
+datos[1] = 99
+FinFuncion
+Dimension original[1]
+original[1] = 7
+mutar(original)
+Escribir original[1]
+Fin
+"""
+        for target in ("python", "javascript"):
+            result = self._run(source, [], target)
+            self.assertEqual(
+                (result.status, result.exit_code, result.stdout, result.stderr), ("completed", 0, "7\n", "")
+            )
+
     def test_official_condition_and_zero_loop_boundaries_match_both_targets(self) -> None:
         examples_dir = Path(__file__).resolve().parents[2] / "examples"
         cases = [

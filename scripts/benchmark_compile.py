@@ -25,23 +25,34 @@ def make_source(line_count: int) -> str:
     return "\n".join(["Inicio", *statements, "Fin", ""])
 
 
-def measure(line_count: int, iterations: int) -> dict[str, object]:
-    source = make_source(line_count)
+def make_invalid_source(line_count: int) -> str:
+    if line_count < 3:
+        raise ValueError("line_count debe contar al menos Inicio, una sentencia y Fin.")
+    statements = [f"valor_{index} =" for index in range(line_count - 2)]
+    return "\n".join(["Inicio", *statements, "Fin", ""])
+
+
+def measure(line_count: int, iterations: int, *, recovery: bool = False) -> dict[str, object]:
+    source = make_invalid_source(line_count) if recovery else make_source(line_count)
     warmup = compile_source(source, targets=())
-    if not warmup.translatable:
-        raise RuntimeError(f"El caso de {line_count} líneas no compila: {warmup.diagnostics}")
+    if warmup.translatable == recovery:
+        expectation = "debe recuperarse con diagnósticos" if recovery else "debe compilar"
+        raise RuntimeError(f"El caso de {line_count} líneas {expectation}: {warmup.diagnostics}")
     timings_ms = []
     for _ in range(iterations):
         start = time.perf_counter()
         result = compile_source(source, targets=())
         timings_ms.append((time.perf_counter() - start) * 1000)
-        if not result.translatable:
-            raise RuntimeError(f"El caso de {line_count} líneas no compila: {result.diagnostics}")
+        if result.translatable == recovery:
+            expectation = "debe recuperarse con diagnósticos" if recovery else "debe compilar"
+            raise RuntimeError(f"El caso de {line_count} líneas {expectation}: {result.diagnostics}")
     ordered = sorted(timings_ms)
     return {
         "requested_lines": line_count,
         "actual_lines": len(source.splitlines()),
         "source_bytes": len(source.encode("utf-8")),
+        "mode": "error_recovery" if recovery else "valid_compile",
+        "diagnostic_count": len(warmup.diagnostics),
         "iterations": iterations,
         "p50_ms": round(statistics.median(ordered), 3),
         "p95_ms": round(statistics.quantiles(ordered, n=100, method="inclusive")[94], 3),
@@ -60,7 +71,9 @@ def main() -> int:
         "platform": platform.platform(),
         "cpu_count": os.cpu_count(),
         "targets": [],
-        "measurements": [measure(size, iterations) for size in (100, 1000)],
+        "measurements": [
+            measure(size, iterations, recovery=recovery) for size in (100, 1000) for recovery in (False, True)
+        ],
     }
     report_path = ROOT / "reports/compiler-performance.json"
     report_path.parent.mkdir(parents=True, exist_ok=True)
@@ -70,12 +83,13 @@ def main() -> int:
         "",
         f"Generated `{report['generated_at']}` · Python `{report['python']}` · `{report['platform']}` · CPUs `{report['cpu_count']}`",
         "",
-        "| Lines | Bytes | Iterations | p50 ms | p95 ms | Min ms | Max ms |",
-        "|---:|---:|---:|---:|---:|---:|---:|",
+        "| Mode | Lines | Bytes | Diagnostics | Iterations | p50 ms | p95 ms | Min ms | Max ms |",
+        "|---|---:|---:|---:|---:|---:|---:|---:|---:|",
     ]
     for item in report["measurements"]:
         markdown.append(
-            f"| {item['actual_lines']} | {item['source_bytes']} | {item['iterations']} | {item['p50_ms']:.3f} | "
+            f"| {item['mode']} | {item['actual_lines']} | {item['source_bytes']} | {item['diagnostic_count']} | "
+            f"{item['iterations']} | {item['p50_ms']:.3f} | "
             f"{item['p95_ms']:.3f} | {item['min_ms']:.3f} | {item['max_ms']:.3f} |"
         )
     (ROOT / "reports/compiler-performance.md").write_text("\n".join(markdown) + "\n", encoding="utf-8")

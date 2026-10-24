@@ -1,0 +1,54 @@
+.ast-fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  padding: 2px 4px 6px 11px;
+}
+
+.ast-field {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  border: 1px solid #e3eae3;
+  border-radius: 4px;
+  background: #fafcf9;
+  padding: 3px 6px;
+  color: #536860;
+  font: 9px/1.5 'DM Mono', monospace;
+}
+
+.ast-field b {
+  color: #315f4b;
+  font-weight: 700;
+}
+
+.ast-child {
+  margin: 3px 0 5px 8px;
+  border-left: 1px solid #dce7df;
+  padding-left: 7px;
+}
+
+.ast-edge {
+  display: block;
+  margin: 3px 0;
+  color: #84958b;
+  font: 8px/1.4 'DM Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: .45px;
+}
+
+.ast-child > .ast-node {
+  margin-top: 0;
+}
+
+.export-actions,
+.code-export-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.code-export-actions .button {
+  padding: 0 8px;
+}

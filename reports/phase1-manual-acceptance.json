@@ -1,0 +1,211 @@
+{
+  "generated_at": "2026-10-24T07:11:24.273046+00:00",
+  "runtimes": {
+    "python": "Python 3.12.3",
+    "node": "v22.22.2"
+  },
+  "input_mode": "stdin batch",
+  "total_runs": 12,
+  "passed_runs": 12,
+  "failed_runs": 0,
+  "runs": [
+    {
+      "case_id": "A-1",
+      "program": "A",
+      "target": "python",
+      "inputs": [
+        "4",
+        "2",
+        "3"
+      ],
+      "expected_stdout": "Ingrese el primer número:\nIngrese el segundo número:\nIngrese el tercer número:\nEl resultado es: 16\n",
+      "actual_stdout": "Ingrese el primer número:\nIngrese el segundo número:\nIngrese el tercer número:\nEl resultado es: 16\n",
+      "stderr": "",
+      "exit_code": 0,
+      "duration_ms": 17.46031299990136,
+      "source_sha256": "cbac813510d644757f5cb2ac512b4042d0a37b41959d13379064925b3a74c142",
+      "passed": true
+    },
+    {
+      "case_id": "A-1",
+      "program": "A",
+      "target": "javascript",
+      "inputs": [
+        "4",
+        "2",
+        "3"
+      ],
+      "expected_stdout": "Ingrese el primer número:\nIngrese el segundo número:\nIngrese el tercer número:\nEl resultado es: 16\n",
+      "actual_stdout": "Ingrese el primer número:\nIngrese el segundo número:\nIngrese el tercer número:\nEl resultado es: 16\n",
+      "stderr": "",
+      "exit_code": 0,
+      "duration_ms": 20.00943799976085,
+      "source_sha256": "c33d809cb0ae3676b66c3480d7080309775e3346624befb0df2463b0049d915a",
+      "passed": true
+    },
+    {
+      "case_id": "A-2",
+      "program": "A",
+      "target": "python",
+      "inputs": [
+        "10",
+        "5",
+        "2"
+      ],
+      "expected_stdout": "Ingrese el primer número:\nIngrese el segundo número:\nIngrese el tercer número:\nEl resultado es: 28\n",
+      "actual_stdout": "Ingrese el primer número:\nIngrese el segundo número:\nIngrese el tercer número:\nEl resultado es: 28\n",
+      "stderr": "",
+      "exit_code": 0,
+      "duration_ms": 21.816684999976133,
+      "source_sha256": "cbac813510d644757f5cb2ac512b4042d0a37b41959d13379064925b3a74c142",
+      "passed": true
+    },
+    {
+      "case_id": "A-2",
+      "program": "A",
+      "target": "javascript",
+      "inputs": [
+        "10",
+        "5",
+        "2"
+      ],
+      "expected_stdout": "Ingrese el primer número:\nIngrese el segundo número:\nIngrese el tercer número:\nEl resultado es: 28\n",
+      "actual_stdout": "Ingrese el primer número:\nIngrese el segundo número:\nIngrese el tercer número:\nEl resultado es: 28\n",
+      "stderr": "",
+      "exit_code": 0,
+      "duration_ms": 22.458731999904558,
+      "source_sha256": "c33d809cb0ae3676b66c3480d7080309775e3346624befb0df2463b0049d915a",
+      "passed": true
+    },
+    {
+      "case_id": "A-3",
+      "program": "A",
+      "target": "python",
+      "inputs": [
+        "6",
+        "3",
+        "4"
+      ],
+      "expected_stdout": "Ingrese el primer número:\nIngrese el segundo número:\nIngrese el tercer número:\nEl resultado es: 34\n",
+      "actual_stdout": "Ingrese el primer número:\nIngrese el segundo número:\nIngrese el tercer número:\nEl resultado es: 34\n",
+      "stderr": "",
+      "exit_code": 0,
+      "duration_ms": 22.216305999791075,
+      "source_sha256": "cbac813510d644757f5cb2ac512b4042d0a37b41959d13379064925b3a74c142",
+      "passed": true
+    },
+    {
+      "case_id": "A-3",
+      "program": "A",
+      "target": "javascript",
+      "inputs": [
+        "6",
+        "3",
+        "4"
+      ],
+      "expected_stdout": "Ingrese el primer número:\nIngrese el segundo número:\nIngrese el tercer número:\nEl resultado es: 34\n",
+      "actual_stdout": "Ingrese el primer número:\nIngrese el segundo número:\nIngrese el tercer número:\nEl resultado es: 34\n",
+      "stderr": "",
+      "exit_code": 0,
+      "duration_ms": 21.184628000810335,
+      "source_sha256": "c33d809cb0ae3676b66c3480d7080309775e3346624befb0df2463b0049d915a",
+      "passed": true
+    },
+    {
+      "case_id": "B-1",
+      "program": "B",
+      "target": "python",
+      "inputs": [
+        "8",
+        "80"
+      ],
+      "expected_stdout": "Ingrese su nota final:\nIngrese su porcentaje de asistencia:\nAprobado\n",
+      "actual_stdout": "Ingrese su nota final:\nIngrese su porcentaje de asistencia:\nAprobado\n",
+      "stderr": "",
+      "exit_code": 0,
+      "duration_ms": 22.509753000122146,
+      "source_sha256": "a9679451fa6bb2766554a7f74f24ea2c5398a75a617e812afe9c7f4c8abe0fe8",
+      "passed": true
+    },
+    {
+      "case_id": "B-1",
+      "program": "B",
+      "target": "javascript",
+      "inputs": [
+        "8",
+        "80"
+      ],
+      "expected_stdout": "Ingrese su nota final:\nIngrese su porcentaje de asistencia:\nAprobado\n",
+      "actual_stdout": "Ingrese su nota final:\nIngrese su porcentaje de asistencia:\nAprobado\n",
+      "stderr": "",
+      "exit_code": 0,
+      "duration_ms": 25.131356999736454,
+      "source_sha256": "e7a6b2a628da47b45e3cb7ff9fc26c6be7f7b07db149470b714f7a22f3a6de8f",
+      "passed": true
+    },
+    {
+      "case_id": "B-2",
+      "program": "B",
+      "target": "python",
+      "inputs": [
+        "7",
+        "60"
+      ],
+      "expected_stdout": "Ingrese su nota final:\nIngrese su porcentaje de asistencia:\nReprobado por asistencia\n",
+      "actual_stdout": "Ingrese su nota final:\nIngrese su porcentaje de asistencia:\nReprobado por asistencia\n",
+      "stderr": "",
+      "exit_code": 0,
+      "duration_ms": 18.761443000585132,
+      "source_sha256": "a9679451fa6bb2766554a7f74f24ea2c5398a75a617e812afe9c7f4c8abe0fe8",
+      "passed": true
+    },
+    {
+      "case_id": "B-2",
+      "program": "B",
+      "target": "javascript",
+      "inputs": [
+        "7",
+        "60"
+      ],
+      "expected_stdout": "Ingrese su nota final:\nIngrese su porcentaje de asistencia:\nReprobado por asistencia\n",
+      "actual_stdout": "Ingrese su nota final:\nIngrese su porcentaje de asistencia:\nReprobado por asistencia\n",
+      "stderr": "",
+      "exit_code": 0,
+      "duration_ms": 21.52469800057588,
+      "source_sha256": "e7a6b2a628da47b45e3cb7ff9fc26c6be7f7b07db149470b714f7a22f3a6de8f",
+      "passed": true
+    },
+    {
+      "case_id": "B-3",
+      "program": "B",
+      "target": "python",
+      "inputs": [
+        "4",
+        "90"
+      ],
+      "expected_stdout": "Ingrese su nota final:\nIngrese su porcentaje de asistencia:\nReprobado por nota\n",
+      "actual_stdout": "Ingrese su nota final:\nIngrese su porcentaje de asistencia:\nReprobado por nota\n",
+      "stderr": "",
+      "exit_code": 0,
+      "duration_ms": 17.747079000400845,
+      "source_sha256": "a9679451fa6bb2766554a7f74f24ea2c5398a75a617e812afe9c7f4c8abe0fe8",
+      "passed": true
+    },
+    {
+      "case_id": "B-3",
+      "program": "B",
+      "target": "javascript",
+      "inputs": [
+        "4",
+        "90"
+      ],
+      "expected_stdout": "Ingrese su nota final:\nIngrese su porcentaje de asistencia:\nReprobado por nota\n",
+      "actual_stdout": "Ingrese su nota final:\nIngrese su porcentaje de asistencia:\nReprobado por nota\n",
+      "stderr": "",
+      "exit_code": 0,
+      "duration_ms": 19.920129999263736,
+      "source_sha256": "e7a6b2a628da47b45e3cb7ff9fc26c6be7f7b07db149470b714f7a22f3a6de8f",
+      "passed": true
+    }
+  ]
+}
