@@ -47,7 +47,7 @@ jobs:
           fi
           curl -fsSL https://get.docker.com/rootless | sh
           if [ -r /sys/module/apparmor/parameters/enabled ] && grep -q '^Y' /sys/module/apparmor/parameters/enabled; then
-            profile_name="home.$(printf '%s' "$HOME/bin/rootlesskit" | sed 's#^/##; s#/#.#g')"
+            profile_name="$(printf '%s' "$HOME/bin/rootlesskit" | sed 's#^/##; s#/#.#g')"
             {
               printf 'abi <abi/4.0>,\ninclude <tunables/global>\n\n'
               printf '"%s" flags=(unconfined) {\n  userns,\n  include if exists <local/%s>\n}\n' "$HOME/bin/rootlesskit" "$profile_name"
